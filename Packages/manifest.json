@@ -5,6 +5,7 @@
     "com.unity.render-pipelines.universal": "14.0.12",
     "com.unity.test-framework": "1.1.33",
     "com.unity.toolchain.win-x86_64-linux-x86_64": "2.0.10",
+    "org.nuget.com.ivanmurzak.reflectornet": "0.1.13",
     "org.nuget.microsoft.aspnetcore.signalr.client": "9.0.4",
     "org.nuget.microsoft.aspnetcore.signalr.protocols.json": "9.0.4",
     "org.nuget.microsoft.bcl.memory": "9.0.4",
@@ -28,6 +29,7 @@
       "name": "package.openupm.com",
       "url": "https://package.openupm.com",
       "scopes": [
+        "org.nuget.com.ivanmurzak.reflectornet",
         "org.nuget.microsoft.aspnetcore.connections.abstractions",
         "org.nuget.microsoft.aspnetcore.http.connections.client",
         "org.nuget.microsoft.aspnetcore.http.connections.common",

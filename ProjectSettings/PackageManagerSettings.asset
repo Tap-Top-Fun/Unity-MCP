@@ -30,6 +30,7 @@ MonoBehaviour:
     m_Name: package.openupm.com
     m_Url: https://package.openupm.com
     m_Scopes:
+    - org.nuget.com.ivanmurzak.reflectornet
     - org.nuget.microsoft.aspnetcore.connections.abstractions
     - org.nuget.microsoft.aspnetcore.http.connections.client
     - org.nuget.microsoft.aspnetcore.http.connections.common

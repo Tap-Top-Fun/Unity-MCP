@@ -10,7 +10,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
     public class ObjectRefConverter : JsonConverter<ObjectRef>, IJsonSchemaConverter
     {
-        public string Id => typeof(ObjectRef).FullName;
+        public string Id => typeof(ObjectRef).FullName ?? throw new InvalidOperationException("ObjectRef type name is null.");
         public JsonNode GetScheme() => new JsonObject
         {
             ["id"] = Id,

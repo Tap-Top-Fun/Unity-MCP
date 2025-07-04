@@ -1,6 +1,8 @@
 {
     "cSpell.words": [
-        "Murzak"
+        "dbug",
+        "Murzak",
+        "trce"
     ],
     "files.exclude": {
         "**/*.meta": true

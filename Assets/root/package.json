@@ -17,6 +17,7 @@
     "dependencies": {
         "com.unity.test-framework": "1.1.33",
         "com.unity.modules.uielements": "1.0.0",
+        "org.nuget.com.ivanmurzak.reflectornet": "0.1.13",
         "org.nuget.microsoft.bcl.memory": "9.0.4",
         "org.nuget.microsoft.aspnetcore.signalr.client": "9.0.4",
         "org.nuget.microsoft.aspnetcore.signalr.protocols.json": "9.0.4",
