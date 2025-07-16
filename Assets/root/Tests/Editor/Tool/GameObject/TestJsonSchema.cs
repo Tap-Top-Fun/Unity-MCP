@@ -15,12 +15,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         static void ValidateType<T>() => ValidateType(typeof(T));
         static void ValidateType(Type type)
         {
-            var schema = JsonUtils.GetSchema(type);
+            var schema = JsonUtils.Schema.GetSchema(type);
             UnityEngine.Debug.Log($"Schema for '{type.FullName}': {schema}");
 
             Assert.IsNotNull(schema, $"Schema for '{type.FullName}' is null");
 
-            var typeNodes = JsonUtils.FindAllProperties(schema, "type");
+            var typeNodes = JsonUtils.Schema.FindAllProperties(schema, "type");
             foreach (var typeNode in typeNodes)
             {
                 switch (typeNode)
