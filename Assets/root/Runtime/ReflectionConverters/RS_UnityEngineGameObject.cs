@@ -113,7 +113,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return stringBuilder?.AppendLine($"[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
 
             var componentObject = (object)component;
-            return reflector.Populate(ref componentObject, fieldValue, logger: logger);
+            return reflector.Populate(ref componentObject, fieldValue, depth: depth, logger: logger);
         }
     }
 }

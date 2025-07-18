@@ -28,7 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var currentValue = fieldInfo.GetValue(obj);
-            Populate(reflector, ref currentValue, value, 0, null, flags, logger);
+            Populate(reflector, ref currentValue, value, type, depth: 0, stringBuilder, flags, logger);
             fieldInfo.SetValue(obj, currentValue);
             stringBuilder?.AppendLine($"[Success] Field '{value.name}' modified to '{currentValue}'.");
             return true;
@@ -38,7 +38,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var currentValue = propertyInfo.GetValue(obj);
-            Populate(reflector, ref currentValue, value, 0, null, flags, logger);
+            Populate(reflector, ref currentValue, value, type, depth: 0, stringBuilder, flags, logger);
             propertyInfo.SetValue(obj, currentValue);
             stringBuilder?.AppendLine($"[Success] Property '{value.name}' modified to '{currentValue}'.");
             return true;

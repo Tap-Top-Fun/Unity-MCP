@@ -60,9 +60,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             // ValidateType<object>();
             ValidateType<ObjectRef>();
 
-            ValidateType<GameObjectData>();
             ValidateType<GameObjectRef>();
             ValidateType<GameObjectRefList>();
+            ValidateType<GameObjectComponentsRef>();
+            ValidateType<GameObjectComponentsRefList>();
 
             ValidateType<ComponentData>();
             ValidateType<ComponentDataLight>();

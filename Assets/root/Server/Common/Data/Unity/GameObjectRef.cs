@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
-    [Description(@"GameObject reference. Used to find GameObject in opened Prefab or in a Scene.
+    [Description(@"Find GameObject in opened Prefab or in a Scene.
 Use one of the following properties:
 1. 'instanceID' (int) - recommended. It finds the exact GameObject.
 2. 'path' (string) - finds GameObject by path. It may find a wrong GameObject.
