@@ -39,3 +39,6 @@ packages/
 
 *.sln
 *.sln.meta
+
+# Whitelist specific DLLs
+!ReflectorNet.dll
