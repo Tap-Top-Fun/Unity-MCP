@@ -75,8 +75,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Success] Field '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
 
             fieldInfo.SetValue(obj, refObj);
             return true;
@@ -86,8 +87,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Success] Property '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
 
             propertyInfo.SetValue(obj, refObj);
             return true;

@@ -78,6 +78,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var serialized = JsonUtils.Deserialize<SerializedMember>(value.Value);
             var material = obj as Material;
 
@@ -85,20 +86,20 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var shaderName = serialized.GetField(FieldShader)?.GetValue<string>();
             if (string.IsNullOrEmpty(shaderName))
             {
-                stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Shader name is null or empty.");
+                stringBuilder?.AppendLine($"{padding}[Error] Shader name is null or empty.");
                 return false;
             }
 
             if (material.shader.name == shaderName)
             {
-                stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+                stringBuilder?.AppendLine($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
                 return true;
             }
 
             var parsedValue = Shader.Find(shaderName);
             if (parsedValue == null)
             {
-                stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Shader with name '{shaderName}' not found.");
+                stringBuilder?.AppendLine($"{padding}[Error] Shader with name '{shaderName}' not found.");
                 return false;
             }
 
@@ -111,8 +112,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
-            var material = obj as Material;
             var padding = StringUtils.GetPadding(depth);
+            var material = obj as Material;
 
             // Set shader
             if (fieldValue.name == FieldShader)

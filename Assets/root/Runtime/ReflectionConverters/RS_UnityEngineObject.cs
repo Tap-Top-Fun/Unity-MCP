@@ -44,7 +44,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+            var padding = StringUtils.GetPadding(depth);
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
             return false;
         }
     }

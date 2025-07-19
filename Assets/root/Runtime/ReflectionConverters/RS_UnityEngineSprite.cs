@@ -28,20 +28,22 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var currentValue = fieldInfo.GetValue(obj);
             Populate(reflector, ref currentValue, value, type, depth: depth, stringBuilder: stringBuilder, flags, logger);
             fieldInfo.SetValue(obj, currentValue);
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Success] Field '{value.name}' modified to '{currentValue}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name}' modified to '{currentValue}'.");
             return true;
         }
         public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var currentValue = propertyInfo.GetValue(obj);
             Populate(reflector, ref currentValue, value, type, depth: depth, stringBuilder: stringBuilder, flags, logger);
             propertyInfo.SetValue(obj, currentValue);
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Success] Property '{value.name}' modified to '{currentValue}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name}' modified to '{currentValue}'.");
             return true;
         }
     }

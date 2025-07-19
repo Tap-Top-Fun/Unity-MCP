@@ -88,7 +88,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+            var padding = StringUtils.GetPadding(depth);
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
             return false;
         }
 
@@ -96,11 +97,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var go = obj as UnityEngine.GameObject;
 
             var type = TypeUtils.GetType(fieldValue.typeName);
             if (type == null)
-                return stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Type not found: {fieldValue.typeName}");
+                return stringBuilder?.AppendLine($"{padding}[Error] Type not found: {fieldValue.typeName}");
 
             // If not a component, use base method
             if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
@@ -110,7 +112,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             var componentInstanceID = fieldValue.GetInstanceID();
             if (componentInstanceID == 0 && index == -1)
-                return stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Component 'instanceID' is not provided. Use 'instanceID' or name '[index]' to specify the component. '{fieldValue.name}' is not valid.");
+                return stringBuilder?.AppendLine($"{padding}[Error] Component 'instanceID' is not provided. Use 'instanceID' or name '[index]' to specify the component. '{fieldValue.name}' is not valid.");
 
             var allComponents = go.GetComponents<UnityEngine.Component>();
             var component = componentInstanceID == 0
@@ -120,7 +122,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 : allComponents.FirstOrDefault(c => c.GetInstanceID() == componentInstanceID);
 
             if (component == null)
-                return stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
+                return stringBuilder?.AppendLine($"{padding}[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
 
             var componentObject = (object)component;
             return reflector.Populate(ref componentObject, fieldValue, depth: depth, stringBuilder: stringBuilder, logger: logger);

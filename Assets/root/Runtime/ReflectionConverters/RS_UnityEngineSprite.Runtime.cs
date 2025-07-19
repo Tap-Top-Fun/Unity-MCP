@@ -16,7 +16,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
-            return stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Operation is not supported in runtime.");
+            var padding = StringUtils.GetPadding(depth);
+            return stringBuilder?.AppendLine($"{padding}[Error] Operation is not supported in runtime.");
         }
     }
 }
