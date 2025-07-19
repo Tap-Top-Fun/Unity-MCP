@@ -98,7 +98,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var parsedValue = Shader.Find(shaderName);
             if (parsedValue == null)
             {
-                stringBuilder?.AppendLine(new string(' ', 2) + $"[Error] Shader with name '{shaderName}' not found.");
+                stringBuilder?.AppendLine($"[Error] Shader with name '{shaderName}' not found.");
                 return false;
             }
 
