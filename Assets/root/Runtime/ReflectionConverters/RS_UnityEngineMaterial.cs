@@ -107,7 +107,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 var originalType = obj?.GetType() ?? type;
                 var newType = parsedValue?.GetType() ?? type;
 
-                stringBuilder.AppendLine($@"[Success] Set array value
+                stringBuilder.AppendLine($@"[Success] Set shader value
 was: type='{originalType.FullName ?? "null"}', value='{obj}'
 new: type='{newType.FullName ?? "null"}', value='{parsedValue}'.");
             }
