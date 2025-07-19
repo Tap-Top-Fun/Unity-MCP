@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
@@ -40,9 +41,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             throw new ArgumentException($"Unsupported type: {type.FullName}");
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
-            return true;
+            stringBuilder?.AppendLine($"[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+            return false;
         }
     }
 }

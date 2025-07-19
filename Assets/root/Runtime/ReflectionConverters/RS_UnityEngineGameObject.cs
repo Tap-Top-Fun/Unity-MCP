@@ -17,13 +17,15 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineGameObject : RS_GenericUnity<UnityEngine.GameObject>
     {
-        protected override IEnumerable<string> ignoredProperties => base.ignoredProperties
-            .Concat(new[]
-            {
-                nameof(UnityEngine.GameObject.gameObject),
-                nameof(UnityEngine.GameObject.transform),
-                nameof(UnityEngine.GameObject.scene)
-            });
+        protected override IEnumerable<string> GetIgnoredProperties()
+        {
+            foreach (var property in base.GetIgnoredProperties())
+                yield return property;
+
+            yield return nameof(UnityEngine.GameObject.gameObject);
+            yield return nameof(UnityEngine.GameObject.transform);
+            yield return nameof(UnityEngine.GameObject.scene);
+        }
         protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
@@ -72,9 +74,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return serializedFields;
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
-            return true;
+            stringBuilder?.AppendLine($"[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+            return false;
         }
 
         protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, StringBuilder? stringBuilder = null, int depth = 0,

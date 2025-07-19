@@ -16,6 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
+            stringBuilder?.AppendLine($"[Warning] Cannot set field '{value.name}' for {type.FullName}. This type is not supported for setting values.");
             return false;
         }
 
@@ -23,6 +24,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
+            stringBuilder?.AppendLine($"[Warning] Cannot set property '{value.name}' for {type.FullName}. This type is not supported for setting values.");
             return false;
         }
     }

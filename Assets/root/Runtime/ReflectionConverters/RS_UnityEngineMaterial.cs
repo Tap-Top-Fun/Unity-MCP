@@ -76,16 +76,43 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }.SetValue(new ObjectRef(material.GetInstanceID()));
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
             var serialized = JsonUtils.Deserialize<SerializedMember>(value.Value);
             var material = obj as Material;
 
             // Set shader
             var shaderName = serialized.GetField(FieldShader)?.GetValue<string>();
-            if (!string.IsNullOrEmpty(shaderName) && material.shader.name != shaderName)
-                material.shader = Shader.Find(shaderName) ?? throw new ArgumentException($"Shader '{shaderName}' not found.");
+            if (string.IsNullOrEmpty(shaderName))
+            {
+                stringBuilder?.AppendLine("[Error] Shader name is null or empty.");
+                return false;
+            }
 
+            if (material.shader.name == shaderName)
+            {
+                stringBuilder?.AppendLine($"[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+                return true;
+            }
+
+            var parsedValue = Shader.Find(shaderName);
+            if (parsedValue == null)
+            {
+                stringBuilder?.AppendLine(new string(' ', 2) + $"[Error] Shader with name '{shaderName}' not found.");
+                return false;
+            }
+
+            if (stringBuilder != null)
+            {
+                var originalType = obj?.GetType() ?? type;
+                var newType = parsedValue?.GetType() ?? type;
+
+                stringBuilder.AppendLine($@"[Success] Set array value
+was: type='{originalType.FullName ?? "null"}', value='{obj}'
+new: type='{newType.FullName ?? "null"}', value='{parsedValue}'.");
+            }
+
+            material.shader = parsedValue;
             return true;
         }
 
