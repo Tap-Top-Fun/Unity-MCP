@@ -80,7 +80,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return false;
         }
 
-        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, StringBuilder? stringBuilder = null, int depth = 0,
+        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, int depth = 0, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
@@ -92,7 +92,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             // If not a component, use base method
             if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
-                return base.ModifyField(reflector, ref obj, fieldValue, stringBuilder, depth, flags);
+                return base.ModifyField(reflector, ref obj, fieldValue, depth: depth, stringBuilder: stringBuilder, flags: flags);
 
             var index = -1;
             if (fieldValue.name.StartsWith("component_"))

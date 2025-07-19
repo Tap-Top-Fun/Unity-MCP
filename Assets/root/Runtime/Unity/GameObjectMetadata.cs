@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.Collections.Generic;
 using System.Text;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEngine;
@@ -18,7 +19,7 @@ namespace com.IvanMurzak.Unity.MCP
         public bool activeInHierarchy;
         public List<GameObjectMetadata> children = new();
 
-        public string Print(int limit = Consts.MCP.LinesLimit)
+        public string Print(int limit = Common.Consts.MCP.LinesLimit)
         {
             var sb = new StringBuilder();
 
@@ -37,24 +38,26 @@ namespace com.IvanMurzak.Unity.MCP
 
         public static void AppendMetadata(StringBuilder sb, GameObjectMetadata metadata, int depth, ref int limit)
         {
+            var padding = StringUtils.GetPadding(depth);
             if (limit <= 0)
             {
-                sb.AppendLine(new string(' ', depth * 2) + "... [Limit reached] ...");
+                sb.AppendLine(padding + "... [Limit reached] ...");
                 return;
             }
             limit--;
             // Indent the path based on depth for better readability
-            var indentedPath = new string(' ', depth * 2) + metadata.name;
+            var indentedPath = padding + metadata.name;
 
             // Add the current GameObject's data
             sb.AppendLine($"{metadata.instanceID,-10} | {metadata.activeInHierarchy,-17} | {metadata.activeSelf,-10} | {metadata.tag,-9} | {indentedPath}");
 
             // Recursively add children
+            var paddingForChildren = StringUtils.GetPadding(depth + 1);
             foreach (var child in metadata.children)
             {
                 if (limit <= 0)
                 {
-                    sb.AppendLine(new string(' ', (depth + 1) * 2) + "... [Limit reached] ...");
+                    sb.AppendLine(paddingForChildren + "... [Limit reached] ...");
                     return;
                 }
                 limit--;

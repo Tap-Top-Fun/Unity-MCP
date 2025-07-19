@@ -116,11 +116,12 @@ new: type='{newType.FullName ?? "null"}', value='{parsedValue}'.");
             return true;
         }
 
-        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, StringBuilder? stringBuilder = null, int depth = 0,
+        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, int depth = 0, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var material = obj as Material;
+            var padding = StringUtils.GetPadding(depth);
 
             // Set shader
             if (fieldValue.name == FieldShader)
@@ -130,10 +131,10 @@ new: type='{newType.FullName ?? "null"}', value='{parsedValue}'.");
                 {
                     var shader = Shader.Find(shaderName);
                     if (shader == null)
-                        return stringBuilder?.AppendLine(new string(' ', depth) + $"[Error] Shader '{shaderName}' not found.");
+                        return stringBuilder?.AppendLine(padding + $"[Error] Shader '{shaderName}' not found.");
 
                     material.shader = shader;
-                    return stringBuilder?.AppendLine(new string(' ', depth) + $"[Success] Material '{material.name}' shader set to '{shaderName}'.");
+                    return stringBuilder?.AppendLine(padding + $"[Success] Material '{material.name}' shader set to '{shaderName}'.");
                 }
             }
 
