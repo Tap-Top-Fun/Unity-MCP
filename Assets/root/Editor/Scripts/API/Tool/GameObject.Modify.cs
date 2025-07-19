@@ -16,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "GameObject_Modify",
-            Title = "Modify GameObjects or in a Scene in opened Prefab"
+            Title = "Modify GameObjects in opened Prefab or in a Scene"
         )]
         [Description(@"Modify GameObjects and/or attached component's field and properties.
 You can modify multiple GameObjects at once. Just provide the same number of GameObject references and SerializedMember objects.")]
