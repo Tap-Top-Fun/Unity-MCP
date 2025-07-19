@@ -76,7 +76,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }.SetValue(new ObjectRef(material.GetInstanceID()));
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, StringBuilder? stringBuilder = null, ILogger? logger = null)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
             var serialized = JsonUtils.Deserialize<SerializedMember>(value.Value);
             var material = obj as Material;
@@ -85,33 +85,24 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var shaderName = serialized.GetField(FieldShader)?.GetValue<string>();
             if (string.IsNullOrEmpty(shaderName))
             {
-                stringBuilder?.AppendLine("[Error] Shader name is null or empty.");
+                stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Shader name is null or empty.");
                 return false;
             }
 
             if (material.shader.name == shaderName)
             {
-                stringBuilder?.AppendLine($"[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+                stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
                 return true;
             }
 
             var parsedValue = Shader.Find(shaderName);
             if (parsedValue == null)
             {
-                stringBuilder?.AppendLine($"[Error] Shader with name '{shaderName}' not found.");
+                stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Shader with name '{shaderName}' not found.");
                 return false;
             }
 
-            if (stringBuilder != null)
-            {
-                var originalType = obj?.GetType() ?? type;
-                var newType = parsedValue?.GetType() ?? type;
-
-                stringBuilder.AppendLine($@"[Success] Set shader value
-was: type='{originalType.FullName ?? "null"}', value='{obj}'
-new: type='{newType.FullName ?? "null"}', value='{parsedValue}'.");
-            }
-
+            Print.SetNewValue(ref obj, ref parsedValue, type, depth, stringBuilder);
             material.shader = parsedValue;
             return true;
         }
@@ -131,10 +122,10 @@ new: type='{newType.FullName ?? "null"}', value='{parsedValue}'.");
                 {
                     var shader = Shader.Find(shaderName);
                     if (shader == null)
-                        return stringBuilder?.AppendLine(padding + $"[Error] Shader '{shaderName}' not found.");
+                        return stringBuilder?.AppendLine($"{padding}[Error] Shader '{shaderName}' not found.");
 
                     material.shader = shader;
-                    return stringBuilder?.AppendLine(padding + $"[Success] Material '{material.name}' shader set to '{shaderName}'.");
+                    return stringBuilder?.AppendLine($"{padding}[Success] Material '{material.name}' shader set to '{shaderName}'.");
                 }
             }
 

@@ -6,6 +6,7 @@ using System.Text.Json;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -41,9 +42,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             throw new ArgumentException($"Unsupported type: {type.FullName}");
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, StringBuilder? stringBuilder = null, ILogger? logger = null)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
-            stringBuilder?.AppendLine($"[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
             return false;
         }
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEngine;
 
@@ -41,12 +40,12 @@ namespace com.IvanMurzak.Unity.MCP
             var padding = StringUtils.GetPadding(depth);
             if (limit <= 0)
             {
-                sb.AppendLine(padding + "... [Limit reached] ...");
+                sb.AppendLine($"{padding}... [Limit reached] ...");
                 return;
             }
             limit--;
             // Indent the path based on depth for better readability
-            var indentedPath = padding + metadata.name;
+            var indentedPath = $"{padding}{metadata.name}";
 
             // Add the current GameObject's data
             sb.AppendLine($"{metadata.instanceID,-10} | {metadata.activeInHierarchy,-17} | {metadata.activeSelf,-10} | {metadata.tag,-9} | {indentedPath}");
@@ -57,7 +56,7 @@ namespace com.IvanMurzak.Unity.MCP
             {
                 if (limit <= 0)
                 {
-                    sb.AppendLine(paddingForChildren + "... [Limit reached] ...");
+                    sb.AppendLine($"{paddingForChildren}... [Limit reached] ...");
                     return;
                 }
                 limit--;

@@ -17,6 +17,18 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineGameObject : RS_GenericUnity<UnityEngine.GameObject>
     {
+        const string ComponentNamePrefix = "component_";
+        static string GetComponentName(int index) => $"{ComponentNamePrefix}{index}";
+        static bool TryParseComponentIndex(string name, out int index)
+        {
+            index = -1;
+            if (string.IsNullOrEmpty(name) || !name.StartsWith(ComponentNamePrefix))
+                return false;
+
+            var indexStr = name.Substring(ComponentNamePrefix.Length).Trim('[', ']');
+            return int.TryParse(indexStr, out index);
+        }
+
         protected override IEnumerable<string> GetIgnoredProperties()
         {
             foreach (var property in base.GetIgnoredProperties())
@@ -64,7 +76,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 var componentSerialized = reflector.Serialize(
                     obj: component,
                     type: componentType,
-                    name: $"component_{i}",
+                    name: GetComponentName(i),
                     recursive: true,
                     flags: flags,
                     logger: logger
@@ -74,9 +86,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return serializedFields;
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, StringBuilder? stringBuilder = null, ILogger? logger = null)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
-            stringBuilder?.AppendLine($"[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
             return false;
         }
 
@@ -88,22 +100,17 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             var type = TypeUtils.GetType(fieldValue.typeName);
             if (type == null)
-                return stringBuilder?.AppendLine($"[Error] Type not found: {fieldValue.typeName}");
+                return stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Type not found: {fieldValue.typeName}");
 
             // If not a component, use base method
             if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
                 return base.ModifyField(reflector, ref obj, fieldValue, depth: depth, stringBuilder: stringBuilder, flags: flags);
 
-            var index = -1;
-            if (fieldValue.name.StartsWith("component_"))
-                int.TryParse(fieldValue.name
-                    .Replace("component_", "")
-                    .Replace("[", "")
-                    .Replace("]", ""), out index);
+            TryParseComponentIndex(fieldValue.name, out var index);
 
             var componentInstanceID = fieldValue.GetInstanceID();
             if (componentInstanceID == 0 && index == -1)
-                return stringBuilder?.AppendLine($"[Error] Component 'instanceID' is not provided. Use 'instanceID' or name '[index]' to specify the component. '{fieldValue.name}' is not valid.");
+                return stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Component 'instanceID' is not provided. Use 'instanceID' or name '[index]' to specify the component. '{fieldValue.name}' is not valid.");
 
             var allComponents = go.GetComponents<UnityEngine.Component>();
             var component = componentInstanceID == 0
@@ -113,10 +120,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 : allComponents.FirstOrDefault(c => c.GetInstanceID() == componentInstanceID);
 
             if (component == null)
-                return stringBuilder?.AppendLine($"[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
+                return stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
 
             var componentObject = (object)component;
-            return reflector.Populate(ref componentObject, fieldValue, depth: depth, logger: logger);
+            return reflector.Populate(ref componentObject, fieldValue, depth: depth, stringBuilder: stringBuilder, logger: logger);
         }
     }
 }
