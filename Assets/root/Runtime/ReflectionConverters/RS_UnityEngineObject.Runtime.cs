@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -19,7 +20,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] Cannot set field '{value.name}' for {type.FullName}. This type is not supported for setting values.");
+            var padding = StringUtils.GetPadding(depth);
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set field '{value.name}' for {type.FullName}. This type is not supported for setting values.");
             return false;
         }
 
@@ -27,7 +29,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] Cannot set property '{value.name}' for {type.FullName}. This type is not supported for setting values.");
+            var padding = StringUtils.GetPadding(depth);
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set property '{value.name}' for {type.FullName}. This type is not supported for setting values.");
             return false;
         }
     }

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Utils;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor

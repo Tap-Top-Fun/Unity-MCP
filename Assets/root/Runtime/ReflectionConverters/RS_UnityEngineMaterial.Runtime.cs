@@ -18,6 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var material = obj as Material;
             var propType = TypeUtils.GetType(property.typeName);
             if (propType == null)
@@ -73,7 +74,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] Cannot set field '{value.name}' for {type.FullName}. This type is not supported for setting values.");
+            var padding = StringUtils.GetPadding(depth);
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set field '{value.name}' for {type.FullName}. This type is not supported for setting values.");
             return false;
         }
 
@@ -81,7 +83,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
-            stringBuilder?.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] Cannot set property '{value.name}' for {type.FullName}. This type is not supported for setting values.");
+            var padding = StringUtils.GetPadding(depth);
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set property '{value.name}' for {type.FullName}. This type is not supported for setting values.");
             return false;
         }
     }
