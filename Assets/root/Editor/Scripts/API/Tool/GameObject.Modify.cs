@@ -7,6 +7,7 @@ using com.IvanMurzak.Unity.MCP.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.ReflectorNet;
+using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -15,19 +16,21 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "GameObject_Modify",
-            Title = "Modify GameObjects in opened Prefab or in a Scene"
+            Title = "Modify GameObjects or in a Scene in opened Prefab"
         )]
         [Description(@"Modify GameObjects and/or attached component's field and properties.
 You can modify multiple GameObjects at once. Just provide the same number of GameObject references and SerializedMember objects.")]
         public string Modify
         (
-            [Description(@"Json Object with required readonly 'instanceID' and 'type' fields.
-Each field and property requires to have 'type' and 'name' fields to identify the exact modification target.
-Follow the object schema to specify what to change, ignore values that should not be modified. Keep the original data structure.
-Any unknown or wrong located fields and properties will be ignored.
-Check the result of this command to see what was changed. The ignored fields and properties will be listed.")]
-            SerializedMemberList gameObjectDiffs,
-            GameObjectRefList gameObjectRefs
+            GameObjectRefList gameObjectRefs,
+            [Description("Each item in the array represents a GameObject modification of the 'gameObjectRefs' at the same index.\n" +
+                "Usually GameObject is a container for components. Each component may have fields and properties for modification.\n" +
+                "If need to modify components of a gameObject please use '" + nameof(SerializedMember.fields) + "' to wrap a component into it." +
+                "Each component need to have '" + nameof(SerializedMember.typeName) + "' and '" + nameof(SerializedMember.name) + "' or 'value." + nameof(GameObjectRef.instanceID) + "' fields to identify the exact modification target.\n" +
+                "Ignore values that should not be modified.\n" +
+                "Any unknown or wrong located fields and properties will be ignored.\n" +
+                "Check the result of this command to see what was changed. The ignored fields and properties will be listed.")]
+            SerializedMemberList gameObjectDiffs
         )
         => MainThread.Instance.Run(() =>
         {
@@ -60,7 +63,7 @@ Check the result of this command to see what was changed. The ignored fields and
                     }
                     objToModify = component;
                 }
-                Reflector.Instance.Populate(ref objToModify, gameObjectDiffs[i], stringBuilder);
+                Reflector.Instance.Populate(ref objToModify, gameObjectDiffs[i], objToModify.GetType(), stringBuilder);
             }
 
             return stringBuilder.ToString();
