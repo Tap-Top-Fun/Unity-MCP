@@ -150,7 +150,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         {
             var type = typeof(T);
             var serializedObj = Reflector.Instance.Serialize(sourceObj, logger: McpPlugin.Instance.Logger);
-            var deserializedObj = Reflector.Instance.Deserialize(serializedObj, McpPlugin.Instance.Logger);
+            var deserializedObj = Reflector.Instance.Deserialize(serializedObj, logger: McpPlugin.Instance.Logger);
 
             Debug.Log($"[{type.Name}] Source:\n```json\n{JsonUtils.Serialize(sourceObj)}\n```");
             Debug.Log($"[{type.Name}] Serialized:\n```json\n{JsonUtils.Serialize(serializedObj)}\n```");

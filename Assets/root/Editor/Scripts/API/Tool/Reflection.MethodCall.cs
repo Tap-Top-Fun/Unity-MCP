@@ -121,7 +121,7 @@ Required:
             {
                 var dictInputParameters = inputParameters?.ToImmutableDictionary(
                     keySelector: p => p.name,
-                    elementSelector: p => Reflector.Instance.Deserialize(p, McpPlugin.Instance.Logger)
+                    elementSelector: p => Reflector.Instance.Deserialize(p, logger: McpPlugin.Instance.Logger)
                 );
 
                 var methodWrapper = default(MethodWrapper);
@@ -134,7 +134,7 @@ Required:
                 else
                 {
                     // Object instance needed. Probably instance method.
-                    var obj = Reflector.Instance.Deserialize(targetObject, McpPlugin.Instance.Logger);
+                    var obj = Reflector.Instance.Deserialize(targetObject, logger: McpPlugin.Instance.Logger);
                     if (obj == null)
                         return $"[Error] '{nameof(targetObject)}' deserialized instance is null. Please specify the '{nameof(targetObject)}' properly.";
 
