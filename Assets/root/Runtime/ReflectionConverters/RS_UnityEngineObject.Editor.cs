@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
-            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name.ValueOrNull()}' modified to '{refObj?.GetInstanceID()}'. Convertor: {GetType().Name}");
 
             fieldInfo.SetValue(obj, refObj);
             return true;
@@ -35,7 +35,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
-            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name.ValueOrNull()}' modified to '{refObj?.GetInstanceID()}'. Convertor: {GetType().Name}");
 
             propertyInfo.SetValue(obj, refObj);
             return true;

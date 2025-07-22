@@ -86,6 +86,10 @@ namespace com.IvanMurzak.Unity.MCP
             reflector.Convertors.Add(new RS_UnityEngineVector3());
             reflector.Convertors.Add(new RS_UnityEngineVector3Int());
             reflector.Convertors.Add(new RS_UnityEngineVector4());
+            reflector.Convertors.Add(new RS_UnityEngineBounds());
+            reflector.Convertors.Add(new RS_UnityEngineBoundsInt());
+            reflector.Convertors.Add(new RS_UnityEngineRect());
+            reflector.Convertors.Add(new RS_UnityEngineRectInt());
 
             // Components
             reflector.Convertors.Add(new RS_UnityEngineObject());

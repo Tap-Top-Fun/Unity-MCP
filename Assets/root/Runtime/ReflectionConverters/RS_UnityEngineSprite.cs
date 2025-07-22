@@ -32,7 +32,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var currentValue = fieldInfo.GetValue(obj);
             Populate(reflector, ref currentValue, value, type, depth: depth, stringBuilder: stringBuilder, flags, logger);
             fieldInfo.SetValue(obj, currentValue);
-            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name}' modified to '{currentValue}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name.ValueOrNull()}' modified to '{currentValue}'. Convertor: {GetType().Name}");
             return true;
         }
         public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
@@ -43,7 +43,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var currentValue = propertyInfo.GetValue(obj);
             Populate(reflector, ref currentValue, value, type, depth: depth, stringBuilder: stringBuilder, flags, logger);
             propertyInfo.SetValue(obj, currentValue);
-            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name}' modified to '{currentValue}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name.ValueOrNull()}' modified to '{currentValue}'. Convertor: {GetType().Name}");
             return true;
         }
     }

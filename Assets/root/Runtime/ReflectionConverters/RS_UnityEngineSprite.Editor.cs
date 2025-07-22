@@ -22,11 +22,11 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             if (instanceID == 0)
             {
                 obj = null;
-                return stringBuilder?.AppendLine($"[Success] InstanceID is 0. Cleared the reference.");
+                return stringBuilder?.AppendLine($"[Success] InstanceID is 0. Cleared the reference. Convertor: {GetType().Name}");
             }
             var textureOrSprite = EditorUtility.InstanceIDToObject(instanceID);
             if (textureOrSprite == null)
-                return stringBuilder?.AppendLine($"[Error] InstanceID {instanceID} not found.");
+                return stringBuilder?.AppendLine($"[Error] InstanceID {instanceID} not found. Convertor: {GetType().Name}");
 
             if (textureOrSprite is UnityEngine.Texture2D texture)
             {
@@ -35,17 +35,17 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     .OfType<UnityEngine.Sprite>()
                     .ToArray();
                 if (sprites.Length == 0)
-                    return stringBuilder?.AppendLine($"[Error] No sprites found for texture at path: {path}.");
+                    return stringBuilder?.AppendLine($"[Error] No sprites found for texture at path: {path}. Convertor: {GetType().Name}");
 
                 obj = sprites[0]; // Assign the first sprite found
-                return stringBuilder?.AppendLine($"[Success] Assigned sprite from texture: {path}.");
+                return stringBuilder?.AppendLine($"[Success] Assigned sprite from texture: {path}. Convertor: {GetType().Name}");
             }
             if (textureOrSprite is UnityEngine.Sprite sprite)
             {
                 obj = sprite;
-                return stringBuilder?.AppendLine($"[Success] Assigned sprite: {sprite.name}.");
+                return stringBuilder?.AppendLine($"[Success] Assigned sprite: {sprite.name}. Convertor: {GetType().Name}");
             }
-            return stringBuilder?.AppendLine($"[Error] InstanceID {instanceID} is not a Texture2D or Sprite.");
+            return stringBuilder?.AppendLine($"[Error] InstanceID {instanceID} is not a Texture2D or Sprite. Convertor: {GetType().Name}");
         }
     }
 }

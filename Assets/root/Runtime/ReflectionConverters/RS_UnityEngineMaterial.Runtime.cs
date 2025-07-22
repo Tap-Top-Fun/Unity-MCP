@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var material = obj as Material;
             var propType = TypeUtils.GetType(property.typeName);
             if (propType == null)
-                return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' not found.");
+                return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' not found. Convertor: {GetType().Name}");
 
             switch (propType)
             {
@@ -30,30 +30,30 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     if (material.HasInt(property.name))
                     {
                         material.SetInt(property.name, property.GetValue<int>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<int>()}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<int>()}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 case Type t when t == typeof(float):
                     if (material.HasFloat(property.name))
                     {
                         material.SetFloat(property.name, property.GetValue<float>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<float>()}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<float>()}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 case Type t when t == typeof(Color):
                     if (material.HasColor(property.name))
                     {
                         material.SetColor(property.name, property.GetValue<Color>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Color>()}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Color>()}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 case Type t when t == typeof(Vector4):
                     if (material.HasVector(property.name))
                     {
                         material.SetVector(property.name, property.GetValue<Vector4>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Vector4>()}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Vector4>()}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 // case Type t when t == typeof(Texture):
                 //     if (material.HasTexture(property.name))
                 //     {
@@ -66,7 +66,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 //     }
                 //     return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
                 default:
-                    return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' is not supported.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' is not supported. Convertor: {GetType().Name}");
             }
         }
 
@@ -75,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set field '{value.name}' for {type.FullName}. This type is not supported for setting values.");
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set field '{value.name.ValueOrNull()}' for {type.FullName}. This type is not supported for setting values. Convertor: {GetType().Name}");
             return false;
         }
 
@@ -84,7 +84,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set property '{value.name}' for {type.FullName}. This type is not supported for setting values.");
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set property '{value.name.ValueOrNull()}' for {type.FullName}. This type is not supported for setting values. Convertor: {GetType().Name}");
             return false;
         }
     }

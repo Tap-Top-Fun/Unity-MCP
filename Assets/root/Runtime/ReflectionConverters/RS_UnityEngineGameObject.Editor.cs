@@ -20,9 +20,17 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
-            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
+
+            // Validate if refObj is castable to the fieldInfo type
+            var castable = fieldInfo.FieldType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.Object));
+            if (!castable)
+            {
+                stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value.name.ValueOrNull()}' for {type.FullName}. Value type '{refObj?.GetType().Name}' is not assignable to field type '{fieldInfo.FieldType.Name}'.");
+                return false;
+            }
 
             fieldInfo.SetValue(obj, refObj);
+            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name.ValueOrNull()}' modified to '{refObj?.GetInstanceID()}'. Convertor: {GetType().Name}");
             return true;
         }
 
@@ -32,8 +40,16 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
-            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
 
+            // Validate if refObj is castable to the propertyInfo type
+            var castable = propertyInfo.PropertyType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.Object));
+            if (!castable)
+            {
+                stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value.name.ValueOrNull()}' for {type.FullName}. Value type '{refObj?.GetType().Name}' is not assignable to property type '{propertyInfo.PropertyType.Name}'.");
+                return false;
+            }
+
+            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name.ValueOrNull()}' modified to '{refObj?.GetInstanceID()}'. Convertor: {GetType().Name}");
             propertyInfo.SetValue(obj, refObj);
             return true;
         }

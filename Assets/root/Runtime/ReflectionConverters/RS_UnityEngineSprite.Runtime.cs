@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
-            return stringBuilder?.AppendLine($"{padding}[Error] Operation is not supported in runtime.");
+            return stringBuilder?.AppendLine($"{padding}[Error] Operation is not supported in runtime. Convertor: {GetType().Name}");
         }
     }
 }

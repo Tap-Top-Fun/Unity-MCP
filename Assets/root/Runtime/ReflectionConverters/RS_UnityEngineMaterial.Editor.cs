@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var material = obj as Material;
             var propType = TypeUtils.GetType(property.typeName);
             if (propType == null)
-                return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' not found.");
+                return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' not found. Convertor: {GetType().Name}");
 
             switch (propType)
             {
@@ -33,41 +33,41 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     if (material.HasInt(property.name))
                     {
                         material.SetInt(property.name, property.GetValue<int>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<int>()}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<int>()}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 case Type t when t == typeof(float):
                     if (material.HasFloat(property.name))
                     {
                         material.SetFloat(property.name, property.GetValue<float>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<float>()}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<float>()}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 case Type t when t == typeof(Color):
                     if (material.HasColor(property.name))
                     {
                         material.SetColor(property.name, property.GetValue<Color>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Color>()}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Color>()}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 case Type t when t == typeof(Vector4):
                     if (material.HasVector(property.name))
                     {
                         material.SetVector(property.name, property.GetValue<Vector4>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Vector4>()}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Vector4>()}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 case Type t when t == typeof(Texture):
                     if (material.HasTexture(property.name))
                     {
                         var objTexture = property.GetValue<ObjectRef>().FindObject();
                         var texture = objTexture as Texture;
                         material.SetTexture(property.name, texture);
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{texture?.name ?? "null"}'.");
+                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{texture?.name ?? "null"}'. Convertor: {GetType().Name}");
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
                 default:
-                    return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' is not supported.");
+                    return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' is not supported. Convertor: {GetType().Name}");
             }
         }
 
@@ -77,7 +77,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
-            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name.ValueOrNull()}' modified to '{refObj?.GetInstanceID()}'. Convertor: {GetType().Name}");
 
             fieldInfo.SetValue(obj, refObj);
             return true;
@@ -89,7 +89,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
-            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name.ValueOrNull()}' modified to '{refObj?.GetInstanceID()}'. Convertor: {GetType().Name}");
 
             propertyInfo.SetValue(obj, refObj);
             return true;

@@ -21,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set field '{value.name}' for {type.FullName}. This type is not supported for setting values.");
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set field '{value.name.ValueOrNull()}' for {type.FullName}. This type is not supported for setting values. Convertor: {GetType().Name}");
             return false;
         }
 
@@ -30,7 +30,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set property '{value.name}' for {type.FullName}. This type is not supported for setting values.");
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set property '{value.name.ValueOrNull()}' for {type.FullName}. This type is not supported for setting values. Convertor: {GetType().Name}");
             return false;
         }
     }
