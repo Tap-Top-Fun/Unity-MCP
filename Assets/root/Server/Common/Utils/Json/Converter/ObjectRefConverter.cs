@@ -3,29 +3,31 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Json;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
     public class ObjectRefConverter : JsonConverter<ObjectRef>, IJsonSchemaConverter
     {
-        public string Id => typeof(ObjectRef).FullName ?? throw new InvalidOperationException("ObjectRef type name is null");
+        public string Id => typeof(ObjectRef).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            ["id"] = Id,
-            ["type"] = "object",
-            ["properties"] = new JsonObject
+            [JsonUtils.Schema.Id] = Id,
+            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
+            [JsonUtils.Schema.Properties] = new JsonObject
             {
-                [nameof(ObjectRef.instanceID)] = new JsonObject { ["type"] = "integer" },
-                [nameof(ObjectRef.assetPath)] = new JsonObject { ["type"] = "string" },
-                [nameof(ObjectRef.assetGuid)] = new JsonObject { ["type"] = "string" }
+                [nameof(ObjectRef.instanceID)] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
+                [nameof(ObjectRef.assetPath)] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.String },
+                [nameof(ObjectRef.assetGuid)] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.String }
             },
-            ["required"] = new JsonArray { "instanceID" }
+            [JsonUtils.Schema.Required] = new JsonArray { "instanceID" }
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            ["$ref"] = Id
+            [JsonUtils.Schema.Ref] = Id
         };
 
         public override ObjectRef? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

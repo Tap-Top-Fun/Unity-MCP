@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var castable = fieldInfo.FieldType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.Object));
             if (!castable)
             {
-                stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value.name.ValueOrNull()}' for {type.FullName}. Value type '{refObj?.GetType().Name}' is not assignable to field type '{fieldInfo.FieldType.Name}'.");
+                stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value.name.ValueOrNull()}' for object with type '{type.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to field type '{fieldInfo.FieldType.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
                 return false;
             }
 
@@ -45,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var castable = propertyInfo.PropertyType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.Object));
             if (!castable)
             {
-                stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value.name.ValueOrNull()}' for {type.FullName}. Value type '{refObj?.GetType().Name}' is not assignable to property type '{propertyInfo.PropertyType.Name}'.");
+                stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value.name.ValueOrNull()}' for object with type '{type.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to property type '{propertyInfo.PropertyType.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
                 return false;
             }
 

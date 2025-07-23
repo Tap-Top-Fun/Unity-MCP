@@ -2,38 +2,40 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Json;
+using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
     public class Matrix4x4Converter : JsonConverter<Matrix4x4>, IJsonSchemaConverter
     {
-        public string Id => typeof(Matrix4x4).FullName;
+        public string Id => typeof(Matrix4x4).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            ["id"] = Id,
-            ["type"] = "object",
-            ["properties"] = new JsonObject
+            [JsonUtils.Schema.Id] = Id,
+            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
+            [JsonUtils.Schema.Properties] = new JsonObject
             {
-                ["m00"] = new JsonObject { ["type"] = "number" },
-                ["m01"] = new JsonObject { ["type"] = "number" },
-                ["m02"] = new JsonObject { ["type"] = "number" },
-                ["m03"] = new JsonObject { ["type"] = "number" },
-                ["m10"] = new JsonObject { ["type"] = "number" },
-                ["m11"] = new JsonObject { ["type"] = "number" },
-                ["m12"] = new JsonObject { ["type"] = "number" },
-                ["m13"] = new JsonObject { ["type"] = "number" },
-                ["m20"] = new JsonObject { ["type"] = "number" },
-                ["m21"] = new JsonObject { ["type"] = "number" },
-                ["m22"] = new JsonObject { ["type"] = "number" },
-                ["m23"] = new JsonObject { ["type"] = "number" },
-                ["m30"] = new JsonObject { ["type"] = "number" },
-                ["m31"] = new JsonObject { ["type"] = "number" },
-                ["m32"] = new JsonObject { ["type"] = "number" },
-                ["m33"] = new JsonObject { ["type"] = "number" }
+                ["m00"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m01"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m02"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m03"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m10"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m11"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m12"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m13"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m20"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m21"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m22"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m23"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m30"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m31"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m32"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["m33"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number }
             },
-            ["required"] = new JsonArray
+            [JsonUtils.Schema.Required] = new JsonArray
             {
                 "m00", "m01", "m02", "m03",
                 "m10", "m11", "m12", "m13",
@@ -43,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            ["$ref"] = Id
+            [JsonUtils.Schema.Ref] = Id
         };
 
         public override Matrix4x4 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

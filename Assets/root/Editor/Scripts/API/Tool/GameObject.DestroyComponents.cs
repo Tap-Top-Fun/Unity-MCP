@@ -7,6 +7,7 @@ using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -39,14 +40,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 {
                     UnityEngine.Object.DestroyImmediate(component);
                     destroyCounter++;
-                    stringBuilder.AppendLine($"[Success] Destroyed component instanceID='{component.GetInstanceID()}', type='{component.GetType().FullName}'.");
+                    stringBuilder.AppendLine($"[Success] Destroyed component instanceID='{component.GetInstanceID()}', type='{component.GetType().GetTypeName(pretty: false)}'.");
                 }
             }
 
             if (destroyCounter == 0)
                 return Error.NotFoundComponents(destroyComponentRefs, allComponents);
 
-            return $"[Success] Destroyed {destroyCounter} components from GameObject.\n{stringBuilder.ToString()}";
+            return $"[Success] Destroyed {destroyCounter} components from GameObject.\n{stringBuilder}";
         });
     }
 }

@@ -89,7 +89,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for {type.FullName}. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
             return false;
         }
 
@@ -102,7 +102,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             var type = TypeUtils.GetType(fieldValue.typeName);
             if (type == null)
-                return stringBuilder?.AppendLine($"{padding}[Error] Type not found: {fieldValue.typeName}");
+                return stringBuilder?.AppendLine($"{padding}[Error] Type not found: '{fieldValue.typeName}'");
 
             // If not a component, use base method
             if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
