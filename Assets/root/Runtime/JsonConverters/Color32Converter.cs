@@ -2,50 +2,52 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Json;
+using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
     public class Color32Converter : JsonConverter<Color32>, IJsonSchemaConverter
     {
-        public string Id => typeof(Color32).FullName;
+        public string Id => typeof(Color32).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            ["id"] = Id,
-            ["type"] = "object",
-            ["properties"] = new JsonObject
+            [JsonUtils.Schema.Id] = Id,
+            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
+            [JsonUtils.Schema.Properties] = new JsonObject
             {
                 ["r"] = new JsonObject
                 {
-                    ["type"] = "integer",
-                    ["minimum"] = 0,
-                    ["maximum"] = 255
+                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer,
+                    [JsonUtils.Schema.Minimum] = 0,
+                    [JsonUtils.Schema.Maximum] = 255
                 },
                 ["g"] = new JsonObject
                 {
-                    ["type"] = "integer",
-                    ["minimum"] = 0,
-                    ["maximum"] = 255
+                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer,
+                    [JsonUtils.Schema.Minimum] = 0,
+                    [JsonUtils.Schema.Maximum] = 255
                 },
                 ["b"] = new JsonObject
                 {
-                    ["type"] = "integer",
-                    ["minimum"] = 0,
-                    ["maximum"] = 255
+                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer,
+                    [JsonUtils.Schema.Minimum] = 0,
+                    [JsonUtils.Schema.Maximum] = 255
                 },
                 ["a"] = new JsonObject
                 {
-                    ["type"] = "integer",
-                    ["minimum"] = 0,
-                    ["maximum"] = 255
+                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer,
+                    [JsonUtils.Schema.Minimum] = 0,
+                    [JsonUtils.Schema.Maximum] = 255
                 }
             },
-            ["required"] = new JsonArray { "r", "g", "b", "a" }
+            [JsonUtils.Schema.Required] = new JsonArray { "r", "g", "b", "a" }
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            ["$ref"] = Id
+            [JsonUtils.Schema.Ref] = Id
         };
 
         public override Color32 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

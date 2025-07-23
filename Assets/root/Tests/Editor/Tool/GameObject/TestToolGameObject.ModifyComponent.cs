@@ -49,6 +49,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator ModifyComponent_Material()
         {
+            // "Standard" shader is always available in a Unity project.
+            // Doesn't matter whether it's built-in or URP/HDRP.
             var sharedMaterial = new Material(Shader.Find("Standard"));
 
             var go = new GameObject(GO_ParentName);
@@ -58,7 +60,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                     name: go.name,
                     type: typeof(GameObject),
                     value: new ObjectRef(go.GetInstanceID()))
-                .AddField(SerializedMember.FromValue(name: "",
+                .AddField(SerializedMember.FromValue(name: string.Empty,
                     type: typeof(MeshRenderer),
                     value: new ObjectRef(component.GetInstanceID())
                 )

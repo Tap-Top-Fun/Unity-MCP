@@ -4,9 +4,6 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
     [System.Serializable]
     public class GameObjectDataLight
     {
-        public string name { get; set; } = string.Empty;
-        public string tag { get; set; } = "Untagged";
-        public int layer { get; set; }
         public int instanceID { get; set; }
 
         public GameObjectDataLight() { }

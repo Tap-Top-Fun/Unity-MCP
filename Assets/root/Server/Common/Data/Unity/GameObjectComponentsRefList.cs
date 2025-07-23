@@ -4,18 +4,19 @@ using System.ComponentModel;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
-    [Description(@"Array of GameObjects in opened Prefab or in a Scene. Used for finding GameObjects.
+    [System.Serializable]
+    [Description(@"GameObject references. Used to specify GameObjects in opened Prefab or in a Scene.
 Use one of the following properties:
 1. 'instanceID' (int) - recommended. It finds the exact GameObject.
 2. 'path' (string) - finds GameObject by path. It may find a wrong GameObject.
 3. 'name' (string) - finds GameObject by name. It may find a wrong GameObject.")]
-    public class GameObjectRefList : List<GameObjectRef>
+    public class GameObjectComponentsRefList : List<GameObjectComponentsRef>
     {
-        public GameObjectRefList() { }
+        public GameObjectComponentsRefList() { }
 
-        public GameObjectRefList(int capacity) : base(capacity) { }
+        public GameObjectComponentsRefList(int capacity) : base(capacity) { }
 
-        public GameObjectRefList(IEnumerable<GameObjectRef> collection) : base(collection) { }
+        public GameObjectComponentsRefList(IEnumerable<GameObjectComponentsRef> collection) : base(collection) { }
 
         public override string ToString()
         {

@@ -6,8 +6,8 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
     [System.Serializable]
     public class ComponentData : ComponentDataLight
     {
-        public List<SerializedMember> fields { get; set; } = new();
-        public List<SerializedMember> properties { get; set; } = new();
+        public List<SerializedMember?>? fields { get; set; }
+        public List<SerializedMember?>? properties { get; set; }
 
         public ComponentData() { }
     }

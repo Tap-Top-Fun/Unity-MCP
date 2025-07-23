@@ -17,13 +17,27 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineGameObject : RS_GenericUnity<UnityEngine.GameObject>
     {
-        protected override IEnumerable<string> ignoredProperties => base.ignoredProperties
-            .Concat(new[]
-            {
-                nameof(UnityEngine.GameObject.gameObject),
-                nameof(UnityEngine.GameObject.transform),
-                nameof(UnityEngine.GameObject.scene)
-            });
+        const string ComponentNamePrefix = "component_";
+        static string GetComponentName(int index) => $"{ComponentNamePrefix}{index}";
+        static bool TryParseComponentIndex(string name, out int index)
+        {
+            index = -1;
+            if (string.IsNullOrEmpty(name) || !name.StartsWith(ComponentNamePrefix))
+                return false;
+
+            var indexStr = name.Substring(ComponentNamePrefix.Length).Trim('[', ']');
+            return int.TryParse(indexStr, out index);
+        }
+
+        protected override IEnumerable<string> GetIgnoredProperties()
+        {
+            foreach (var property in base.GetIgnoredProperties())
+                yield return property;
+
+            yield return nameof(UnityEngine.GameObject.gameObject);
+            yield return nameof(UnityEngine.GameObject.transform);
+            yield return nameof(UnityEngine.GameObject.scene);
+        }
         protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
@@ -62,7 +76,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 var componentSerialized = reflector.Serialize(
                     obj: component,
                     type: componentType,
-                    name: $"component_{i}",
+                    name: GetComponentName(i),
                     recursive: true,
                     flags: flags,
                     logger: logger
@@ -72,35 +86,33 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return serializedFields;
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
-            return true;
+            var padding = StringUtils.GetPadding(depth);
+            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+            return false;
         }
 
-        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, StringBuilder? stringBuilder = null, int depth = 0,
+        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, int depth = 0, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var go = obj as UnityEngine.GameObject;
 
             var type = TypeUtils.GetType(fieldValue.typeName);
             if (type == null)
-                return stringBuilder?.AppendLine($"[Error] Type not found: {fieldValue.typeName}");
+                return stringBuilder?.AppendLine($"{padding}[Error] Type not found: '{fieldValue.typeName}'");
 
             // If not a component, use base method
             if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
-                return base.ModifyField(reflector, ref obj, fieldValue, stringBuilder, depth, flags);
+                return base.ModifyField(reflector, ref obj, fieldValue, depth: depth, stringBuilder: stringBuilder, flags: flags);
 
-            var index = -1;
-            if (fieldValue.name.StartsWith("component_"))
-                int.TryParse(fieldValue.name
-                    .Replace("component_", "")
-                    .Replace("[", "")
-                    .Replace("]", ""), out index);
+            TryParseComponentIndex(fieldValue.name, out var index);
 
             var componentInstanceID = fieldValue.GetInstanceID();
             if (componentInstanceID == 0 && index == -1)
-                return stringBuilder?.AppendLine($"[Error] Component 'instanceID' is not provided. Use 'instanceID' or name '[index]' to specify the component. '{fieldValue.name}' is not valid.");
+                return stringBuilder?.AppendLine($"{padding}[Error] Component 'instanceID' is not provided. Use 'instanceID' or name '[index]' to specify the component. '{fieldValue.name}' is not valid.");
 
             var allComponents = go.GetComponents<UnityEngine.Component>();
             var component = componentInstanceID == 0
@@ -110,10 +122,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 : allComponents.FirstOrDefault(c => c.GetInstanceID() == componentInstanceID);
 
             if (component == null)
-                return stringBuilder?.AppendLine($"[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
+                return stringBuilder?.AppendLine($"{padding}[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
 
             var componentObject = (object)component;
-            return reflector.Populate(ref componentObject, fieldValue, logger: logger);
+            return reflector.Populate(ref componentObject, fieldValue, depth: depth, stringBuilder: stringBuilder, logger: logger);
         }
     }
 }

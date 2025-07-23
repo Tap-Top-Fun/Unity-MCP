@@ -76,23 +76,43 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }.SetValue(new ObjectRef(material.GetInstanceID()));
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var serialized = JsonUtils.Deserialize<SerializedMember>(value.Value);
             var material = obj as Material;
 
             // Set shader
             var shaderName = serialized.GetField(FieldShader)?.GetValue<string>();
-            if (!string.IsNullOrEmpty(shaderName) && material.shader.name != shaderName)
-                material.shader = Shader.Find(shaderName) ?? throw new ArgumentException($"Shader '{shaderName}' not found.");
+            if (string.IsNullOrEmpty(shaderName))
+            {
+                stringBuilder?.AppendLine($"{padding}[Error] Shader name is null or empty.");
+                return false;
+            }
 
+            if (material.shader.name == shaderName)
+            {
+                stringBuilder?.AppendLine($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+                return true;
+            }
+
+            var parsedValue = Shader.Find(shaderName);
+            if (parsedValue == null)
+            {
+                stringBuilder?.AppendLine($"{padding}[Error] Shader with name '{shaderName}' not found.");
+                return false;
+            }
+
+            Print.SetNewValue(ref obj, ref parsedValue, type, depth, stringBuilder);
+            material.shader = parsedValue;
             return true;
         }
 
-        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, StringBuilder? stringBuilder = null, int depth = 0,
+        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, int depth = 0, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var material = obj as Material;
 
             // Set shader
@@ -103,10 +123,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 {
                     var shader = Shader.Find(shaderName);
                     if (shader == null)
-                        return stringBuilder?.AppendLine(new string(' ', depth) + $"[Error] Shader '{shaderName}' not found.");
+                        return stringBuilder?.AppendLine($"{padding}[Error] Shader '{shaderName}' not found.");
 
                     material.shader = shader;
-                    return stringBuilder?.AppendLine(new string(' ', depth) + $"[Success] Material '{material.name}' shader set to '{shaderName}'.");
+                    return stringBuilder?.AppendLine($"{padding}[Success] Material '{material.name}' shader set to '{shaderName}'.");
                 }
             }
 

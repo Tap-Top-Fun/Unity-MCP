@@ -7,6 +7,7 @@ using com.IvanMurzak.Unity.MCP.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.ReflectorNet;
+using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -21,13 +22,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 You can modify multiple GameObjects at once. Just provide the same number of GameObject references and SerializedMember objects.")]
         public string Modify
         (
-            [Description(@"Json Object with required readonly 'instanceID' and 'type' fields.
-Each field and property requires to have 'type' and 'name' fields to identify the exact modification target.
-Follow the object schema to specify what to change, ignore values that should not be modified. Keep the original data structure.
-Any unknown or wrong located fields and properties will be ignored.
-Check the result of this command to see what was changed. The ignored fields and properties will be listed.")]
-            SerializedMemberList gameObjectDiffs,
-            GameObjectRefList gameObjectRefs
+            GameObjectRefList gameObjectRefs,
+            [Description("Each item in the array represents a GameObject modification of the 'gameObjectRefs' at the same index.\n" +
+                "Usually a GameObject is a container for components. Each component may have fields and properties for modification.\n" +
+                "If you need to modify components of a gameObject, please use '" + nameof(SerializedMember.fields) + "' to wrap a component into it. " +
+                "Each component needs to have '" + nameof(SerializedMember.typeName) + "' and '" + nameof(SerializedMember.name) + "' or 'value." + nameof(GameObjectRef.instanceID) + "' fields to identify the exact modification target.\n" +
+                "Ignore values that should not be modified.\n" +
+                "Any unknown or wrong located fields and properties will be ignored.\n" +
+                "Check the result of this command to see what was changed. The ignored fields and properties will be listed.")]
+            SerializedMemberList gameObjectDiffs
         )
         => MainThread.Instance.Run(() =>
         {
@@ -55,12 +58,12 @@ Check the result of this command to see what was changed. The ignored fields and
                     var component = go.GetComponent(type);
                     if (component == null)
                     {
-                        stringBuilder.AppendLine($"[Error] Component '{type.FullName}' not found on GameObject '{go.name}'.");
+                        stringBuilder.AppendLine($"[Error] Component '{type.GetTypeName(pretty: false)}' not found on GameObject '{go.name.ValueOrNull()}'.");
                         continue;
                     }
                     objToModify = component;
                 }
-                Reflector.Instance.Populate(ref objToModify, gameObjectDiffs[i], stringBuilder);
+                Reflector.Instance.Populate(ref objToModify, gameObjectDiffs[i], objToModify.GetType(), stringBuilder: stringBuilder);
             }
 
             return stringBuilder.ToString();
