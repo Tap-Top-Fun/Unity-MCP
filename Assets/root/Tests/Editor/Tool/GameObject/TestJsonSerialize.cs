@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var deserializedValue = JsonUtils.Deserialize<T>(serializedValue);
 
             var areEqual = Reflector.Instance.AreEqual(sourceValue, deserializedValue);
-            Assert.IsTrue(areEqual, $"Serialized and deserialized values do not match for type '{typeof(T).FullName}'");
+            Assert.IsTrue(areEqual, $"Serialized and deserialized values do not match for type '{typeof(T).GetTypeName(pretty: true)}'");
         }
 
         [UnityTest]

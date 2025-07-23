@@ -1,5 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
@@ -15,9 +17,9 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             {
                 return componentRef.Index == index.Value;
             }
-            if (!string.IsNullOrEmpty(componentRef.TypeName))
+            if (!StringUtils.IsNullOrEmpty(componentRef.TypeName))
             {
-                return component.GetType().FullName == componentRef.TypeName;
+                return component.GetType().IsMatch(componentRef.TypeName);
             }
             return false;
         }

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using UnityEngine.TestTools;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -15,20 +16,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         static void ValidateType<T>() => ValidateType(typeof(T));
         static void ValidateType(Type type)
         {
-            var schema = JsonUtils.GetSchema(type);
-            UnityEngine.Debug.Log($"Schema for '{type.FullName}': {schema}");
+            var schema = JsonUtils.Schema.GetSchema(type);
+            UnityEngine.Debug.Log($"Schema for '{type.GetTypeName(pretty: true)}': {schema}");
 
-            Assert.IsNotNull(schema, $"Schema for '{type.FullName}' is null");
+            Assert.IsNotNull(schema, $"Schema for '{type.GetTypeName(pretty: true)}' is null");
 
-            var typeNodes = JsonUtils.FindAllProperties(schema, "type");
+            var typeNodes = JsonUtils.Schema.FindAllProperties(schema, "type");
             foreach (var typeNode in typeNodes)
             {
                 switch (typeNode)
                 {
                     case JsonValue value:
                         var typeValue = value.ToString();
-                        Assert.IsFalse(string.IsNullOrEmpty(typeValue), $"Type node for '{type.FullName}' is empty");
-                        Assert.IsFalse(typeValue == "null", $"Type node for '{type.FullName}' is \"null\" string");
+                        Assert.IsFalse(string.IsNullOrEmpty(typeValue), $"Type node for '{type.GetTypeName(pretty: true)}' is empty");
+                        Assert.IsFalse(typeValue == "null", $"Type node for '{type.GetTypeName(pretty: true)}' is \"null\" string");
                         break;
                     default:
                         if (typeNode is JsonObject typeObject)
@@ -36,7 +37,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                             if (typeObject.TryGetPropertyValue("enum", out var enumValue))
                                 continue; // Skip enum types
                         }
-                        Assert.Fail($"Unexpected type node for '{type.FullName}'.\nThe 'type' node has the type '{typeNode.GetType().Name}':\n{typeNode}");
+                        Assert.Fail($"Unexpected type node for '{type.GetTypeName(pretty: true)}'.\nThe 'type' node has the type '{typeNode.GetType().Name}':\n{typeNode}");
                         break;
                 }
             }
@@ -60,9 +61,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             // ValidateType<object>();
             ValidateType<ObjectRef>();
 
-            ValidateType<GameObjectData>();
             ValidateType<GameObjectRef>();
             ValidateType<GameObjectRefList>();
+            ValidateType<GameObjectComponentsRef>();
+            ValidateType<GameObjectComponentsRefList>();
 
             ValidateType<ComponentData>();
             ValidateType<ComponentDataLight>();

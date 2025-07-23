@@ -6,6 +6,7 @@ using System.Reflection;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -61,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 if (parameter.Name != methodRefParameter.Name)
                     return 1;
 
-                if (parameter.ParameterType.FullName != methodRefParameter.TypeName)
+                if (parameter.ParameterType.IsMatch(methodRefParameter.TypeName) == false)
                     return 1;
             }
 

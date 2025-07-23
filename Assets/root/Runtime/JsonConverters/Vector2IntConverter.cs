@@ -2,28 +2,30 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Json;
+using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
     public class Vector2IntConverter : JsonConverter<Vector2Int>, IJsonSchemaConverter
     {
-        public string Id => typeof(Vector2Int).FullName;
+        public string Id => typeof(Vector2Int).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            ["id"] = Id,
-            ["type"] = "object",
-            ["properties"] = new JsonObject
+            [JsonUtils.Schema.Id] = Id,
+            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
+            [JsonUtils.Schema.Properties] = new JsonObject
             {
-                ["x"] = new JsonObject { ["type"] = "number" },
-                ["y"] = new JsonObject { ["type"] = "number" }
+                ["x"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["y"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number }
             },
-            ["required"] = new JsonArray { "x", "y" }
+            [JsonUtils.Schema.Required] = new JsonArray { "x", "y" }
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            ["$ref"] = Id
+            [JsonUtils.Schema.Ref] = Id
         };
 
         public override Vector2Int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

@@ -5,6 +5,7 @@ using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.ReflectorNet.Utils;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
@@ -23,24 +24,26 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             return base.InternalSerialize(reflector, obj, type, name, recursive, flags);
         }
-        public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
+        public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var currentValue = fieldInfo.GetValue(obj);
-            Populate(reflector, ref currentValue, value, 0, null, flags, logger);
+            Populate(reflector, ref currentValue, value, type, depth: depth, stringBuilder: stringBuilder, flags, logger);
             fieldInfo.SetValue(obj, currentValue);
-            stringBuilder?.AppendLine($"[Success] Field '{value.name}' modified to '{currentValue}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name.ValueOrNull()}' modified to '{currentValue}'. Convertor: {GetType().Name}");
             return true;
         }
-        public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
+        public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
+            var padding = StringUtils.GetPadding(depth);
             var currentValue = propertyInfo.GetValue(obj);
-            Populate(reflector, ref currentValue, value, 0, null, flags, logger);
+            Populate(reflector, ref currentValue, value, type, depth: depth, stringBuilder: stringBuilder, flags, logger);
             propertyInfo.SetValue(obj, currentValue);
-            stringBuilder?.AppendLine($"[Success] Property '{value.name}' modified to '{currentValue}'.");
+            stringBuilder?.AppendLine($"{padding}[Success] Property '{value.name.ValueOrNull()}' modified to '{currentValue}'. Convertor: {GetType().Name}");
             return true;
         }
     }
