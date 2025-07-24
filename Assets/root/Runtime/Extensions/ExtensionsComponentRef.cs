@@ -11,7 +11,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         {
             if (componentRef.InstanceID != 0)
             {
-                return componentRef.InstanceID == component.GetInstanceID();
+                return componentRef.InstanceID == (component?.GetInstanceID() ?? 0);
             }
             if (componentRef.Index >= 0 && index != null)
             {
@@ -19,7 +19,12 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             }
             if (!StringUtils.IsNullOrEmpty(componentRef.TypeName))
             {
-                return component.GetType().IsMatch(componentRef.TypeName);
+                var type = component?.GetType() ?? typeof(UnityEngine.Component);
+                return type.IsMatch(componentRef.TypeName);
+            }
+            if (componentRef.InstanceID == 0 && component == null)
+            {
+                return true; // Matches null component
             }
             return false;
         }

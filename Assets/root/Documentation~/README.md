@@ -134,10 +134,10 @@ Here is the list of default AI tools. All of them are available after installati
 
 ### Scriptable Object
 
-- 🔲 Create
-- 🔲 Read
-- 🔲 Modify
-- 🔲 Remove
+- ✅ Create
+- ✅ Read
+- ✅ Modify
+- ✅ Remove
 
 ### Debug
 

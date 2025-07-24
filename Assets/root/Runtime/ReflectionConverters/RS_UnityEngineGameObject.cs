@@ -49,8 +49,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 {
                     name = name,
                     typeName = type.FullName,
-                    fields = SerializeFields(reflector, obj, flags),
-                    props = SerializeProperties(reflector, obj, flags)
+                    fields = SerializeFields(reflector, obj, flags, logger: logger),
+                    props = SerializeProperties(reflector, obj, flags, logger: logger)
                 }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
             }
             else
@@ -62,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected override List<SerializedMember> SerializeFields(Reflector reflector, object obj, BindingFlags flags, ILogger? logger = null)
         {
-            var serializedFields = base.SerializeFields(reflector, obj, flags) ?? new();
+            var serializedFields = base.SerializeFields(reflector, obj, flags, logger: logger) ?? new();
 
             var go = obj as UnityEngine.GameObject;
             var components = go.GetComponents<UnityEngine.Component>();
@@ -72,7 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             for (int i = 0; i < components.Length; i++)
             {
                 var component = components[i];
-                var componentType = component.GetType();
+                var componentType = component?.GetType() ?? typeof(UnityEngine.Component);
                 var componentSerialized = reflector.Serialize(
                     obj: component,
                     type: componentType,

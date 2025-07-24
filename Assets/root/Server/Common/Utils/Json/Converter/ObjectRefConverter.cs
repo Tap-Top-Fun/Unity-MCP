@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                 [nameof(ObjectRef.assetPath)] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.String },
                 [nameof(ObjectRef.assetGuid)] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.String }
             },
-            [JsonUtils.Schema.Required] = new JsonArray { "instanceID" }
+            [JsonUtils.Schema.Required] = new JsonArray { nameof(ObjectRef.instanceID) }
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
@@ -72,7 +72,13 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
         {
             if (value == null)
             {
-                writer.WriteNullValue();
+                writer.WriteStartObject();
+
+                // Write the "instanceID" property
+                writer.WritePropertyName(nameof(ObjectRef.instanceID));
+                writer.WriteNumberValue(0);
+
+                writer.WriteEndObject();
                 return;
             }
 

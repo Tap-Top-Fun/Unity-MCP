@@ -8,7 +8,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
     {
         public static int GetInstanceID(this SerializedMember member)
             => member.GetValue<ObjectRef>()?.instanceID
-            ?? member.GetField("instanceID")?.GetValue<int>()
+            ?? member.GetField(nameof(ObjectRef.instanceID))?.GetValue<int>()
             ?? 0;
     }
 }

@@ -28,13 +28,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     {
                         name = name,
                         typeName = type.FullName,
-                        fields = SerializeFields(reflector, obj, flags),
-                        props = SerializeProperties(reflector, obj, flags)
+                        fields = SerializeFields(reflector, obj, flags, logger: logger),
+                        props = SerializeProperties(reflector, obj, flags, logger: logger)
                     }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
                 }
                 else
                 {
-                    var objectRef = new ObjectRef(unityObject.GetInstanceID());
+                    var objectRef = new ObjectRef(unityObject?.GetInstanceID() ?? 0);
                     return SerializedMember.FromValue(type, objectRef, name);
                 }
             }
