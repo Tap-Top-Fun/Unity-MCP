@@ -20,7 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             "Script_Execute",
             Title = "Execute C# code immediately"
         )]
-        [Description("Reads the content of a script file and returns it as a string.")]
+        [Description("Compiles and executes C# code dynamically using Roslyn. The provided code must define a class with a static method to execute.")]
         public string Execute
         (
             [Description(@"C# code that compiles and executes immediately. It won't be stored as a script in the project. It is temporary one shot C# code execution using Roslyn.
