@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using Microsoft.CodeAnalysis;
@@ -28,7 +30,9 @@ Do NOT use top-level statements or code outside a class. Top-level statements ar
             [Description("The name of the class containing the method to execute.")]
             string className = "Script",
             [Description("The name of the method to execute. It must be a static method in the class provided above.")]
-            string methodName = "Main"
+            string methodName = "Main",
+            [Description("Serialized parameters to pass to the method. If the method does not require parameters, leave this empty.")]
+            SerializedMemberList? parameters = null
         )
         {
             if (string.IsNullOrEmpty(csharpCode))
@@ -49,13 +53,13 @@ Do NOT use top-level statements or code outside a class. Top-level statements ar
             return MainThread.Instance.Run(() =>
             {
                 // Compile C# code using Roslyn and execute it immediately
-                if (ExecuteCSharpCode(className, methodName, csharpCode, out var result, out var error) == false)
+                if (ExecuteCSharpCode(className, methodName, csharpCode, parameters, out var result, out var error) == false)
                     return $"[Error] {error}";
 
                 return $"[Success] {result}";
             });
         }
-        static bool ExecuteCSharpCode(string className, string methodName, string code, out object? returnValue, out string error)
+        static bool ExecuteCSharpCode(string className, string methodName, string code, SerializedMemberList? parameters, out object? returnValue, out string error)
         {
             if (string.IsNullOrEmpty(className))
             {
@@ -69,6 +73,10 @@ Do NOT use top-level statements or code outside a class. Top-level statements ar
                 error = $"'{nameof(methodName)}' cannot be null or empty.";
                 return false;
             }
+
+            var parsedParameters = parameters
+                ?.Select(p => Reflector.Instance.Deserialize(p, logger: McpPlugin.Instance.Logger))
+                ?.ToArray();
 
             var compilation = CSharpCompilation.Create(
                 assemblyName: "DynamicAssembly",
@@ -96,7 +104,7 @@ Do NOT use top-level statements or code outside a class. Top-level statements ar
                 var method = type.GetMethod(methodName);
                 try
                 {
-                    returnValue = method.Invoke(null, null);
+                    returnValue = method.Invoke(null, parsedParameters);
                     error = null;
                     return true;
                 }
