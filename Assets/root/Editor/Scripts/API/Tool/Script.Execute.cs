@@ -101,7 +101,18 @@ Do NOT use top-level statements or code outside a class. Top-level statements ar
                 ms.Seek(0, SeekOrigin.Begin);
                 var assembly = Assembly.Load(ms.ToArray());
                 var type = assembly.GetType(className);
+                if (type == null)
+                {
+                    error = $"Class '{className}' not found in the compiled assembly.";
+                    returnValue = null;
+                    return false;
+                }
                 var method = type.GetMethod(methodName);
+                if (method == null)
+                {
+                    error = $"Method '{methodName}' not found in class '{className}'.";
+                    returnValue = null;
+                }
                 try
                 {
                     returnValue = method.Invoke(null, parsedParameters);
