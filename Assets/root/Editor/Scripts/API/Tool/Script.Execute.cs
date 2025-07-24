@@ -112,6 +112,7 @@ Do NOT use top-level statements or code outside a class. Top-level statements ar
                 {
                     error = $"Method '{methodName}' not found in class '{className}'.";
                     returnValue = null;
+                    return false;
                 }
                 try
                 {
