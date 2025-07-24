@@ -77,7 +77,7 @@ Searching is case insensitive.")]
                 stringBuilder.AppendLine($"{instanceID,-10} | {assetGuids[i],-36} | {assetPath}");
             }
 
-            return $"[Success] Assets found: {assetGuids.Length}.\n{stringBuilder.ToString()}";
+            return $"[Success] Assets found: {assetGuids.Length}.\n{stringBuilder}";
         });
     }
 }

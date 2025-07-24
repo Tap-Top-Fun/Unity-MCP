@@ -64,7 +64,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 var componentInstanceIDsString = string.Join(", ", componentRefs.Select(cr => cr.ToString()));
                 var availableComponentsPreview = allComponents
                     .Select((c, i) => Reflector.Instance.Serialize(
-                        c,
+                        obj: c,
+                        type: c?.GetType() ?? typeof(UnityEngine.Component),
                         name: $"[{i}]",
                         recursive: false,
                         logger: McpPlugin.Instance.Logger

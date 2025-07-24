@@ -36,7 +36,7 @@ Also, it returns Components preview just for the target GameObject.")]
                     return error;
 
                 var serializedGo = Reflector.Instance.Serialize(
-                    go,
+                    obj: go,
                     name: go.name,
                     recursive: !briefData,
                     logger: McpPlugin.Instance.Logger
