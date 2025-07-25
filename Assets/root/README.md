@@ -141,7 +141,7 @@ Here is the list of default AI tools. All of them are available after installati
 
 ### Debug
 
-- 🔲 Read logs (console)
+- ✅ Read logs (console)
 
 ### Component
 
