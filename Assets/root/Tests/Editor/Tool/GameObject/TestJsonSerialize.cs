@@ -13,7 +13,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
     {
         static void ValidateType<T>(T sourceValue)
         {
-            var serializedValue = JsonUtils.Serialize(sourceValue);
+            var serializedValue = JsonUtils.ToJson(sourceValue);
             var deserializedValue = JsonUtils.Deserialize<T>(serializedValue);
 
             var areEqual = Reflector.Instance.AreEqual(sourceValue, deserializedValue);

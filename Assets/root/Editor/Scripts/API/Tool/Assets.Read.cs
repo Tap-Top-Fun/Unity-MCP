@@ -45,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 recursive: true,
                 logger: McpPlugin.Instance.Logger
             );
-            var json = JsonUtils.Serialize(serialized);
+            var json = JsonUtils.ToJson(serialized);
 
             return $"[Success] Loaded asset at path '{assetPath}'.\n{json}";
 

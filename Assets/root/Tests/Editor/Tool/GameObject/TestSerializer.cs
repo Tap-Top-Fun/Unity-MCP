@@ -100,7 +100,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var material = new Material(Shader.Find("Standard"));
 
             var serialized = Reflector.Instance.Serialize(material);
-            var json = JsonUtils.Serialize(serialized);
+            var json = JsonUtils.ToJson(serialized);
             Debug.Log($"[{nameof(TestSerializer)}] Result:\n{json}");
 
             var glossinessValue = 1.0f;
@@ -128,7 +128,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var materials = new[] { material1, material2 };
 
             var serialized = Reflector.Instance.Serialize(materials, logger: McpPlugin.Instance.Logger);
-            var json = JsonUtils.Serialize(serialized);
+            var json = JsonUtils.ToJson(serialized);
             Debug.Log($"[{nameof(TestSerializer)}] Result:\n{json}");
 
             // var glossinessValue = 1.0f;
@@ -152,9 +152,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var serializedObj = Reflector.Instance.Serialize(sourceObj, logger: McpPlugin.Instance.Logger);
             var deserializedObj = Reflector.Instance.Deserialize(serializedObj, logger: McpPlugin.Instance.Logger);
 
-            Debug.Log($"[{type.Name}] Source:\n```json\n{JsonUtils.Serialize(sourceObj)}\n```");
-            Debug.Log($"[{type.Name}] Serialized:\n```json\n{JsonUtils.Serialize(serializedObj)}\n```");
-            Debug.Log($"[{type.Name}] Deserialized:\n```json\n{JsonUtils.Serialize(deserializedObj)}\n```");
+            Debug.Log($"[{type.Name}] Source:\n```json\n{JsonUtils.ToJson(sourceObj)}\n```");
+            Debug.Log($"[{type.Name}] Serialized:\n```json\n{JsonUtils.ToJson(serializedObj)}\n```");
+            Debug.Log($"[{type.Name}] Deserialized:\n```json\n{JsonUtils.ToJson(deserializedObj)}\n```");
 
             Assert.AreEqual(sourceObj.GetType(), deserializedObj.GetType(), $"Object type should be {sourceObj.GetType()}.");
 

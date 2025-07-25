@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             data.Arguments ??= value == null
                 ? new Dictionary<string, JsonElement>()
-                : new Dictionary<string, JsonElement>() { [name] = JsonUtils.SerializeToElement(value) };
+                : new Dictionary<string, JsonElement>() { [name] = value.ToJsonElement() };
             return data;
         }
         // public static IRequestData BuildRequest(this IRequestTool data)

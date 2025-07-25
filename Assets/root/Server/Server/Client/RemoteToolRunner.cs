@@ -25,7 +25,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
         }
 
         public Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, CancellationToken cancellationToken = default)
-            => ClientUtils.InvokeAsync<IRequestCallTool, ResponseCallTool, RemoteApp>(
+        {
+            var responseTask = ClientUtils.InvokeAsync<IRequestCallTool, ResponseCallTool, RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunCallTool,
@@ -39,6 +40,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 return response;
             }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+
+            // if the task fails, and the `requestData` support reconnection,
+            // need to wait for the external call from the client
+
+            return responseTask;
+        }
 
         public Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, CancellationToken cancellationToken = default)
             => ClientUtils.InvokeAsync<IRequestListTool, ResponseListTool[], RemoteApp>(

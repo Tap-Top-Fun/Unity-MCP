@@ -130,8 +130,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         logger.LogTrace("Invoke '{0}', ConnectionId ='{1}'. RequestData:\n{2}\n{3}", methodName, connectionId, requestData, allConnections);
                     }
                     var invokeTask = client.InvokeAsync<ResponseData<TResponse>>(methodName, requestData, cancellationToken);
-                    var completedTask = await Task.WhenAny(invokeTask, Task.Delay(TimeSpan.FromMilliseconds(ConnectionConfig.TimeoutMs), cancellationToken));
-                    if (completedTask == invokeTask)
+                    var completed = await invokeTask.WaitWithTimeout(ConnectionConfig.TimeoutMs, cancellationToken);
+                    if (completed)
                     {
                         try
                         {

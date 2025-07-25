@@ -2,11 +2,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NLog;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Server
@@ -48,7 +47,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             };
 
             if (logger.IsTraceEnabled)
-                logger.Trace("ListAll, result: {0}", JsonUtils.Serialize(result));
+                logger.Trace("ListAll, result: {0}", JsonUtils.ToJson(result));
 
             return result;
         }

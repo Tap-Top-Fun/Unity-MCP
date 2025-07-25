@@ -179,7 +179,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         }
         public static string Print(this GameObject go) => go == null
             ? null
-            : $"instanceID: {go.GetInstanceID()}, path: {go.GetPath()}, bounds: {JsonUtils.Serialize(go.CalculateBounds())}";
+            : $"instanceID: {go.GetInstanceID()}, path: {go.GetPath()}, bounds: {JsonUtils.ToJson(go.CalculateBounds())}";
 
         public static string Print(this IEnumerable<GameObject> gos)
         {

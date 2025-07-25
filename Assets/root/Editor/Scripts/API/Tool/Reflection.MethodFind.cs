@@ -68,7 +68,7 @@ Even private methods are available. Use 'Reflection_MethodCall' to call the meth
 
             return $@"[Success] Found {methods.Count} method(s):
 ```json
-{JsonUtils.Serialize(methodRefs)}
+{JsonUtils.ToJson(methodRefs)}
 ```";
         }
     }

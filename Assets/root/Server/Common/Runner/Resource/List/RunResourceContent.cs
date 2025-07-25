@@ -2,13 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
-using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
@@ -55,7 +54,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             var result = await Invoke(parameters);
 
             if (_logger?.IsEnabled(LogLevel.Trace) ?? false)
-                _logger.LogTrace("Result: {result}", result.JsonSerialize());
+                _logger.LogTrace("Result: {result}", JsonUtils.ToJson(result));
 
             return result as ResponseResourceContent[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseResourceContent)}[]. Instead returned {result?.GetType().Name}.");
         }
@@ -71,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             var result = await InvokeDict(namedParameters?.ToImmutableDictionary(x => x.Key, x => x.Value));
 
             if (_logger?.IsEnabled(LogLevel.Trace) ?? false)
-                _logger.LogTrace("Result: {result}", result.JsonSerialize());
+                _logger.LogTrace("Result: {result}", JsonUtils.ToJson(result));
 
             return result as ResponseResourceContent[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseResourceContent)}[]. Instead returned {result?.GetType().Name}.");
         }

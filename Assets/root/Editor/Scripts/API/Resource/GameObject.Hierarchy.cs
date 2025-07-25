@@ -42,7 +42,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
                 return ResponseResourceContent.CreateText(
                     uri,
-                    JsonUtils.Serialize(
+                    JsonUtils.ToJson(
                         Reflector.Instance.Serialize(
                             go,
                             logger: McpPlugin.Instance.Logger
