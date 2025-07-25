@@ -1,12 +1,10 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+using System.Linq;
+using System.Collections;
+using com.IvanMurzak.Unity.MCP.Editor.API;
 using NUnit.Framework;
 using UnityEngine;
-using System.Collections;
 using UnityEngine.TestTools;
-using System.Threading;
-using com.IvanMurzak.Unity.MCP.Editor.API;
-using System.Linq;
-using System;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -201,6 +199,30 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 Assert.IsTrue(results[i].Contains("[Success]") || results[i].Contains("No log entries"),
                     $"Sequential call {i} should maintain consistency");
             }
+        }
+
+        [Test]
+        public void GetLogs_MaxEntriesParameterDescription_EndsWithMax()
+        {
+            // This test verifies that the maxEntries parameter description ends with "Max: 5000"
+            // by using reflection to get the parameter description attribute
+
+            var methodInfo = typeof(Tool_Console).GetMethod(nameof(Tool_Console.GetLogs));
+            Assert.IsNotNull(methodInfo, $"{nameof(Tool_Console.GetLogs)} method should exist");
+
+            var parameterName = "maxEntries";
+            var parameters = methodInfo.GetParameters();
+            var maxEntriesParam = parameters.FirstOrDefault(p => p.Name == parameterName);
+            Assert.IsNotNull(maxEntriesParam, $"{parameterName} parameter should exist");
+
+            var descriptionAttr = maxEntriesParam.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false)
+                .FirstOrDefault() as System.ComponentModel.DescriptionAttribute;
+            Assert.IsNotNull(descriptionAttr, $"{parameterName} parameter should have Description attribute");
+
+            var description = descriptionAttr.Description;
+            Assert.IsNotNull(description, "Description should not be null");
+            Assert.IsTrue(description.EndsWith($"Max: {LogUtils.MaxLogEntries}"),
+                $"{parameterName} parameter description should end with 'Max: {LogUtils.MaxLogEntries}'. Actual description: '{description}'");
         }
     }
 }
