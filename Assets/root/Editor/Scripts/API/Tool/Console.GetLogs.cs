@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [Description("Retrieves the Unity Console log entries. Supports filtering by log type and limiting the number of entries returned.")]
         public string GetLogs
         (
-            [Description("Maximum number of log entries to return. Default: 100, Max: 100000")]
+            [Description("Maximum number of log entries to return. Default: 100, Max: 5000")]
             int maxEntries = 100,
             [Description("Filter by log type. Options: 'All', 'Error', 'Assert', 'Warning', 'Log', 'Exception'. Default: 'All'")]
             string logTypeFilter = "All",

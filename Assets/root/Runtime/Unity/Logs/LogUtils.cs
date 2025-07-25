@@ -9,10 +9,11 @@ namespace com.IvanMurzak.Unity.MCP
 {
     public static class LogUtils
     {
+        public const int MaxLogEntries = 5000; // Default max entries to keep in memory
+
         static readonly ConcurrentQueue<LogEntry> _logEntries = new();
         static readonly object _lockObject = new();
         static bool _isSubscribed = false;
-        public static int MaxLogEntries = 5000; // Default max entries to keep in memory
 
         public static int LogEntries
         {

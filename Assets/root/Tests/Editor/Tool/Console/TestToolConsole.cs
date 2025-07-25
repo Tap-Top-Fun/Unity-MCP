@@ -179,7 +179,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var logMessage = "Regular log for assert filter test";
             var logWarningMessage = "Warning log for assert filter test";
             Debug.Log(logMessage);
-            Debug.Log(logWarningMessage);
+            Debug.LogWarning(logWarningMessage);
 
             for (int i = 0; i < 3; i++)
                 yield return null;
