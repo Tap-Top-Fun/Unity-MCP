@@ -52,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                         logger: McpPlugin.Instance.Logger
                     ))
                     .ToList();
-                var previewJson = JsonUtils.Serialize(availableComponentsPreview);
+                var previewJson = JsonUtils.ToJson(availableComponentsPreview);
 
                 var instanceIdSample = JsonSerializer.Serialize(new { componentData = availableComponentsPreview[0] });
                 var helpMessage = $"Use 'name=[index]' to specify the component. Or use 'instanceID' to specify the component.\n{instanceIdSample}";
@@ -71,7 +71,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                         logger: McpPlugin.Instance.Logger
                     ))
                     .ToList();
-                var previewJson = JsonUtils.Serialize(availableComponentsPreview);
+                var previewJson = JsonUtils.ToJson(availableComponentsPreview);
 
                 return $"[Error] No components with instanceIDs [{componentInstanceIDsString}] found in GameObject.\nAvailable components preview:\n{previewJson}";
             }

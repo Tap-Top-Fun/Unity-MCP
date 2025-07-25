@@ -149,7 +149,7 @@ Required:
                     : methodWrapper.Invoke();
 
                 var result = task.Result;
-                return $"[Success] Execution result:\n```json\n{JsonUtils.Serialize(result)}\n```";
+                return $"[Success] Execution result:\n```json\n{JsonUtils.ToJson(result)}\n```";
             };
 
             if (executeInMainThread)

@@ -42,7 +42,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     configure.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
                     configure.KeepAliveInterval = TimeSpan.FromSeconds(1);
                     configure.HandshakeTimeout = TimeSpan.FromSeconds(5);
-                    configure.JsonSerialize(JsonUtils.JsonSerializerOptions);
                 });
 
                 // Setup MCP server ---------------------------------------------------------------
@@ -76,10 +75,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 // builder.WebHost.UseUrls(Consts.Hub.DefaultEndpoint);
                 var dataArguments = new DataArguments(args);
-                
+
                 // Set the runtime configurable timeout
                 ConnectionConfig.TimeoutMs = dataArguments.TimeoutMs;
-                
+
                 builder.WebHost.UseKestrel(options =>
                 {
                     options.ListenLocalhost(dataArguments.Port);

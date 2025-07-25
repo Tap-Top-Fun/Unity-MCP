@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -45,11 +46,15 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 var hubConnection = new HubConnectionBuilder()
                     .WithUrl(connectionConfig.Endpoint + endpoint)
                     .WithAutomaticReconnect(new FixedRetryPolicy(TimeSpan.FromSeconds(1)))
-                    .WithServerTimeout(TimeSpan.FromSeconds(3))
+                    .WithServerTimeout(TimeSpan.FromSeconds(5))
                     .AddJsonProtocol(options =>
                     {
-                        // options.PayloadSerializerOptions.PropertyNamingPolicy = null;
-                        // options.PayloadSerializerOptions.DictionaryKeyPolicy = null;
+                        options.PayloadSerializerOptions.DefaultIgnoreCondition = JsonUtils.JsonSerializerOptions.DefaultIgnoreCondition;
+                        options.PayloadSerializerOptions.PropertyNamingPolicy = JsonUtils.JsonSerializerOptions.PropertyNamingPolicy;
+                        options.PayloadSerializerOptions.WriteIndented = JsonUtils.JsonSerializerOptions.WriteIndented;
+
+                        foreach (var converter in JsonUtils.JsonSerializerOptions.Converters)
+                            options.PayloadSerializerOptions.Converters.Add(converter);
                     })
                     .ConfigureLogging(logging =>
                     {

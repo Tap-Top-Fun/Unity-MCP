@@ -60,10 +60,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             return @$"[Success] Found Prefab at '{prefabAssetPath}'.
 # Components preview:
-{JsonUtils.Serialize(componentsPreview)}
+{JsonUtils.ToJson(componentsPreview)}
 
 # GameObject bounds:
-{JsonUtils.Serialize(prefab.CalculateBounds())}
+{JsonUtils.ToJson(prefab.CalculateBounds())}
 
 # GameObject information:
 {prefab.ToMetadata(includeChildrenDepth).Print()}";

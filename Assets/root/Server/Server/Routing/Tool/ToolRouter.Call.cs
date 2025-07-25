@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NLog;
+using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Server
@@ -47,14 +47,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             var requestData = new RequestCallTool(request.Params.Name, request.Params.Arguments);
             if (logger.IsTraceEnabled)
-                logger.Trace("Call remote tool '{0}':\n{1}", request.Params.Name, JsonUtils.Serialize(requestData));
+                logger.Trace("Call remote tool '{0}':\n{1}", request.Params.Name, requestData.ToJsonOrEmptyJsonObject());
 
             var response = await toolRunner.RunCallTool(requestData, cancellationToken: cancellationToken);
             if (response == null)
                 return new CallToolResult().SetError($"[Error] '{nameof(response)}' is null");
 
             if (logger.IsTraceEnabled)
-                logger.Trace("Call tool response:\n{0}", JsonUtils.Serialize(response));
+                logger.Trace("Call tool response:\n{0}", response.ToJsonOrEmptyJsonObject());
 
             if (response.IsError)
                 return new CallToolResult().SetError(response.Message ?? "[Error] Got an error during running tool");

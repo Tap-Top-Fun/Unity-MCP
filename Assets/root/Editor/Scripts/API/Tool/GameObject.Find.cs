@@ -41,16 +41,16 @@ Also, it returns Components preview just for the target GameObject.")]
                     recursive: !briefData,
                     logger: McpPlugin.Instance.Logger
                 );
-                var json = JsonUtils.Serialize(serializedGo);
+                var json = JsonUtils.ToJson(serializedGo);
                 return @$"[Success] Found GameObject.
 # Data:
 ```json
-{JsonUtils.Serialize(serializedGo)}
+{JsonUtils.ToJson(serializedGo)}
 ```
 
 # Bounds:
 ```json
-{JsonUtils.Serialize(go.CalculateBounds())}
+{JsonUtils.ToJson(go.CalculateBounds())}
 ```
 
 # Hierarchy:
