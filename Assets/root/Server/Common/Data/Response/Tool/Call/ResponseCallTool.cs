@@ -1,4 +1,5 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+using System;
 using System.Collections.Generic;
 using com.IvanMurzak.ReflectorNet.Utils;
 
@@ -16,20 +17,29 @@ namespace com.IvanMurzak.ReflectorNet.Model
             Content = content;
         }
 
+        public static ResponseCallTool Error(Exception exception)
+            => Error($"[Error] {exception?.Message}\n{exception?.StackTrace}");
+
         public static ResponseCallTool Error(string? message)
-            => new ResponseCallTool(isError: true, new List<ResponseCallToolContent> { new ResponseCallToolContent()
+            => new ResponseCallTool(isError: true, new List<ResponseCallToolContent>
             {
-                Type = "text",
-                Text = message,
-                MimeType = Consts.MimeType.TextPlain
-            } });
+                new ResponseCallToolContent()
+                {
+                    Type = "text",
+                    Text = message,
+                    MimeType = Consts.MimeType.TextPlain
+                }
+            });
 
         public static ResponseCallTool Success(string? message)
-            => new ResponseCallTool(isError: false, new List<ResponseCallToolContent> { new ResponseCallToolContent()
+            => new ResponseCallTool(isError: false, new List<ResponseCallToolContent>
             {
-                Type = "text",
-                Text = message,
-                MimeType = Consts.MimeType.TextPlain
-            } });
+                new ResponseCallToolContent()
+                {
+                    Type = "text",
+                    Text = message,
+                    MimeType = Consts.MimeType.TextPlain
+                }
+            });
     }
 }

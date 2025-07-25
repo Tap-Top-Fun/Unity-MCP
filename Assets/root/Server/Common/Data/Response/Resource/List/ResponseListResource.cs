@@ -11,8 +11,7 @@ namespace com.IvanMurzak.ReflectorNet.Model
         public long? size { get; set; }
 
         public ResponseListResource() { }
-        public
-        ResponseListResource(string uri, string name, string? mimeType = null, string? description = null, long? size = null)
+        public ResponseListResource(string uri, string name, string? mimeType = null, string? description = null, long? size = null)
         {
             this.uri = uri;
             this.name = name;

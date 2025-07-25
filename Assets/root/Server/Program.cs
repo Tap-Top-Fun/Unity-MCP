@@ -42,7 +42,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     configure.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
                     configure.KeepAliveInterval = TimeSpan.FromSeconds(1);
                     configure.HandshakeTimeout = TimeSpan.FromSeconds(5);
-                    // configure.ToJson(JsonUtils.JsonSerializerOptions);
                 });
 
                 // Setup MCP server ---------------------------------------------------------------
