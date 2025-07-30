@@ -13,11 +13,18 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineObject<T> : RS_GenericUnity<T> where T : UnityEngine.Object
     {
-        public override object? Deserialize(Reflector reflector, SerializedMember data, ILogger? logger = null)
-            => null;
+        public override object? Deserialize(Reflector reflector, SerializedMember data,
+            Type? fallbackType = null,
+            string? fallbackName = null,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
+        {
+            return null;
+        }
 
-        public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+        public override bool SetAsField(Reflector reflector, ref object? obj, Type type, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
@@ -25,8 +32,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return false;
         }
 
-        public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+        public override bool SetAsProperty(Reflector reflector, ref object? obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);

@@ -12,20 +12,32 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
     {
-        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true,
+        protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string name = null, bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            int depth = 0, StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
+            if (obj == null)
+                return SerializedMember.FromValue(type, value: null, name: name);
+
             if (obj is UnityEngine.Texture2D texture)
             {
                 var objectRef = new ObjectRef(texture.GetInstanceID());
                 return SerializedMember.FromValue(type, objectRef, name);
             }
 
-            return base.InternalSerialize(reflector, obj, type, name, recursive, flags);
+            return base.InternalSerialize(reflector,
+                obj: obj,
+                type: type,
+                name: name,
+                recursive: recursive,
+                flags: flags,
+                depth: depth,
+                stringBuilder: stringBuilder,
+                logger: logger);
         }
-        public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+        public override bool SetAsField(Reflector reflector, ref object? obj, Type type, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
@@ -35,8 +47,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name.ValueOrNull()}' modified to '{currentValue}'. Convertor: {GetType().Name}");
             return true;
         }
-        public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+        public override bool SetAsProperty(Reflector reflector, ref object? obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);

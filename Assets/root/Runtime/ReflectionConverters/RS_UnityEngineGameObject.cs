@@ -29,6 +29,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return int.TryParse(indexStr, out index);
         }
 
+        public override bool AllowSetValue => false;
+
         protected override IEnumerable<string> GetIgnoredProperties()
         {
             foreach (var property in base.GetIgnoredProperties())
@@ -38,10 +40,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             yield return nameof(UnityEngine.GameObject.transform);
             yield return nameof(UnityEngine.GameObject.scene);
         }
-        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+        protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string? name = null, bool recursive = true,
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            int depth = 0, StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
+            if (obj == null)
+                return SerializedMember.FromValue(type, value: null, name: name);
+
             var unityObject = obj as UnityEngine.GameObject;
             if (recursive)
             {
@@ -49,8 +55,18 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 {
                     name = name,
                     typeName = type.FullName,
-                    fields = SerializeFields(reflector, obj, flags, logger: logger),
-                    props = SerializeProperties(reflector, obj, flags, logger: logger)
+                    fields = SerializeFields(reflector,
+                        obj: obj,
+                        flags: flags,
+                        depth: depth,
+                        stringBuilder: stringBuilder,
+                        logger: logger),
+                    props = SerializeProperties(reflector,
+                        obj: obj,
+                        flags: flags,
+                        depth: depth,
+                        stringBuilder: stringBuilder,
+                        logger: logger)
                 }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
             }
             else
@@ -60,9 +76,15 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }
         }
 
-        protected override List<SerializedMember> SerializeFields(Reflector reflector, object obj, BindingFlags flags, ILogger? logger = null)
+        protected override SerializedMemberList SerializeFields(Reflector reflector, object obj, BindingFlags flags,
+            int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
         {
-            var serializedFields = base.SerializeFields(reflector, obj, flags, logger: logger) ?? new();
+            var serializedFields = base.SerializeFields(reflector,
+                obj: obj,
+                flags: flags,
+                depth: depth,
+                stringBuilder: stringBuilder,
+                logger: logger) ?? new();
 
             var go = obj as UnityEngine.GameObject;
             var components = go.GetComponents<UnityEngine.Component>();
@@ -72,10 +94,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             for (int i = 0; i < components.Length; i++)
             {
                 var component = components[i];
-                var componentType = component?.GetType() ?? typeof(UnityEngine.Component);
                 var componentSerialized = reflector.Serialize(
                     obj: component,
-                    type: componentType,
+                    fallbackType: typeof(UnityEngine.Component),
                     name: GetComponentName(i),
                     recursive: true,
                     flags: flags,

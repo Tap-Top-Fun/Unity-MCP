@@ -1,10 +1,8 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using UnityEngine;
@@ -20,15 +18,19 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         const string FieldShader = "shader";
         const string FieldName = "name";
 
-        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true,
+        protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string name = null, bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            int depth = 0, StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
+            if (obj == null)
+                return SerializedMember.FromValue(type, value: null, name: name);
+
             var material = obj as Material;
             var shader = material.shader;
             int propertyCount = shader.GetPropertyCount();
 
-            var properties = new List<SerializedMember>(propertyCount);
+            var properties = new SerializedMemberList(propertyCount);
 
             for (int i = 0; i < propertyCount; i++)
             {
@@ -67,7 +69,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             {
                 name = name,
                 typeName = type.FullName,
-                fields = new List<SerializedMember>()
+                fields = new SerializedMemberList()
                 {
                     SerializedMember.FromValue(name: FieldName, value: material.name),
                     SerializedMember.FromValue(name: FieldShader, value: shader.name)

@@ -59,7 +59,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var data = SerializedMember.FromValue(
                     name: go.name,
                     type: typeof(GameObject),
-                    value: new ObjectRef(go.GetInstanceID()))
+                    value: null)
                 .AddField(SerializedMember.FromValue(name: string.Empty,
                     type: typeof(MeshRenderer),
                     value: new ObjectRef(component.GetInstanceID())

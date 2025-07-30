@@ -12,13 +12,22 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public class RS_UnityEngineObject : RS_UnityEngineObject<UnityEngine.Object> { }
+    public class RS_UnityEngineObject : RS_UnityEngineObject<UnityEngine.Object>
+    {
+        public override bool AllowCascadePropertiesConversion => false;
+    }
     public partial class RS_UnityEngineObject<T> : RS_GenericUnity<T> where T : UnityEngine.Object
     {
-        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true,
+        public override bool AllowCascadePropertiesConversion => false;
+
+        protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string name = null, bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            int depth = 0, StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
+            if (obj == null)
+                return SerializedMember.FromValue(type, value: null, name: name);
+
             var unityObject = obj as T;
             if (type.IsClass)
             {
@@ -28,8 +37,18 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     {
                         name = name,
                         typeName = type.FullName,
-                        fields = SerializeFields(reflector, obj, flags, logger: logger),
-                        props = SerializeProperties(reflector, obj, flags, logger: logger)
+                        fields = SerializeFields(reflector,
+                            obj: obj,
+                            flags: flags,
+                            depth: depth,
+                            stringBuilder: stringBuilder,
+                            logger: logger),
+                        props = SerializeProperties(reflector,
+                            obj: obj,
+                            flags: flags,
+                            depth: depth,
+                            stringBuilder: stringBuilder,
+                            logger: logger)
                     }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
                 }
                 else

@@ -52,8 +52,11 @@ You can modify multiple GameObjects at once. Just provide the same number of Gam
                     continue;
                 }
                 var objToModify = (object)go;
+
+                // LLM may mistakenly provide "typeName" as a Component type when it should be a GameObject.
+                // It is fine, lets handle it gracefully.
                 var type = TypeUtils.GetType(gameObjectDiffs[i].typeName);
-                if (typeof(UnityEngine.Component).IsAssignableFrom(type))
+                if (type != null && typeof(UnityEngine.Component).IsAssignableFrom(type))
                 {
                     var component = go.GetComponent(type);
                     if (component == null)
@@ -61,9 +64,15 @@ You can modify multiple GameObjects at once. Just provide the same number of Gam
                         stringBuilder.AppendLine($"[Error] Component '{type.GetTypeName(pretty: false)}' not found on GameObject '{go.name.ValueOrNull()}'.");
                         continue;
                     }
+                    // Switch to the component type for modification.
                     objToModify = component;
                 }
-                Reflector.Instance.Populate(ref objToModify, gameObjectDiffs[i], objToModify.GetType(), stringBuilder: stringBuilder);
+
+                Reflector.Instance.Populate(ref objToModify,
+                    data: gameObjectDiffs[i],
+                    dataType: objToModify.GetType(),
+                    stringBuilder: stringBuilder,
+                    logger: McpPlugin.Instance.Logger);
             }
 
             return stringBuilder.ToString();

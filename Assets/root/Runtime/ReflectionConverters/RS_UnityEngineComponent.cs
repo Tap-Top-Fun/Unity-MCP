@@ -6,6 +6,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineComponent : RS_UnityEngineObject<UnityEngine.Component>
     {
+        public override bool AllowSetValue => false;
+
         protected override IEnumerable<string> GetIgnoredProperties()
         {
             foreach (var property in base.GetIgnoredProperties())
