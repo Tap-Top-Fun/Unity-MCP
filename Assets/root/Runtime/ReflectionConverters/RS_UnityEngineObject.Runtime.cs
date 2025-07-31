@@ -13,7 +13,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineObject<T> : RS_GenericUnity<T> where T : UnityEngine.Object
     {
-        public override object? Deserialize(Reflector reflector, SerializedMember data,
+        public override object? Deserialize(
+            Reflector reflector,
+            SerializedMember data,
             Type? fallbackType = null,
             string? fallbackName = null,
             int depth = 0,

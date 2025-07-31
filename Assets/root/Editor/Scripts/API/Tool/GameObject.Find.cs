@@ -45,7 +45,7 @@ Also, it returns Components preview just for the target GameObject.")]
                 return @$"[Success] Found GameObject.
 # Data:
 ```json
-{JsonUtils.ToJson(serializedGo)}
+{json}
 ```
 
 # Bounds:

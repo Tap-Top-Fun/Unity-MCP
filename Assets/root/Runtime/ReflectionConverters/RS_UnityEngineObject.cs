@@ -20,9 +20,15 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
     {
         public override bool AllowCascadePropertiesConversion => false;
 
-        protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string name = null, bool recursive = true,
+        protected override SerializedMember InternalSerialize(
+            Reflector reflector,
+            object? obj,
+            Type type,
+            string name = null,
+            bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            int depth = 0, StringBuilder? stringBuilder = null,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
             if (obj == null)
@@ -37,13 +43,15 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     {
                         name = name,
                         typeName = type.FullName,
-                        fields = SerializeFields(reflector,
+                        fields = SerializeFields(
+                            reflector,
                             obj: obj,
                             flags: flags,
                             depth: depth,
                             stringBuilder: stringBuilder,
                             logger: logger),
-                        props = SerializeProperties(reflector,
+                        props = SerializeProperties(
+                            reflector,
                             obj: obj,
                             flags: flags,
                             depth: depth,
@@ -61,7 +69,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             throw new ArgumentException($"Unsupported type: '{type.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
+        protected override bool SetValue(
+            Reflector reflector,
+            ref object obj,
+            Type type,
+            JsonElement? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
             stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for type '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead. Convertor: {GetType().Name}");

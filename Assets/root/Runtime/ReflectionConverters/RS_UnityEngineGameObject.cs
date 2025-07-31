@@ -40,7 +40,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             yield return nameof(UnityEngine.GameObject.transform);
             yield return nameof(UnityEngine.GameObject.scene);
         }
-        protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string? name = null, bool recursive = true,
+        protected override SerializedMember InternalSerialize(
+            Reflector reflector,
+            object? obj,
+            Type type,
+            string? name = null,
+            bool recursive = true,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             int depth = 0, StringBuilder? stringBuilder = null,
             ILogger? logger = null)
@@ -76,8 +81,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }
         }
 
-        protected override SerializedMemberList SerializeFields(Reflector reflector, object obj, BindingFlags flags,
-            int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
+        protected override SerializedMemberList SerializeFields(
+            Reflector reflector,
+            object obj,
+            BindingFlags flags,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             var serializedFields = base.SerializeFields(reflector,
                 obj: obj,
@@ -107,14 +117,26 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return serializedFields;
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
+        protected override bool SetValue(
+            Reflector reflector,
+            ref object obj,
+            Type type,
+            JsonElement? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
             stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
             return false;
         }
 
-        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, int depth = 0, StringBuilder? stringBuilder = null,
+        protected override StringBuilder? ModifyField(
+            Reflector reflector,
+            ref object obj,
+            SerializedMember fieldValue,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
@@ -146,7 +168,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return stringBuilder?.AppendLine($"{padding}[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
 
             var componentObject = (object)component;
-            return reflector.Populate(ref componentObject, fieldValue, depth: depth, stringBuilder: stringBuilder, logger: logger);
+            return reflector.Populate(
+                ref componentObject,
+                fieldValue,
+                depth: depth,
+                stringBuilder: stringBuilder,
+                logger: logger);
         }
     }
 }
