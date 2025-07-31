@@ -68,14 +68,18 @@ You can modify multiple GameObjects at once. Just provide the same number of Gam
                     objToModify = component;
                 }
 
-                Reflector.Instance.Populate(ref objToModify,
+                Reflector.Instance.Populate(
+                    ref objToModify,
                     data: gameObjectDiffs[i],
                     dataType: objToModify.GetType(),
                     stringBuilder: stringBuilder,
                     logger: McpPlugin.Instance.Logger);
             }
 
-            return stringBuilder.ToString();
+            var result = stringBuilder.ToString();
+            return string.IsNullOrEmpty(result)
+                ? "[Success] No modifications were made."
+                : result;
         });
     }
 }

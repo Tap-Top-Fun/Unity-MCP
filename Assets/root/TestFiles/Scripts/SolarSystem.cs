@@ -1,6 +1,7 @@
+
 using UnityEngine;
 
-namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
+namespace com.IvanMurzak.Unity.MCP
 {
     public class SolarSystem : MonoBehaviour
     {
