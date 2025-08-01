@@ -89,7 +89,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
-            var serializedFields = base.SerializeFields(reflector,
+            var serializedFields = base.SerializeFields(
+                reflector,
                 obj: obj,
                 flags: flags,
                 depth: depth,
@@ -110,6 +111,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     name: GetComponentName(i),
                     recursive: true,
                     flags: flags,
+                    depth: depth + 1,
+                    stringBuilder: stringBuilder,
                     logger: logger
                 );
                 serializedFields.Add(componentSerialized);
@@ -144,36 +147,86 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var go = obj as UnityEngine.GameObject;
 
             var type = TypeUtils.GetType(fieldValue.typeName);
-            if (type == null)
-                return stringBuilder?.AppendLine($"{padding}[Error] Type not found: '{fieldValue.typeName}'");
 
-            // If not a component, use base method
-            if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
-                return base.ModifyField(reflector, ref obj, fieldValue, depth: depth, stringBuilder: stringBuilder, flags: flags);
+            int? instanceID = fieldValue.TryGetGameObjectInstanceID(out var tempInstanceID)
+                ? tempInstanceID
+                : null;
 
-            TryParseComponentIndex(fieldValue.name, out var index);
+            int? index = TryParseComponentIndex(fieldValue.name, out var tempIndex)
+                ? tempIndex
+                : null;
 
-            var componentInstanceID = fieldValue.GetInstanceID();
-            if (componentInstanceID == 0 && index == -1)
-                return stringBuilder?.AppendLine($"{padding}[Error] Component 'instanceID' is not provided. Use 'instanceID' or name '[index]' to specify the component. '{fieldValue.name}' is not valid.");
-
-            var allComponents = go.GetComponents<UnityEngine.Component>();
-            var component = componentInstanceID == 0
-                ? index >= 0 && index < allComponents.Length
-                    ? allComponents[index]
-                    : null
-                : allComponents.FirstOrDefault(c => c.GetInstanceID() == componentInstanceID);
-
+            var component = GetComponent(go, instanceID, index, type, out var error);
             if (component == null)
-                return stringBuilder?.AppendLine($"{padding}[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
+            {
+                if (type == null)
+                    return stringBuilder?.AppendLine($"{padding}[Error] Type not found: '{fieldValue.typeName}'");
+
+                // If not a component, use base method
+                if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
+                {
+                    return base.ModifyField(
+                        reflector,
+                        ref obj,
+                        fieldValue,
+                        depth: depth,
+                        stringBuilder: stringBuilder,
+                        flags: flags,
+                        logger: logger);
+                }
+
+                if (error != null)
+                    return stringBuilder?.AppendLine($"{padding}[Error] {error}");
+            }
 
             var componentObject = (object)component;
             return reflector.Populate(
                 ref componentObject,
-                fieldValue,
+                data: fieldValue,
+                dataType: type,
                 depth: depth,
+                flags: flags,
                 stringBuilder: stringBuilder,
                 logger: logger);
+        }
+
+        protected virtual UnityEngine.Component GetComponent(UnityEngine.GameObject go, int? instanceID, int? index, Type? typeName, out string? error)
+        {
+            var allComponents = go.GetComponents<UnityEngine.Component>();
+            if (instanceID.HasValue && instanceID.Value != 0)
+            {
+                var component = allComponents.FirstOrDefault(c => c.GetInstanceID() == instanceID.Value);
+                if (component != null)
+                {
+                    error = null;
+                    return component;
+                }
+                error = $"Component with '{nameof(instanceID)}'='{instanceID.Value}' not found.";
+                return null;
+            }
+            if (index.HasValue)
+            {
+                if (index < 0 || index >= allComponents.Length)
+                {
+                    error = $"Component with '{nameof(index)}'='{index.Value}' not found. Index is out of range.";
+                    return null;
+                }
+                error = null;
+                return allComponents[index.Value];
+            }
+            if (typeName != null)
+            {
+                var component = allComponents.FirstOrDefault(c => c.GetType() == typeName);
+                if (component != null)
+                {
+                    error = null;
+                    return component;
+                }
+                error = $"Component of type '{typeName.GetTypeName(pretty: false)}' not found.";
+                return null;
+            }
+            error = $"No valid criteria provided to find the component. Use '{nameof(instanceID)}', '{nameof(index)}', or '{nameof(typeName)}'.";
+            return null;
         }
     }
 }

@@ -18,7 +18,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
-            var instanceID = data.GetInstanceID();
+            if (!data.TryGetInstanceID(out var instanceID))
+            {
+                return stringBuilder?.AppendLine($"[Error] InstanceID not found. Set 'instanceID` as 0 if you want to set it to null. Convertor: {GetType().Name}");
+            }
             if (instanceID == 0)
             {
                 obj = null;

@@ -110,14 +110,19 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return true;
         }
 
-        protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, int depth = 0, StringBuilder? stringBuilder = null,
+        protected override StringBuilder? ModifyField(
+            Reflector reflector,
+            ref object obj,
+            SerializedMember fieldValue,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
             var material = obj as Material;
 
-            // Set shader
+            // Set shader if needed
             if (fieldValue.name == FieldShader)
             {
                 var shaderName = fieldValue.GetValue<string>();

@@ -15,10 +15,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
     public class RS_UnityEngineObject : RS_UnityEngineObject<UnityEngine.Object>
     {
         public override bool AllowCascadePropertiesConversion => false;
+        public override bool AllowSetValue => false;
     }
     public partial class RS_UnityEngineObject<T> : RS_GenericUnity<T> where T : UnityEngine.Object
     {
         public override bool AllowCascadePropertiesConversion => false;
+        public override bool AllowSetValue => false;
 
         protected override SerializedMember InternalSerialize(
             Reflector reflector,
