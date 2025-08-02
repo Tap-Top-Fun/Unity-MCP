@@ -29,6 +29,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as field type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+
             var padding = StringUtils.GetPadding(depth);
             stringBuilder?.AppendLine($"{padding}[Warning] Cannot set field '{value.name.ValueOrNull()}' for {type.FullName}. This type is not supported for setting values. Convertor: {GetType().Name}");
             return false;
@@ -38,6 +41,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as property type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+
             var padding = StringUtils.GetPadding(depth);
             stringBuilder?.AppendLine($"{padding}[Warning] Cannot set property '{value.name.ValueOrNull()}' for {type.FullName}. This type is not supported for setting values. Convertor: {GetType().Name}");
             return false;

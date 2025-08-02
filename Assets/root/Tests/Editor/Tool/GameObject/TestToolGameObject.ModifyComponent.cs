@@ -76,11 +76,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                     name: go.name,
                     type: typeof(GameObject),
                     value: null)
-                .AddField(SerializedMember.FromValue(name: string.Empty,
+                .AddField(SerializedMember.FromValue(
+                    name: null,
                     type: typeof(MeshRenderer),
                     value: new ObjectRef(component.GetInstanceID())
                 )
-                .AddProperty(SerializedMember.FromValue(name: nameof(component.sharedMaterial),
+                .AddProperty(SerializedMember.FromValue(
+                    name: nameof(component.sharedMaterial),
                     type: typeof(Material),
                     value: new ObjectRef(sharedMaterial.GetInstanceID()))));
 

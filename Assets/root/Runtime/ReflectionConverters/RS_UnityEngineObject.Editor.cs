@@ -8,7 +8,9 @@ using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
+using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -37,6 +39,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as field type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+
             var padding = StringUtils.GetPadding(depth);
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
             stringBuilder?.AppendLine($"{padding}[Success] Field '{value.name.ValueOrNull()}' modified to '{refObj?.GetInstanceID() ?? 0}'. Convertor: {GetType().Name}");

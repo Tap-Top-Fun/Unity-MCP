@@ -71,7 +71,6 @@ You can modify multiple GameObjects at once. Just provide the same number of Gam
                 Reflector.Instance.Populate(
                     ref objToModify,
                     data: gameObjectDiffs[i],
-                    dataType: objToModify.GetType(),
                     stringBuilder: stringBuilder,
                     logger: McpPlugin.Instance.Logger);
             }

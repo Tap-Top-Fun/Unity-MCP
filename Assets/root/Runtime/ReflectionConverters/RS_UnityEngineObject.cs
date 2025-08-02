@@ -8,7 +8,9 @@ using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
+using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -37,38 +39,37 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return SerializedMember.FromValue(type, value: null, name: name);
 
             var unityObject = obj as T;
-            if (type.IsClass)
-            {
-                if (recursive)
-                {
-                    return new SerializedMember()
-                    {
-                        name = name,
-                        typeName = type.FullName,
-                        fields = SerializeFields(
-                            reflector,
-                            obj: obj,
-                            flags: flags,
-                            depth: depth,
-                            stringBuilder: stringBuilder,
-                            logger: logger),
-                        props = SerializeProperties(
-                            reflector,
-                            obj: obj,
-                            flags: flags,
-                            depth: depth,
-                            stringBuilder: stringBuilder,
-                            logger: logger)
-                    }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
-                }
-                else
-                {
-                    var objectRef = new ObjectRef(unityObject?.GetInstanceID() ?? 0);
-                    return SerializedMember.FromValue(type, objectRef, name);
-                }
-            }
 
-            throw new ArgumentException($"Unsupported type: '{type.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
+            if (!type.IsClass)
+                throw new ArgumentException($"Unsupported type: '{type.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
+
+            if (recursive)
+            {
+                return new SerializedMember()
+                {
+                    name = name,
+                    typeName = type.FullName,
+                    fields = SerializeFields(
+                        reflector,
+                        obj: obj,
+                        flags: flags,
+                        depth: depth,
+                        stringBuilder: stringBuilder,
+                        logger: logger),
+                    props = SerializeProperties(
+                        reflector,
+                        obj: obj,
+                        flags: flags,
+                        depth: depth,
+                        stringBuilder: stringBuilder,
+                        logger: logger)
+                }.SetValue(new ObjectRef(unityObject?.GetInstanceID() ?? 0));
+            }
+            else
+            {
+                var objectRef = new ObjectRef(unityObject?.GetInstanceID() ?? 0);
+                return SerializedMember.FromValue(type, objectRef, name);
+            }
         }
 
         protected override bool SetValue(
@@ -80,6 +81,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set value type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+
             var padding = StringUtils.GetPadding(depth);
             stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for type '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead. Convertor: {GetType().Name}");
             return false;

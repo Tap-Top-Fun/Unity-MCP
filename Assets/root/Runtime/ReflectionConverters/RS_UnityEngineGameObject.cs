@@ -11,7 +11,9 @@ using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
+using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -60,23 +62,25 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 {
                     name = name,
                     typeName = type.FullName,
-                    fields = SerializeFields(reflector,
+                    fields = SerializeFields(
+                        reflector,
                         obj: obj,
                         flags: flags,
                         depth: depth,
                         stringBuilder: stringBuilder,
                         logger: logger),
-                    props = SerializeProperties(reflector,
+                    props = SerializeProperties(
+                        reflector,
                         obj: obj,
                         flags: flags,
                         depth: depth,
                         stringBuilder: stringBuilder,
                         logger: logger)
-                }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
+                }.SetValue(new GameObjectRef(unityObject.GetInstanceID()));
             }
             else
             {
-                var objectRef = new ObjectRef(unityObject.GetInstanceID());
+                var objectRef = new GameObjectRef(unityObject.GetInstanceID());
                 return SerializedMember.FromValue(type, objectRef, name);
             }
         }
@@ -129,14 +133,18 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set value type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+
             var padding = StringUtils.GetPadding(depth);
             stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
             return false;
         }
 
-        protected override StringBuilder? ModifyField(
+        protected override StringBuilder? PopulateField(
             Reflector reflector,
             ref object obj,
+            Type objType,
             SerializedMember fieldValue,
             int depth = 0,
             StringBuilder? stringBuilder = null,
@@ -146,6 +154,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var padding = StringUtils.GetPadding(depth);
             var go = obj as UnityEngine.GameObject;
 
+            // it is fine if type is unknown here, we will try to find the component by name or index
             var type = TypeUtils.GetType(fieldValue.typeName);
 
             int? instanceID = fieldValue.TryGetGameObjectInstanceID(out var tempInstanceID)
@@ -160,30 +169,35 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             if (component == null)
             {
                 if (type == null)
+                {
+                    if (logger?.IsEnabled(LogLevel.Error) == true)
+                        logger.LogError($"{padding}[Error] Type not found for field '{fieldValue.name}' with type name '{fieldValue.typeName}'.");
+
                     return stringBuilder?.AppendLine($"{padding}[Error] Type not found: '{fieldValue.typeName}'");
+                }
 
                 // If not a component, use base method
                 if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
                 {
-                    return base.ModifyField(
+                    return base.PopulateField(
                         reflector,
-                        ref obj,
-                        fieldValue,
+                        obj: ref obj,
+                        objType: objType,
+                        fieldValue: fieldValue,
                         depth: depth,
                         stringBuilder: stringBuilder,
                         flags: flags,
                         logger: logger);
                 }
 
-                if (error != null)
-                    return stringBuilder?.AppendLine($"{padding}[Error] {error}");
+                return stringBuilder?.AppendLine($"{padding}[Error] {error}");
             }
 
             var componentObject = (object)component;
             return reflector.Populate(
                 ref componentObject,
                 data: fieldValue,
-                dataType: type,
+                fallbackObjType: type,
                 depth: depth,
                 flags: flags,
                 stringBuilder: stringBuilder,

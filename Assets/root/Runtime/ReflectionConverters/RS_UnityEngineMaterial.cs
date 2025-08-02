@@ -10,6 +10,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -18,13 +19,22 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         const string FieldShader = "shader";
         const string FieldName = "name";
 
-        protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string name = null, bool recursive = true,
+        public override bool AllowCascadeSerialization => false;
+
+        protected override SerializedMember InternalSerialize(Reflector reflector,
+            object? obj,
+            Type type,
+            string name = null,
+            bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            int depth = 0, StringBuilder? stringBuilder = null,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
             if (obj == null)
                 return SerializedMember.FromValue(type, value: null, name: name);
+
+            var padding = StringUtils.GetPadding(depth);
 
             var material = obj as Material;
             var shader = material.shader;
@@ -59,7 +69,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 };
                 if (propType == null)
                 {
-                    Debug.LogWarning($"Material property '{propName}' is null or unsupported type '{shader.GetPropertyType(i)}'.");
+                    if (logger?.IsEnabled(LogLevel.Warning) == true)
+                        logger.LogWarning($"{padding}Material property '{propName}' has unsupported type '{shader.GetPropertyType(i)}'.");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Warning] Material property '{propName}' has unsupported type '{shader.GetPropertyType(i)}'.");
+
                     continue;
                 }
                 properties.Add(SerializedMember.FromValue(propType, propValue, name: propName));
@@ -78,7 +93,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }.SetValue(new ObjectRef(material.GetInstanceID()));
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, int depth = 0, StringBuilder? stringBuilder = null, ILogger? logger = null)
+        protected override bool SetValue(
+            Reflector reflector,
+            ref object obj,
+            Type type,
+            JsonElement? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
             var serialized = JsonUtils.Deserialize<SerializedMember>(value.Value);
@@ -88,20 +110,35 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var shaderName = serialized.GetField(FieldShader)?.GetValue<string>();
             if (string.IsNullOrEmpty(shaderName))
             {
-                stringBuilder?.AppendLine($"{padding}[Error] Shader name is null or empty.");
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}[Error] Shader name is null or empty.");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] Shader name is null or empty.");
+
                 return false;
             }
 
             if (material.shader.name == shaderName)
             {
-                stringBuilder?.AppendLine($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+                if (logger?.IsEnabled(LogLevel.Information) == true)
+                    logger.LogInformation($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+
                 return true;
             }
 
             var parsedValue = Shader.Find(shaderName);
             if (parsedValue == null)
             {
-                stringBuilder?.AppendLine($"{padding}[Error] Shader with name '{shaderName}' not found.");
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}[Error] Shader with name '{shaderName}' not found.");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] Shader with name '{shaderName}' not found.");
+
                 return false;
             }
 
@@ -109,10 +146,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             material.shader = parsedValue;
             return true;
         }
-
-        protected override StringBuilder? ModifyField(
+        protected override StringBuilder? PopulateField(
             Reflector reflector,
             ref object obj,
+            Type objType,
             SerializedMember fieldValue,
             int depth = 0,
             StringBuilder? stringBuilder = null,
@@ -130,9 +167,18 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 {
                     var shader = Shader.Find(shaderName);
                     if (shader == null)
+                    {
+                        if (logger?.IsEnabled(LogLevel.Error) == true)
+                            logger.LogError($"{padding}[Error] Shader '{shaderName}' not found. Convertor: {GetType().Name}");
+
                         return stringBuilder?.AppendLine($"{padding}[Error] Shader '{shaderName}' not found.");
+                    }
 
                     material.shader = shader;
+
+                    if (logger?.IsEnabled(LogLevel.Information) == true)
+                        logger.LogInformation($"{padding}[Success] Material '{material.name}' shader set to '{shaderName}'. Convertor: {GetType().Name}");
+
                     return stringBuilder?.AppendLine($"{padding}[Success] Material '{material.name}' shader set to '{shaderName}'.");
                 }
             }

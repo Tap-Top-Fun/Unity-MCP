@@ -8,17 +8,30 @@ using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
+using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineGameObject : RS_GenericUnity<UnityEngine.GameObject>
     {
-        public override bool SetAsField(Reflector reflector, ref object? obj, Type fallbackType, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+        public override bool SetAsField(
+            Reflector reflector,
+            ref object? obj,
+            Type fallbackType,
+            FieldInfo fieldInfo,
+            SerializedMember? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
+
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as field type='{fieldInfo.FieldType.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+
             var refObj = value?.valueJsonElement.ToObjectRef().FindObject();
 
             // Validate if refObj is castable to the fieldInfo type
@@ -34,11 +47,22 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return true;
         }
 
-        public override bool SetAsProperty(Reflector reflector, ref object? obj, Type fallbackType, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+        public override bool SetAsProperty(
+            Reflector reflector,
+            ref object? obj,
+            Type fallbackType,
+            PropertyInfo propertyInfo,
+            SerializedMember? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
+
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as property type='{propertyInfo.PropertyType.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+
             var refObj = value?.valueJsonElement.ToObjectRef().FindObject();
 
             // Validate if refObj is castable to the propertyInfo type

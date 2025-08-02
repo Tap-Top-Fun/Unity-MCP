@@ -34,6 +34,10 @@ Use one of the following properties:
         }
 
         public GameObjectRef() { }
+        public GameObjectRef(int instanceID)
+        {
+            this.instanceID = instanceID;
+        }
 
         public override string ToString()
         {

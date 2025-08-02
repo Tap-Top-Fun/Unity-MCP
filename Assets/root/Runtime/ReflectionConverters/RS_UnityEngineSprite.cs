@@ -12,6 +12,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
     {
+        public override bool AllowCascadeSerialization => false;
+
         protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string name = null, bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             int depth = 0, StringBuilder? stringBuilder = null,
