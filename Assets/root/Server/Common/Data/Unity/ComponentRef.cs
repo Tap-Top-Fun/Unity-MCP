@@ -34,6 +34,10 @@ Use one of the following properties:
         }
 
         public ComponentRef() { }
+        public ComponentRef(int instanceID)
+        {
+            InstanceID = instanceID;
+        }
 
         public override string ToString()
         {

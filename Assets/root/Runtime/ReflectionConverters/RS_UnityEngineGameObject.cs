@@ -12,6 +12,7 @@ using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.Extensions.Logging;
+using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -251,6 +252,11 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }
             error = $"No valid criteria provided to find the component. Use '{nameof(instanceID)}', '{nameof(index)}', or '{nameof(typeName)}'.";
             return null;
+        }
+
+        public override object? CreateInstance(Reflector reflector, Type type)
+        {
+            return new GameObject("New GameObject");
         }
     }
 }

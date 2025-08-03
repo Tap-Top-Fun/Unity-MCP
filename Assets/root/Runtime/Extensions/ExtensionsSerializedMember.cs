@@ -1,4 +1,5 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 
@@ -10,7 +11,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         {
             try
             {
-                var objectRef = member.GetValue<ObjectRef>();
+                var objectRef = member.GetValue<ObjectRef>(Reflector.Instance);
                 if (objectRef != null)
                 {
                     instanceID = objectRef.instanceID;
@@ -27,7 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 var fieldValue = member.GetField(nameof(ObjectRef.instanceID));
                 if (fieldValue != null)
                 {
-                    instanceID = fieldValue.GetValue<int>();
+                    instanceID = fieldValue.GetValue<int>(Reflector.Instance);
                     return true;
                 }
             }
@@ -43,7 +44,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         {
             try
             {
-                var objectRef = member.GetValue<GameObjectRef>();
+                var objectRef = member.GetValue<GameObjectRef>(Reflector.Instance);
                 if (objectRef != null)
                 {
                     instanceID = objectRef.instanceID;
@@ -60,7 +61,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 var fieldValue = member.GetField(nameof(GameObjectRef.instanceID));
                 if (fieldValue != null)
                 {
-                    instanceID = fieldValue.GetValue<int>();
+                    instanceID = fieldValue.GetValue<int>(Reflector.Instance);
                     return true;
                 }
             }
@@ -76,7 +77,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         {
             try
             {
-                var objectRef = member.GetValue<GameObjectRef>();
+                var objectRef = member.GetValue<GameObjectRef>(Reflector.Instance);
                 if (objectRef != null)
                 {
                     path = objectRef.path;
@@ -93,7 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 var fieldValue = member.GetField(nameof(GameObjectRef.path));
                 if (fieldValue != null)
                 {
-                    path = fieldValue.GetValue<string>();
+                    path = fieldValue.GetValue<string>(Reflector.Instance);
                     return true;
                 }
             }

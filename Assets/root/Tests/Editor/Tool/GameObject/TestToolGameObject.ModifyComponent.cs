@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Linq;
 using System.Collections.Generic;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -73,15 +74,17 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var data = SerializedMember.FromValue(
                     name: go.name,
                     type: typeof(GameObject),
-                    value: null)
+                    value: new GameObjectRef(go.GetInstanceID()))
                 .AddField(SerializedMember.FromValue(
                     name: null,
                     type: typeof(MeshRenderer),
-                    value: new ObjectRef(component.GetInstanceID()))
+                    value: new ComponentRef(component.GetInstanceID()))
                 .AddProperty(SerializedMember.FromValue(
                     name: nameof(component.sharedMaterial),
                     type: typeof(Material),
                     value: new ObjectRef(sharedMaterial.GetInstanceID()))));
+
+            Debug.Log($"Data:\n{JsonUtils.ToJson(data)}\n");
 
             var result = new Tool_GameObject().Modify(
                 gameObjectDiffs: new SerializedMemberList(data),
@@ -394,9 +397,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var firstPlaneInstanceIdFromSerialized = serializedMember[0]
                 .GetField("SolarSystem") // SolarSystem component
                 ?.GetField("planets") // planets field
-                ?.GetValue<SerializedMember[]>()?.FirstOrDefault() // first planet
+                ?.GetValue<SerializedMember[]>(Reflector.Instance)?.FirstOrDefault() // first planet
                 ?.GetField("planet") // planet GameObject field
-                ?.GetValue<ObjectRef>()?.instanceID ?? 0; // instanceID
+                ?.GetValue<ObjectRef>(Reflector.Instance)?.instanceID ?? 0; // instanceID
 
             Assert.AreEqual(firstPlaneInstanceId, firstPlaneInstanceIdFromSerialized, "InstanceID from JSON parsing and SerializedMember should match.");
             Assert.AreEqual(planets[0].GetInstanceID(), firstPlaneInstanceIdFromSerialized, "Planet InstanceID should match the serialized member data.");

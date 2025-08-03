@@ -68,7 +68,7 @@ You can modify multiple GameObjects at once. Just provide the same number of Gam
                     objToModify = component;
                 }
 
-                Reflector.Instance.Populate(
+                stringBuilder = Reflector.Instance.Populate(
                     ref objToModify,
                     data: gameObjectDiffs[i],
                     stringBuilder: stringBuilder,

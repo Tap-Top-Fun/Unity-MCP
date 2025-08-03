@@ -20,6 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         const string FieldName = "name";
 
         public override bool AllowCascadeSerialization => false;
+        public override bool AllowSetValue => false;
 
         protected override SerializedMember InternalSerialize(Reflector reflector,
             object? obj,
@@ -103,11 +104,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
-            var serialized = JsonUtils.Deserialize<SerializedMember>(value.Value);
+
+            // Exception happens in the line. Because Serialize serializes it as ObjectRef.
+            // That is why deserialization it as SerializedMember fails with JsonException.
+            var serialized = JsonUtils.Deserialize<SerializedMember>(Reflector.Instance, value);
             var material = obj as Material;
 
             // Set shader
-            var shaderName = serialized.GetField(FieldShader)?.GetValue<string>();
+            var shaderName = serialized.GetField(FieldShader)?.GetValue<string>(Reflector.Instance);
             if (string.IsNullOrEmpty(shaderName))
             {
                 if (logger?.IsEnabled(LogLevel.Error) == true)
@@ -167,7 +171,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             // Set shader if needed
             if (fieldValue.name == FieldShader)
             {
-                var shaderName = fieldValue.GetValue<string>();
+                var shaderName = fieldValue.GetValue<string>(Reflector.Instance);
+
+                // Check if the shader is already set
                 if (!string.IsNullOrEmpty(shaderName) && material.shader.name != shaderName)
                 {
                     var shader = Shader.Find(shaderName);
@@ -189,6 +195,11 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }
 
             return stringBuilder;
+        }
+
+        public override object CreateInstance(Reflector reflector, Type type)
+        {
+            return new Material(Shader.Find("Standard"));
         }
     }
 }
