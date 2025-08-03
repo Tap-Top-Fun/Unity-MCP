@@ -10,6 +10,7 @@ using NLog;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
