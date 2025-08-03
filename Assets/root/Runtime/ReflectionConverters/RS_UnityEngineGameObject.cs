@@ -112,7 +112,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 var component = components[i];
                 var componentSerialized = reflector.Serialize(
                     obj: component,
-                    fallbackType: typeof(UnityEngine.Component),
+                    fallbackType: component?.GetType() ?? typeof(UnityEngine.Component),
                     name: GetComponentName(i),
                     recursive: true,
                     flags: flags,

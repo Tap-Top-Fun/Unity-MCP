@@ -122,10 +122,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
                 default:
                     if (logger?.IsEnabled(LogLevel.Error) == true)
-                        logger.LogError($"{padding}Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
+                        logger.LogError($"{padding}Property type '{propertyValue.typeName}' is not supported. Supported types are: int, float, Color, Vector4, Texture. Convertor: {GetType().GetTypeShortName()}");
 
                     if (stringBuilder != null)
-                        stringBuilder.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
+                        stringBuilder.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' is not supported. Supported types are: int, float, Color, Vector4, Texture. Convertor: {GetType().GetTypeShortName()}");
                     return false;
             }
         }

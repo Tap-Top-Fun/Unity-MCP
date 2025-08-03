@@ -25,11 +25,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var data = SerializedMember.FromValue(
                     name: child.name,
                     type: typeof(GameObject),
-                    value: new ObjectRef(child.GetInstanceID()))
+                    value: new GameObjectRef(child.GetInstanceID()))
                 .AddField(SerializedMember.FromValue(
                     name: nameof(child.transform),
                     type: typeof(Transform),
-                    value: new ObjectRef(child.transform.GetInstanceID()))
+                    value: new ComponentRef(child.transform.GetInstanceID()))
                 .AddProperty(SerializedMember.FromValue(name: nameof(child.transform.position),
                     value: newPosition)));
 

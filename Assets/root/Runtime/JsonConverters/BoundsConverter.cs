@@ -53,8 +53,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
             if (reader.TokenType != JsonTokenType.StartObject)
                 throw new JsonException("Expected start of object token.");
 
-            Vector3 center = Vector3.zero;
-            Vector3 size = Vector3.zero;
+            var center = Vector3.zero;
+            var size = Vector3.zero;
 
             while (reader.Read())
             {

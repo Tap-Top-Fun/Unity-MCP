@@ -54,7 +54,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     UnityEngine.Rendering.ShaderPropertyType.Color => typeof(Color),
                     UnityEngine.Rendering.ShaderPropertyType.Vector => typeof(Vector4),
                     UnityEngine.Rendering.ShaderPropertyType.Texture => typeof(Texture),
-                    _ => throw new NotSupportedException($"Unsupported shader property type: '{shader.GetPropertyType(i)}'")
+                    _ => throw new NotSupportedException($"Unsupported shader property type: '{shader.GetPropertyType(i)}'."
+                        + $" Supported types are: {string.Join(", ", Enum.GetNames(typeof(UnityEngine.Rendering.ShaderPropertyType)))}.")
                 };
                 var propValue = shader.GetPropertyType(i) switch
                 {
@@ -66,7 +67,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     UnityEngine.Rendering.ShaderPropertyType.Texture => material.GetTexture(propName)?.GetInstanceID() != null
                         ? new ObjectRef(material.GetTexture(propName).GetInstanceID())
                         : null,
-                    _ => throw new NotSupportedException($"Unsupported shader property type: '{shader.GetPropertyType(i)}'")
+                    _ => throw new NotSupportedException($"Unsupported shader property type: '{shader.GetPropertyType(i)}'."
+                        + $" Supported types are: {string.Join(", ", Enum.GetNames(typeof(UnityEngine.Rendering.ShaderPropertyType)))}.")
                 };
                 if (propType == null)
                 {
@@ -173,7 +175,6 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         public override object CreateInstance(Reflector reflector, Type type)
         {
-            Debug.LogWarning($"Creating new Material instance with default shader. Convertor: {GetType().GetTypeShortName()}");
             return new Material(Shader.Find("Standard"));
         }
     }
