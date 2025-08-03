@@ -1,4 +1,4 @@
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#pragma warning disable CS8632
 #if UNITY_EDITOR
 using System;
 using System.Reflection;
@@ -38,6 +38,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var castable = fieldInfo.FieldType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.GameObject));
             if (!castable)
             {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to field type '{fieldInfo.FieldType.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
+
                 stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to field type '{fieldInfo.FieldType.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
                 return false;
             }
@@ -69,12 +72,15 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var castable = propertyInfo.PropertyType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.GameObject));
             if (!castable)
             {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to property type '{propertyInfo.PropertyType.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
+
                 stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to property type '{propertyInfo.PropertyType.GetTypeName(pretty: false)}'. Convertor: {GetType().Name}");
                 return false;
             }
 
-            stringBuilder?.AppendLine($"{padding}[Success] Property '{value?.name.ValueOrNull()}' modified to instanceID='{refObj?.GetInstanceID() ?? 0}'. Convertor: {GetType().Name}");
             propertyInfo.SetValue(obj, refObj);
+            stringBuilder?.AppendLine($"{padding}[Success] Property '{value?.name.ValueOrNull()}' modified to instanceID='{refObj?.GetInstanceID() ?? 0}'. Convertor: {GetType().Name}");
             return true;
         }
     }

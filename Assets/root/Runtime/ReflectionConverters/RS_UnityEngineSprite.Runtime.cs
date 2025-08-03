@@ -6,7 +6,10 @@ using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.Unity.MCP.Utils;
+using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -17,6 +20,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
+
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Populate sprite from data. Convertor='{GetType().Name}'.");
+
+            if (logger?.IsEnabled(LogLevel.Error) == true)
+                logger.LogError($"{padding}Operation is not supported in runtime. Convertor: {GetType().Name}");
+
             return stringBuilder?.AppendLine($"{padding}[Error] Operation is not supported in runtime. Convertor: {GetType().Name}");
         }
     }
