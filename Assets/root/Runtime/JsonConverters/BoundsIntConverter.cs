@@ -111,7 +111,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 
                 if (reader.TokenType == JsonTokenType.PropertyName)
                 {
-                    string propertyName = reader.GetString();
+                    var propertyName = reader.GetString();
                     reader.Read();
 
                     switch (propertyName)
