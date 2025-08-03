@@ -117,6 +117,10 @@ namespace com.IvanMurzak.Unity.MCP
             JsonUtils.AddConverter(new Vector3Converter());
             JsonUtils.AddConverter(new Vector3IntConverter());
             JsonUtils.AddConverter(new Vector4Converter());
+            JsonUtils.AddConverter(new BoundsConverter());
+            JsonUtils.AddConverter(new BoundsIntConverter());
+            JsonUtils.AddConverter(new RectConverter());
+            JsonUtils.AddConverter(new RectIntConverter());
 
             JsonUtils.AddConverter(new ObjectRefConverter());
             JsonUtils.AddConverter(new GameObjectRefConverter());

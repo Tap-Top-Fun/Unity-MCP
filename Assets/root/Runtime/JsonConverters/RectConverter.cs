@@ -1,0 +1,84 @@
+using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Json;
+using com.IvanMurzak.ReflectorNet.Utils;
+using UnityEngine;
+
+namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
+{
+    public class RectConverter : JsonConverter<Rect>, IJsonSchemaConverter
+    {
+        public string Id => typeof(Rect).GetTypeId();
+        public JsonNode GetScheme() => new JsonObject
+        {
+            [JsonUtils.Schema.Id] = Id,
+            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
+            [JsonUtils.Schema.Properties] = new JsonObject
+            {
+                ["x"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["y"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["width"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
+                ["height"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number }
+            },
+            [JsonUtils.Schema.Required] = new JsonArray { "x", "y", "width", "height" }
+        };
+        public JsonNode GetSchemeRef() => new JsonObject
+        {
+            [JsonUtils.Schema.Ref] = Id
+        };
+
+        public override Rect Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject)
+                throw new JsonException("Expected start of object token.");
+
+            float x = 0, y = 0, width = 0, height = 0;
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                    return new Rect(x, y, width, height);
+
+                if (reader.TokenType == JsonTokenType.PropertyName)
+                {
+                    var propertyName = reader.GetString();
+                    reader.Read();
+
+                    switch (propertyName)
+                    {
+                        case "x":
+                            x = reader.GetSingle();
+                            break;
+                        case "y":
+                            y = reader.GetSingle();
+                            break;
+                        case "width":
+                            width = reader.GetSingle();
+                            break;
+                        case "height":
+                            height = reader.GetSingle();
+                            break;
+                        default:
+                            throw new JsonException($"Unexpected property name: {propertyName}. "
+                                + "Expected 'x', 'y', 'width', or 'height'.");
+                    }
+                }
+            }
+
+            throw new JsonException("Expected end of object token.");
+        }
+
+        public override void Write(Utf8JsonWriter writer, Rect value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("x", value.x);
+            writer.WriteNumber("y", value.y);
+            writer.WriteNumber("width", value.width);
+            writer.WriteNumber("height", value.height);
+            writer.WriteEndObject();
+        }
+    }
+}
