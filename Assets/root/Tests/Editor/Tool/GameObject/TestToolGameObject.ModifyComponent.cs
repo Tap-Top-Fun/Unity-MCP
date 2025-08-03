@@ -101,7 +101,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             // This line files, and probably that is OK
             // Assert.IsTrue(result.Contains(GO_ParentName), $"{GO_ParentName} should be found in the path");
 
-            Assert.AreEqual(component.sharedMaterial.GetInstanceID(), sharedMaterial.GetInstanceID(), "Materials InstanceIDs should be the same.");
+            Assert.AreEqual(sharedMaterial.GetInstanceID(), component.sharedMaterial.GetInstanceID(), "Materials InstanceIDs should be the same.");
             yield return null;
         }
 

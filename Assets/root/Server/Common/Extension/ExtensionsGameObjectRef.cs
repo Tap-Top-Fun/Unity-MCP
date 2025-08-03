@@ -4,15 +4,15 @@ using com.IvanMurzak.ReflectorNet.Model.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
-    public static class ExtensionsObjectRef
+    public static class ExtensionsGameObjectRef
     {
-        public static ObjectRef? ToObjectRef(this JsonElement? jsonElement)
+        public static GameObjectRef? ToGameObjectRef(this JsonElement? jsonElement)
         {
             if (jsonElement == null)
                 return null;
             try
             {
-                return JsonSerializer.Deserialize<ObjectRef>(jsonElement.Value);
+                return JsonSerializer.Deserialize<GameObjectRef>(jsonElement.Value);
             }
             catch
             {

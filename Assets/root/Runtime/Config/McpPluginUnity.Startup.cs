@@ -119,6 +119,7 @@ namespace com.IvanMurzak.Unity.MCP
             JsonUtils.AddConverter(new Vector4Converter());
 
             JsonUtils.AddConverter(new ObjectRefConverter());
+            JsonUtils.AddConverter(new GameObjectRefConverter());
         }
     }
 }

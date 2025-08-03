@@ -35,12 +35,15 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             if (reader.TokenType == JsonTokenType.Null)
                 return null;
 
-            var instanceID = new ObjectRef();
+            if (reader.TokenType != JsonTokenType.StartObject)
+                throw new JsonException("Expected start of object token.");
+
+            var objectRef = new ObjectRef();
 
             while (reader.Read())
             {
                 if (reader.TokenType == JsonTokenType.EndObject)
-                    break;
+                    return objectRef;
 
                 if (reader.TokenType == JsonTokenType.PropertyName)
                 {
@@ -50,13 +53,13 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                     switch (propertyName)
                     {
                         case nameof(ObjectRef.instanceID):
-                            instanceID.instanceID = reader.GetInt32();
+                            objectRef.instanceID = reader.GetInt32();
                             break;
                         case nameof(ObjectRef.assetPath):
-                            instanceID.assetPath = reader.GetString();
+                            objectRef.assetPath = reader.GetString();
                             break;
                         case nameof(ObjectRef.assetGuid):
-                            instanceID.assetGuid = reader.GetString();
+                            objectRef.assetGuid = reader.GetString();
                             break;
                         default:
                             throw new JsonException($"Unexpected property name: {propertyName}. "
@@ -65,7 +68,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                 }
             }
 
-            return instanceID;
+            throw new JsonException("Expected end of object token.");
         }
 
         public override void Write(Utf8JsonWriter writer, ObjectRef value, JsonSerializerOptions options)

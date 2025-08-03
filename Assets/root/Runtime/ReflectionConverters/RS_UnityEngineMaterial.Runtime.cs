@@ -15,7 +15,7 @@ using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public partial class RS_UnityEngineMaterial : RS_GenericUnity<Material>
+    public partial class RS_UnityEngineMaterial : RS_UnityEngineObject<Material>
     {
         protected override StringBuilder? PopulateProperty(
             Reflector reflector,
@@ -90,52 +90,6 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     return stringBuilder?.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
             }
         }
-
-        // public override bool SetAsField(
-        //     Reflector reflector,
-        //     ref object? obj,
-        //     Type fallbackType,
-        //     FieldInfo fieldInfo,
-        //     SerializedMember? value,
-        //     int depth = 0,
-        //     StringBuilder? stringBuilder = null,
-        //     BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-        //     ILogger? logger = null)
-        // {
-        //     var padding = StringUtils.GetPadding(depth);
-
-        //     if (logger?.IsEnabled(LogLevel.Trace) == true)
-        //         logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as field type='{fieldInfo.FieldType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
-
-        //     if (logger?.IsEnabled(LogLevel.Error) == true)
-        //         logger.LogError($"{padding}Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. This type is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
-
-        //     stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value?.name.ValueOrNull()}' for {fallbackType.GetTypeName(pretty: false)}. This type is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
-        //     return false;
-        // }
-
-        // public override bool SetAsProperty(
-        //     Reflector reflector,
-        //     ref object? obj,
-        //     Type fallbackType,
-        //     PropertyInfo propertyInfo,
-        //     SerializedMember? value,
-        //     int depth = 0,
-        //     StringBuilder? stringBuilder = null,
-        //     BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-        //     ILogger? logger = null)
-        // {
-        //     var padding = StringUtils.GetPadding(depth);
-
-        //     if (logger?.IsEnabled(LogLevel.Trace) == true)
-        //         logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as property type='{propertyInfo.PropertyType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
-
-        //     if (logger?.IsEnabled(LogLevel.Error) == true)
-        //         logger.LogError($"{padding}Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. This type is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
-
-        //     stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value?.name.ValueOrNull()}' for {fallbackType.GetTypeName(pretty: false)}. This type is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
-        //     return false;
-        // }
     }
 }
 #endif

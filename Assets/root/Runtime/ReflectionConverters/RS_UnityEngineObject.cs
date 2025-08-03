@@ -8,17 +8,14 @@ using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
+using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public class RS_UnityEngineObject : RS_UnityEngineObject<UnityEngine.Object>
-    {
-        public override bool AllowCascadePropertiesConversion => false;
-        public override bool AllowSetValue => false;
-    }
+    public class RS_UnityEngineObject : RS_UnityEngineObject<UnityEngine.Object> { }
     public partial class RS_UnityEngineObject<T> : RS_GenericUnity<T> where T : UnityEngine.Object
     {
         public override bool AllowCascadePropertiesConversion => false;
@@ -88,6 +85,29 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for type '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead. Convertor: {GetType().GetTypeShortName()}");
             return false;
+        }
+
+        public override object? Deserialize(
+            Reflector reflector,
+            SerializedMember data,
+            Type? fallbackType = null,
+            string? fallbackName = null,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
+        {
+            return data.valueJsonElement.ToObjectRef().FindObject();
+        }
+
+        protected override object? DeserializeValueAsJsonElement(
+            Reflector reflector,
+            SerializedMember data,
+            Type type,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
+        {
+            return data.valueJsonElement.ToObjectRef().FindObject();
         }
     }
 }

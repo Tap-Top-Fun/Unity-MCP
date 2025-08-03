@@ -263,6 +263,25 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return null;
         }
 
+        public override object? Deserialize(
+            Reflector reflector,
+            SerializedMember data,
+            Type? fallbackType = null,
+            string? fallbackName = null,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
+        {
+            return data.valueJsonElement.ToGameObjectRef().FindGameObject()
+                ?? data.valueJsonElement.ToObjectRef().FindObject() as GameObject;
+        }
+
+        protected override object DeserializeValueAsJsonElement(Reflector reflector, SerializedMember data, Type type, int depth = 0, StringBuilder stringBuilder = null, ILogger logger = null)
+        {
+            return data.valueJsonElement.ToGameObjectRef().FindGameObject()
+                ?? data.valueJsonElement.ToObjectRef().FindObject() as GameObject;
+        }
+
         public override object? CreateInstance(Reflector reflector, Type type)
         {
             return new GameObject("New GameObject");

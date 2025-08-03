@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public partial class RS_UnityEngineMaterial : RS_GenericUnity<Material>
+    public partial class RS_UnityEngineMaterial : RS_UnityEngineObject<Material>
     {
         const string FieldShader = "shader";
         const string FieldName = "name";
@@ -93,77 +93,6 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 props = properties,
             }.SetValue(new ObjectRef(material.GetInstanceID()));
         }
-
-        // protected override bool SetValue(
-        //     Reflector reflector,
-        //     ref object obj,
-        //     Type type,
-        //     JsonElement? value,
-        //     int depth = 0,
-        //     StringBuilder? stringBuilder = null,
-        //     ILogger? logger = null)
-        // {
-        //     var padding = StringUtils.GetPadding(depth);
-
-        //     if (logger?.IsEnabled(LogLevel.Trace) == true)
-        //         logger.LogTrace($"{padding}Set value for type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
-
-        //     // Exception happens in the line. Because Serialize serializes it as ObjectRef.
-        //     // That is why deserialization it as SerializedMember fails with JsonException.
-        //     // var serialized = JsonUtils.Deserialize<SerializedMember>(Reflector.Instance, value);
-
-        //     // var material = obj as Material;
-
-        //     // // Set shader
-        //     // var shaderName = serialized.GetField(FieldShader)?.GetValue<string>(Reflector.Instance);
-        //     // if (string.IsNullOrEmpty(shaderName))
-        //     // {
-        //     //     if (logger?.IsEnabled(LogLevel.Error) == true)
-        //     //         logger.LogError($"{padding}Shader name is null or empty.");
-
-        //     //     if (stringBuilder != null)
-        //     //         stringBuilder.AppendLine($"{padding}[Error] Shader name is null or empty.");
-
-        //     //     return false;
-        //     // }
-
-        //     // if (material.shader.name == shaderName)
-        //     // {
-        //     //     if (logger?.IsEnabled(LogLevel.Information) == true)
-        //     //         logger.LogInformation($"{padding}Material '{material.name}' shader is already set to '{shaderName}'.");
-
-        //     //     if (stringBuilder != null)
-        //     //         stringBuilder.AppendLine($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
-
-        //     //     return true;
-        //     // }
-
-        //     // var parsedValue = Shader.Find(shaderName);
-        //     // if (parsedValue == null)
-        //     // {
-        //     //     if (logger?.IsEnabled(LogLevel.Error) == true)
-        //     //         logger.LogError($"{padding}Shader with name '{shaderName}' not found.");
-
-        //     //     if (stringBuilder != null)
-        //     //         stringBuilder.AppendLine($"{padding}[Error] Shader with name '{shaderName}' not found.");
-
-        //     //     return false;
-        //     // }
-
-        //     // Print.SetNewValue(
-        //     //     obj: ref obj,
-        //     //     newValue: ref parsedValue,
-        //     //     type: type,
-        //     //     depth: depth,
-        //     //     stringBuilder: stringBuilder);
-        //     // material.shader = parsedValue;
-
-        //     // ------------------------------------------------------------------------------------
-
-        //     // var serialized = JsonUtils.Deserialize<ObjectRef>(Reflector.Instance, value);
-
-        //     return false;
-        // }
 
         protected override bool TryPopulateField(
             Reflector reflector,
@@ -244,6 +173,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         public override object CreateInstance(Reflector reflector, Type type)
         {
+            Debug.LogWarning($"Creating new Material instance with default shader. Convertor: {GetType().GetTypeShortName()}");
             return new Material(Shader.Find("Standard"));
         }
     }
