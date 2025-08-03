@@ -17,9 +17,15 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
     {
         public override bool AllowCascadeSerialization => false;
 
-        protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type type, string name = null, bool recursive = true,
+        protected override SerializedMember InternalSerialize(
+            Reflector reflector,
+            object? obj,
+            Type type,
+            string name = null,
+            bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            int depth = 0, StringBuilder? stringBuilder = null,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
             if (obj == null)
@@ -41,7 +47,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 stringBuilder: stringBuilder,
                 logger: logger);
         }
-        public override bool SetAsField(Reflector reflector, ref object? obj, Type fallbackType, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+        public override bool SetAsField(
+            Reflector reflector,
+            ref object? obj,
+            Type fallbackType,
+            FieldInfo fieldInfo,
+            SerializedMember? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
@@ -64,12 +77,27 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return false;
             }
 
-            Populate(reflector, ref currentValue, value, fallbackType, depth: depth, stringBuilder: stringBuilder, flags, logger);
+            Populate(
+                reflector: reflector,
+                obj: ref currentValue,
+                data: value,
+                dataType: fallbackType,
+                depth: depth,
+                stringBuilder: stringBuilder,
+                flags: flags,
+                logger: logger);
             fieldInfo.SetValue(obj, currentValue);
             stringBuilder?.AppendLine($"{padding}[Success] Field '{value?.name.ValueOrNull()}' modified to '{currentValue}'. Convertor: {GetType().Name}");
             return true;
         }
-        public override bool SetAsProperty(Reflector reflector, ref object? obj, Type fallbackType, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+        public override bool SetAsProperty(
+            Reflector reflector,
+            ref object? obj,
+            Type fallbackType,
+            PropertyInfo propertyInfo,
+            SerializedMember? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
@@ -92,7 +120,15 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return false;
             }
 
-            Populate(reflector, ref currentValue, value, fallbackType, depth: depth, stringBuilder: stringBuilder, flags, logger);
+            Populate(
+                reflector: reflector,
+                obj: ref currentValue,
+                data: value,
+                dataType: fallbackType,
+                depth: depth,
+                stringBuilder: stringBuilder,
+                flags: flags,
+                logger: logger);
             propertyInfo.SetValue(obj, currentValue);
             stringBuilder?.AppendLine($"{padding}[Success] Property '{value?.name.ValueOrNull()}' modified to '{currentValue}'. Convertor: {GetType().Name}");
             return true;

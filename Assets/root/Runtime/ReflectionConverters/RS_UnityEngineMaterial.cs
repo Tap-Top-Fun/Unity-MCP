@@ -142,7 +142,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return false;
             }
 
-            Print.SetNewValue(ref obj, ref parsedValue, type, depth, stringBuilder);
+            Print.SetNewValue(
+                obj: ref obj,
+                newValue: ref parsedValue,
+                type: type,
+                depth: depth,
+                stringBuilder: stringBuilder);
             material.shader = parsedValue;
             return true;
         }

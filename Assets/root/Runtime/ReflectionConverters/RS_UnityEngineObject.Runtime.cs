@@ -28,7 +28,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return null;
         }
 
-        public override bool SetAsField(Reflector reflector, ref object? obj, Type fallbackType, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+        public override bool SetAsField(
+            Reflector reflector,
+            ref object? obj,
+            Type fallbackType,
+            FieldInfo fieldInfo,
+            SerializedMember? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
@@ -44,7 +51,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return false;
         }
 
-        public override bool SetAsProperty(Reflector reflector, ref object? obj, Type fallbackType, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
+        public override bool SetAsProperty(
+            Reflector reflector,
+            ref object? obj,
+            Type fallbackType,
+            PropertyInfo propertyInfo,
+            SerializedMember? value,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {

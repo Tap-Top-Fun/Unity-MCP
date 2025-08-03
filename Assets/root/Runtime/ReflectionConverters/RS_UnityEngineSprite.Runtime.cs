@@ -15,7 +15,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
     {
-        public override StringBuilder Populate(Reflector reflector, ref object obj, SerializedMember data, Type? dataType = null, int depth = 0, StringBuilder stringBuilder = null,
+        public override StringBuilder Populate(
+            Reflector reflector,
+            ref object obj,
+            SerializedMember data,
+            Type? dataType = null,
+            int depth = 0,
+            StringBuilder stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {

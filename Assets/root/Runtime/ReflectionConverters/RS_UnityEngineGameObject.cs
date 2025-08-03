@@ -94,7 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var serializedFields = base.SerializeFields(
-                reflector,
+                reflector: reflector,
                 obj: obj,
                 flags: flags,
                 depth: depth,
@@ -165,7 +165,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 ? tempIndex
                 : null;
 
-            var component = GetComponent(go, instanceID, index, type, out var error);
+            var component = GetComponent(
+                go: go,
+                instanceID: instanceID,
+                index: index,
+                typeName: type,
+                error: out var error);
             if (component == null)
             {
                 if (type == null)
@@ -195,7 +200,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             var componentObject = (object)component;
             return reflector.Populate(
-                ref componentObject,
+                obj: ref componentObject,
                 data: fieldValue,
                 fallbackObjType: type,
                 depth: depth,
@@ -204,7 +209,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 logger: logger);
         }
 
-        protected virtual UnityEngine.Component GetComponent(UnityEngine.GameObject go, int? instanceID, int? index, Type? typeName, out string? error)
+        protected virtual UnityEngine.Component GetComponent(
+            UnityEngine.GameObject go,
+            int? instanceID,
+            int? index,
+            Type? typeName,
+            out string? error)
         {
             var allComponents = go.GetComponents<UnityEngine.Component>();
             if (instanceID.HasValue && instanceID.Value != 0)
