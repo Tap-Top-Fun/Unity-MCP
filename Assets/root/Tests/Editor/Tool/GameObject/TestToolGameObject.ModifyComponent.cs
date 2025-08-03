@@ -9,7 +9,6 @@ using com.IvanMurzak.ReflectorNet.Model;
 using System.Text.Json;
 using System.Linq;
 using System.Collections.Generic;
-using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
@@ -29,8 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 .AddField(SerializedMember.FromValue(
                     name: nameof(child.transform),
                     type: typeof(Transform),
-                    value: new ObjectRef(child.transform.GetInstanceID())
-                )
+                    value: new ObjectRef(child.transform.GetInstanceID()))
                 .AddProperty(SerializedMember.FromValue(name: nameof(child.transform.position),
                     value: newPosition)));
 
@@ -79,8 +77,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 .AddField(SerializedMember.FromValue(
                     name: null,
                     type: typeof(MeshRenderer),
-                    value: new ObjectRef(component.GetInstanceID())
-                )
+                    value: new ObjectRef(component.GetInstanceID()))
                 .AddProperty(SerializedMember.FromValue(
                     name: nameof(component.sharedMaterial),
                     type: typeof(Material),
@@ -95,6 +92,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                         instanceID = go.GetInstanceID()
                     }
                 });
+
             ResultValidation(result);
 
             // This line files, and probably that is OK
@@ -103,7 +101,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             Assert.AreEqual(component.sharedMaterial.GetInstanceID(), sharedMaterial.GetInstanceID(), "Materials InstanceIDs should be the same.");
             yield return null;
         }
-
 
         IResponseData<ResponseCallTool> ModifyByJson(string json) => RunTool("GameObject_Modify", json);
 
