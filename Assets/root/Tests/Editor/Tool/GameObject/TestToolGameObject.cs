@@ -1,3 +1,4 @@
+using com.IvanMurzak.ReflectorNet;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
         void ResultValidation(string result)
         {
-            Debug.Log($"[{GetType().Name}] Result:\n{result}");
+            Debug.Log($"[{GetType().GetTypeShortName()}] Result:\n{result}");
             Assert.IsNotNull(result, $"Result should not be empty or null.");
             Assert.IsTrue(result.ToLower().Contains("success"), $"Result should contain 'success'.\n{result}");
             Assert.IsFalse(result.ToLower().Contains("error"), $"Result should not contain 'error'.\n{result}");

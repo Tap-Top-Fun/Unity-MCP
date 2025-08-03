@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -16,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnitySetUp]
         public virtual IEnumerator SetUp()
         {
-            Debug.Log($"[{GetType().Name}] SetUp");
+            Debug.Log($"[{GetType().GetTypeShortName()}] SetUp");
 
             McpPluginUnity.Init();
 
@@ -25,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTearDown]
         public virtual IEnumerator TearDown()
         {
-            Debug.Log($"[{GetType().Name}] TearDown");
+            Debug.Log($"[{GetType().GetTypeShortName()}] TearDown");
 
             DestroyAllGameObjectsInActiveScene();
 

@@ -29,12 +29,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var padding = StringUtils.GetPadding(depth);
 
             if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as field type='{fieldInfo.FieldType.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as field type='{fieldInfo.FieldType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
 
             if (logger?.IsEnabled(LogLevel.Error) == true)
-                logger.LogError($"{padding}Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. This type is not supported for setting values in runtime. Convertor: {GetType().Name}");
+                logger.LogError($"{padding}Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. This type is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
 
-            stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value?.name.ValueOrNull()}' for {fallbackType.GetTypeName(pretty: false)}. This type is not supported for setting values in runtime. Convertor: {GetType().Name}");
+            stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value?.name.ValueOrNull()}' for {fallbackType.GetTypeName(pretty: false)}. This type is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
             return false;
         }
 
@@ -52,12 +52,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var padding = StringUtils.GetPadding(depth);
 
             if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as property type='{propertyInfo.PropertyType.GetTypeName(pretty: true)}'. Convertor='{GetType().Name}'.");
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as property type='{propertyInfo.PropertyType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
 
             if (logger?.IsEnabled(LogLevel.Error) == true)
-                logger.LogError($"{padding}Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. This type is not supported for setting values in runtime. Convertor: {GetType().Name}");
+                logger.LogError($"{padding}Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. This type is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
 
-            stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value?.name.ValueOrNull()}' for {fallbackType.GetTypeName(pretty: false)}. This type is not supported for setting values in runtime. Convertor: {GetType().Name}");
+            stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value?.name.ValueOrNull()}' for {fallbackType.GetTypeName(pretty: false)}. This type is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
             return false;
         }
     }

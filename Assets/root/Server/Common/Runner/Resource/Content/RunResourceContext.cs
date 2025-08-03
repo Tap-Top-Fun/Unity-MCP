@@ -52,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public async Task<ResponseListResource[]> Run(params object?[] parameters)
         {
             var result = await Invoke(parameters);
-            return result as ResponseListResource[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseListResource)}[]. Instead returned {result?.GetType().Name}.");
+            return result as ResponseListResource[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseListResource)}[]. Instead returned {result?.GetType().GetTypeShortName()}.");
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public async Task<ResponseListResource[]> Run(IDictionary<string, object?>? namedParameters)
         {
             var result = await InvokeDict(namedParameters?.ToImmutableDictionary(x => x.Key, x => x.Value));
-            return result as ResponseListResource[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseListResource)}[]. Instead returned {result?.GetType().Name}.");
+            return result as ResponseListResource[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseListResource)}[]. Instead returned {result?.GetType().GetTypeShortName()}.");
         }
     }
 }

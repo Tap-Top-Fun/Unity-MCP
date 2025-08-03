@@ -28,12 +28,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var padding = StringUtils.GetPadding(depth);
 
             if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Populate sprite from data. Convertor='{GetType().Name}'.");
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Populate sprite from data. Convertor='{GetType().GetTypeShortName()}'.");
 
             if (logger?.IsEnabled(LogLevel.Error) == true)
-                logger.LogError($"{padding}Operation is not supported in runtime. Convertor: {GetType().Name}");
+                logger.LogError($"{padding}Operation is not supported in runtime. Convertor: {GetType().GetTypeShortName()}");
 
-            return stringBuilder?.AppendLine($"{padding}[Error] Operation is not supported in runtime. Convertor: {GetType().Name}");
+            return stringBuilder?.AppendLine($"{padding}[Error] Operation is not supported in runtime. Convertor: {GetType().GetTypeShortName()}");
         }
     }
 }

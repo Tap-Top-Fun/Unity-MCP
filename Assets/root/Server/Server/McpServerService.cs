@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             IToolRunner toolRunner, IResourceRunner resourceRunner, EventAppToolsChange eventAppToolsChange)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogTrace("{0} Ctor.", GetType().Name);
+            _logger.LogTrace("{0} Ctor.", GetType().GetTypeShortName());
             _mcpServer = mcpServer ?? throw new ArgumentNullException(nameof(mcpServer));
             _mcpRunner = mcpRunner ?? throw new ArgumentNullException(nameof(mcpRunner));
             _toolRunner = toolRunner ?? throw new ArgumentNullException(nameof(toolRunner));
@@ -47,7 +47,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogTrace("{0} StartAsync.", GetType().Name);
+            _logger.LogTrace("{0} StartAsync.", GetType().GetTypeShortName());
 
             _eventAppToolsChange
                 .Subscribe(data => OnListToolUpdated(data, cancellationToken))
@@ -58,7 +58,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogTrace("{0} StopAsync.", GetType().Name);
+            _logger.LogTrace("{0} StopAsync.", GetType().GetTypeShortName());
             _disposables.Clear();
             Instance = null;
             return McpPlugin.StaticDisposeAsync();
@@ -66,14 +66,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         async void OnListToolUpdated(EventAppToolsChange.EventData eventData, CancellationToken cancellationToken)
         {
-            _logger.LogTrace("{0} OnListToolUpdated", GetType().Name);
+            _logger.LogTrace("{0} OnListToolUpdated", GetType().GetTypeShortName());
             try
             {
                 await _mcpServer.SendNotificationAsync(NotificationMethods.ToolListChangedNotification, cancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError("{0} Error updating tools: {Message}", GetType().Name, ex.Message);
+                _logger.LogError("{0} Error updating tools: {Message}", GetType().GetTypeShortName(), ex.Message);
             }
         }
     }

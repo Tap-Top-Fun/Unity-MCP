@@ -37,7 +37,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 ? mcpServerService.McpRunner
                 : mcpServerService.ToolRunner;
 
-            logger.Trace("Using ToolRunner: {0}", toolRunner?.GetType().Name);
+            logger.Trace("Using ToolRunner: {0}", toolRunner?.GetType().GetTypeShortName());
 
             if (toolRunner == null)
                 return new CallToolResult().SetError($"[Error] '{nameof(toolRunner)}' is null");

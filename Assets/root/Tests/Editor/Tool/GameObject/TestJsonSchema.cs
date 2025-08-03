@@ -37,7 +37,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                             if (typeObject.TryGetPropertyValue("enum", out var enumValue))
                                 continue; // Skip enum types
                         }
-                        Assert.Fail($"Unexpected type node for '{type.GetTypeName(pretty: true)}'.\nThe 'type' node has the type '{typeNode.GetType().Name}':\n{typeNode}");
+                        Assert.Fail($"Unexpected type node for '{type.GetTypeName(pretty: true)}'.\nThe 'type' node has the type '{typeNode.GetType().GetTypeShortName()}':\n{typeNode}");
                         break;
                 }
             }
