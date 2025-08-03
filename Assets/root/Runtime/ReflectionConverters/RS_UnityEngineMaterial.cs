@@ -94,76 +94,77 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }.SetValue(new ObjectRef(material.GetInstanceID()));
         }
 
-        protected override bool SetValue(
-            Reflector reflector,
-            ref object obj,
-            Type type,
-            JsonElement? value,
-            int depth = 0,
-            StringBuilder? stringBuilder = null,
-            ILogger? logger = null)
-        {
-            var padding = StringUtils.GetPadding(depth);
+        // protected override bool SetValue(
+        //     Reflector reflector,
+        //     ref object obj,
+        //     Type type,
+        //     JsonElement? value,
+        //     int depth = 0,
+        //     StringBuilder? stringBuilder = null,
+        //     ILogger? logger = null)
+        // {
+        //     var padding = StringUtils.GetPadding(depth);
 
-            if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set value for type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
+        //     if (logger?.IsEnabled(LogLevel.Trace) == true)
+        //         logger.LogTrace($"{padding}Set value for type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
 
-            // Exception happens in the line. Because Serialize serializes it as ObjectRef.
-            // That is why deserialization it as SerializedMember fails with JsonException.
-            // var serialized = JsonUtils.Deserialize<SerializedMember>(Reflector.Instance, value);
+        //     // Exception happens in the line. Because Serialize serializes it as ObjectRef.
+        //     // That is why deserialization it as SerializedMember fails with JsonException.
+        //     // var serialized = JsonUtils.Deserialize<SerializedMember>(Reflector.Instance, value);
 
-            // var material = obj as Material;
+        //     // var material = obj as Material;
 
-            // // Set shader
-            // var shaderName = serialized.GetField(FieldShader)?.GetValue<string>(Reflector.Instance);
-            // if (string.IsNullOrEmpty(shaderName))
-            // {
-            //     if (logger?.IsEnabled(LogLevel.Error) == true)
-            //         logger.LogError($"{padding}Shader name is null or empty.");
+        //     // // Set shader
+        //     // var shaderName = serialized.GetField(FieldShader)?.GetValue<string>(Reflector.Instance);
+        //     // if (string.IsNullOrEmpty(shaderName))
+        //     // {
+        //     //     if (logger?.IsEnabled(LogLevel.Error) == true)
+        //     //         logger.LogError($"{padding}Shader name is null or empty.");
 
-            //     if (stringBuilder != null)
-            //         stringBuilder.AppendLine($"{padding}[Error] Shader name is null or empty.");
+        //     //     if (stringBuilder != null)
+        //     //         stringBuilder.AppendLine($"{padding}[Error] Shader name is null or empty.");
 
-            //     return false;
-            // }
+        //     //     return false;
+        //     // }
 
-            // if (material.shader.name == shaderName)
-            // {
-            //     if (logger?.IsEnabled(LogLevel.Information) == true)
-            //         logger.LogInformation($"{padding}Material '{material.name}' shader is already set to '{shaderName}'.");
+        //     // if (material.shader.name == shaderName)
+        //     // {
+        //     //     if (logger?.IsEnabled(LogLevel.Information) == true)
+        //     //         logger.LogInformation($"{padding}Material '{material.name}' shader is already set to '{shaderName}'.");
 
-            //     if (stringBuilder != null)
-            //         stringBuilder.AppendLine($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+        //     //     if (stringBuilder != null)
+        //     //         stringBuilder.AppendLine($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
 
-            //     return true;
-            // }
+        //     //     return true;
+        //     // }
 
-            // var parsedValue = Shader.Find(shaderName);
-            // if (parsedValue == null)
-            // {
-            //     if (logger?.IsEnabled(LogLevel.Error) == true)
-            //         logger.LogError($"{padding}Shader with name '{shaderName}' not found.");
+        //     // var parsedValue = Shader.Find(shaderName);
+        //     // if (parsedValue == null)
+        //     // {
+        //     //     if (logger?.IsEnabled(LogLevel.Error) == true)
+        //     //         logger.LogError($"{padding}Shader with name '{shaderName}' not found.");
 
-            //     if (stringBuilder != null)
-            //         stringBuilder.AppendLine($"{padding}[Error] Shader with name '{shaderName}' not found.");
+        //     //     if (stringBuilder != null)
+        //     //         stringBuilder.AppendLine($"{padding}[Error] Shader with name '{shaderName}' not found.");
 
-            //     return false;
-            // }
+        //     //     return false;
+        //     // }
 
-            // Print.SetNewValue(
-            //     obj: ref obj,
-            //     newValue: ref parsedValue,
-            //     type: type,
-            //     depth: depth,
-            //     stringBuilder: stringBuilder);
-            // material.shader = parsedValue;
+        //     // Print.SetNewValue(
+        //     //     obj: ref obj,
+        //     //     newValue: ref parsedValue,
+        //     //     type: type,
+        //     //     depth: depth,
+        //     //     stringBuilder: stringBuilder);
+        //     // material.shader = parsedValue;
 
-            // ------------------------------------------------------------------------------------
+        //     // ------------------------------------------------------------------------------------
 
-            // var serialized = JsonUtils.Deserialize<ObjectRef>(Reflector.Instance, value);
+        //     // var serialized = JsonUtils.Deserialize<ObjectRef>(Reflector.Instance, value);
 
-            return false;
-        }
+        //     return false;
+        // }
+
         protected override StringBuilder? PopulateField(
             Reflector reflector,
             ref object obj,
@@ -175,6 +176,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
+
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Populate field for type='{objType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
+
             var material = obj as Material;
 
             // Set shader if needed
