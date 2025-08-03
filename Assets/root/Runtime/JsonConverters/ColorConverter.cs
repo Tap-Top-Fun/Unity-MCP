@@ -53,7 +53,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public override Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
-                throw new JsonException();
+                throw new JsonException("Expected start of object token.");
 
             float r = 0, g = 0, b = 0, a = 1;
 
@@ -64,7 +64,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 
                 if (reader.TokenType == JsonTokenType.PropertyName)
                 {
-                    string propertyName = reader.GetString();
+                    var propertyName = reader.GetString();
                     reader.Read();
 
                     switch (propertyName)
@@ -88,7 +88,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                 }
             }
 
-            throw new JsonException();
+            throw new JsonException("Expected end of object token.");
         }
 
         public override void Write(Utf8JsonWriter writer, Color value, JsonSerializerOptions options)
