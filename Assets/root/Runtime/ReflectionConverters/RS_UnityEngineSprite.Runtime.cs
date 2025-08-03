@@ -6,7 +6,6 @@ using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -15,9 +14,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
     {
-        public override StringBuilder Populate(
+        public override bool TryPopulate(
             Reflector reflector,
-            ref object obj,
+            ref object? obj,
             SerializedMember data,
             Type? dataType = null,
             int depth = 0,
@@ -33,7 +32,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             if (logger?.IsEnabled(LogLevel.Error) == true)
                 logger.LogError($"{padding}Operation is not supported in runtime. Convertor: {GetType().GetTypeShortName()}");
 
-            return stringBuilder?.AppendLine($"{padding}[Error] Operation is not supported in runtime. Convertor: {GetType().GetTypeShortName()}");
+            if (stringBuilder != null)
+                stringBuilder.AppendLine($"{padding}[Error] Operation is not supported in runtime. Convertor: {GetType().GetTypeShortName()}");
+
+            return false;
         }
     }
 }

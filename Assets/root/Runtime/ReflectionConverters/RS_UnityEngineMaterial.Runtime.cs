@@ -6,10 +6,8 @@ using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.IvanMurzak.Unity.MCP.Utils;
-using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
-using UnityEngine;
 using Microsoft.Extensions.Logging;
+using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -17,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineMaterial : RS_UnityEngineObject<Material>
     {
-        protected override StringBuilder? PopulateProperty(
+        protected override bool TryPopulateProperty(
             Reflector reflector,
             ref object? obj,
             Type objType,
@@ -39,7 +37,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 if (logger?.IsEnabled(LogLevel.Error) == true)
                     logger.LogError($"{padding}Property type '{propertyValue.typeName}' not found. Convertor: {GetType().GetTypeShortName()}");
 
-                return stringBuilder?.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' not found. Convertor: {GetType().GetTypeShortName()}");
+                if (stringBuilder != null)
+                    stringBuilder?.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
             }
 
             switch (propType)
@@ -47,31 +48,47 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 case Type t when t == typeof(int):
                     if (material.HasInt(propertyValue.name))
                     {
-                        material.SetInt(propertyValue.name, propertyValue.GetValue<int>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<int>()}'. Convertor: {GetType().GetTypeShortName()}");
+                        material.SetInt(propertyValue.name, propertyValue.GetValue<int>(reflector));
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<int>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
                 case Type t when t == typeof(float):
                     if (material.HasFloat(propertyValue.name))
                     {
-                        material.SetFloat(propertyValue.name, propertyValue.GetValue<float>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<float>()}'. Convertor: {GetType().GetTypeShortName()}");
+                        material.SetFloat(propertyValue.name, propertyValue.GetValue<float>(reflector));
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<float>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
                 case Type t when t == typeof(Color):
                     if (material.HasColor(propertyValue.name))
                     {
-                        material.SetColor(propertyValue.name, propertyValue.GetValue<Color>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Color>()}'. Convertor: {GetType().GetTypeShortName()}");
+                        material.SetColor(propertyValue.name, propertyValue.GetValue<Color>(reflector));
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Color>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
                 case Type t when t == typeof(Vector4):
                     if (material.HasVector(propertyValue.name))
                     {
-                        material.SetVector(propertyValue.name, propertyValue.GetValue<Vector4>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Vector4>()}'. Convertor: {GetType().GetTypeShortName()}");
+                        material.SetVector(propertyValue.name, propertyValue.GetValue<Vector4>(reflector));
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Vector4>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
                 // case Type t when t == typeof(Texture):
                 //     if (material.HasTexture(property.name))
                 //     {
@@ -87,7 +104,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     if (logger?.IsEnabled(LogLevel.Error) == true)
                         logger.LogError($"{padding}Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
 
-                    return stringBuilder?.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
             }
         }
     }
