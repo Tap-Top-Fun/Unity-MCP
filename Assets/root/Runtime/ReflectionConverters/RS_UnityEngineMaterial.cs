@@ -165,7 +165,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         //     return false;
         // }
 
-        protected override StringBuilder? PopulateField(
+        protected override bool TryPopulateField(
             Reflector reflector,
             ref object obj,
             Type objType,
@@ -182,33 +182,64 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             var material = obj as Material;
 
-            // Set shader if needed
+            if (fieldValue.name == FieldName)
+            {
+                material.name = fieldValue.GetValue<string>(Reflector.Instance);
+
+                if (logger?.IsEnabled(LogLevel.Information) == true)
+                    logger.LogInformation($"{padding}[Success] Material name set to '{material.name}'. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Success] Material name set to '{material.name}'.");
+
+                return true;
+            }
             if (fieldValue.name == FieldShader)
             {
                 var shaderName = fieldValue.GetValue<string>(Reflector.Instance);
 
                 // Check if the shader is already set
-                if (!string.IsNullOrEmpty(shaderName) && material.shader.name != shaderName)
+                if (string.IsNullOrEmpty(shaderName) || material.shader.name == shaderName)
                 {
-                    var shader = Shader.Find(shaderName);
-                    if (shader == null)
-                    {
-                        if (logger?.IsEnabled(LogLevel.Error) == true)
-                            logger.LogError($"{padding}[Error] Shader '{shaderName}' not found. Convertor: {GetType().GetTypeShortName()}");
-
-                        return stringBuilder?.AppendLine($"{padding}[Error] Shader '{shaderName}' not found.");
-                    }
-
-                    material.shader = shader;
-
                     if (logger?.IsEnabled(LogLevel.Information) == true)
-                        logger.LogInformation($"{padding}[Success] Material '{material.name}' shader set to '{shaderName}'. Convertor: {GetType().GetTypeShortName()}");
+                        logger.LogInformation($"{padding}Material '{material.name}' shader is already set to '{shaderName}'. Convertor: {GetType().GetTypeShortName()}");
 
-                    return stringBuilder?.AppendLine($"{padding}[Success] Material '{material.name}' shader set to '{shaderName}'.");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Info] Material '{material.name}' shader is already set to '{shaderName}'.");
+
+                    return true;
                 }
+
+                var shader = Shader.Find(shaderName);
+                if (shader == null)
+                {
+                    if (logger?.IsEnabled(LogLevel.Error) == true)
+                        logger.LogError($"{padding}[Error] Shader '{shaderName}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Shader '{shaderName}' not found.");
+
+                    return false;
+                }
+
+                material.shader = shader;
+
+                if (logger?.IsEnabled(LogLevel.Information) == true)
+                    logger.LogInformation($"{padding}[Success] Material '{material.name}' shader set to '{shaderName}'. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Success] Material '{material.name}' shader set to '{shaderName}'.");
+
+                return true;
             }
 
-            return stringBuilder;
+            if (logger?.IsEnabled(LogLevel.Error) == true)
+                logger.LogError($"{padding}[Error] Field '{fieldValue.name}' is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
+
+            if (stringBuilder != null)
+                stringBuilder.AppendLine($"{padding}[Error] Field '{fieldValue.name}' is not supported for setting values in runtime. Convertor: {GetType().GetTypeShortName()}");
+
+            return false;
         }
 
         public override object CreateInstance(Reflector reflector, Type type)

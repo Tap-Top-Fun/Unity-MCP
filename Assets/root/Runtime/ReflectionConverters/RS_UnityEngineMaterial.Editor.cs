@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineMaterial : RS_GenericUnity<Material>
     {
-        protected override StringBuilder? PopulateProperty(
+        protected override bool TryPopulateProperty(
             Reflector reflector,
             ref object? obj,
             Type objType,
@@ -40,7 +40,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 if (logger?.IsEnabled(LogLevel.Error) == true)
                     logger.LogError($"{padding}Property type '{propertyValue.typeName}' not found. Convertor: {GetType().GetTypeShortName()}");
 
-                return stringBuilder?.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' not found. Convertor: {GetType().GetTypeShortName()}");
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
             }
 
             switch (propType)
@@ -49,114 +52,151 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     if (material.HasInt(propertyValue.name))
                     {
                         material.SetInt(propertyValue.name, propertyValue.GetValue<int>(Reflector.Instance));
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<int>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<int>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
+
                 case Type t when t == typeof(float):
                     if (material.HasFloat(propertyValue.name))
                     {
                         material.SetFloat(propertyValue.name, propertyValue.GetValue<float>(Reflector.Instance));
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<float>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<float>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
+
                 case Type t when t == typeof(Color):
                     if (material.HasColor(propertyValue.name))
                     {
                         material.SetColor(propertyValue.name, propertyValue.GetValue<Color>(Reflector.Instance));
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Color>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Color>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
+
                 case Type t when t == typeof(Vector4):
                     if (material.HasVector(propertyValue.name))
                     {
                         material.SetVector(propertyValue.name, propertyValue.GetValue<Vector4>(Reflector.Instance));
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Vector4>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Vector4>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
+
                 case Type t when t == typeof(Texture):
                     if (material.HasTexture(propertyValue.name))
                     {
                         var objTexture = propertyValue.GetValue<ObjectRef>(Reflector.Instance).FindObject();
                         var texture = objTexture as Texture;
                         material.SetTexture(propertyValue.name, texture);
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{texture?.name ?? "null"}'. Convertor: {GetType().GetTypeShortName()}");
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{texture?.name ?? "null"}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
+
                 default:
                     if (logger?.IsEnabled(LogLevel.Error) == true)
                         logger.LogError($"{padding}Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
 
-                    return stringBuilder?.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
             }
         }
 
-        public override bool SetAsField(
-            Reflector reflector,
-            ref object? obj,
-            Type fallbackType,
-            FieldInfo fieldInfo,
-            SerializedMember? value,
-            int depth = 0,
-            StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-            ILogger? logger = null)
-        {
-            var padding = StringUtils.GetPadding(depth);
+        // public override bool SetAsField(
+        //     Reflector reflector,
+        //     ref object? obj,
+        //     Type fallbackType,
+        //     FieldInfo fieldInfo,
+        //     SerializedMember? value,
+        //     int depth = 0,
+        //     StringBuilder? stringBuilder = null,
+        //     BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+        //     ILogger? logger = null)
+        // {
+        //     var padding = StringUtils.GetPadding(depth);
 
-            if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as field type='{fieldInfo.FieldType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
+        //     if (logger?.IsEnabled(LogLevel.Trace) == true)
+        //         logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as field type='{fieldInfo.FieldType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
 
-            var refObj = value?.valueJsonElement.ToObjectRef().FindObject();
+        //     var refObj = value?.valueJsonElement.ToObjectRef().FindObject();
 
-            // Validate if refObj is castable to the fieldInfo type
-            var castable = fieldInfo.FieldType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.Material));
-            if (!castable)
-            {
-                if (logger?.IsEnabled(LogLevel.Error) == true)
-                    logger.LogError($"{padding}Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to field type '{fieldInfo.FieldType.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}");
+        //     // Validate if refObj is castable to the fieldInfo type
+        //     var castable = fieldInfo.FieldType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.Material));
+        //     if (!castable)
+        //     {
+        //         if (logger?.IsEnabled(LogLevel.Error) == true)
+        //             logger.LogError($"{padding}Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to field type '{fieldInfo.FieldType.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}");
 
-                stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to field type '{fieldInfo.FieldType.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}");
-                return false;
-            }
+        //         stringBuilder?.AppendLine($"{padding}[Error] Cannot set field '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to field type '{fieldInfo.FieldType.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}");
+        //         return false;
+        //     }
 
-            fieldInfo.SetValue(obj, refObj);
-            stringBuilder?.AppendLine($"{padding}[Success] Field '{value?.name.ValueOrNull()}' modified to instanceID='{refObj?.GetInstanceID() ?? 0}'. Convertor: {GetType().GetTypeShortName()}");
-            return true;
-        }
+        //     fieldInfo.SetValue(obj, refObj);
+        //     stringBuilder?.AppendLine($"{padding}[Success] Field '{value?.name.ValueOrNull()}' modified to instanceID='{refObj?.GetInstanceID() ?? 0}'. Convertor: {GetType().GetTypeShortName()}");
+        //     return true;
+        // }
 
-        public override bool SetAsProperty(
-            Reflector reflector,
-            ref object? obj,
-            Type fallbackType,
-            PropertyInfo propertyInfo,
-            SerializedMember? value,
-            int depth = 0,
-            StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-            ILogger? logger = null)
-        {
-            var padding = StringUtils.GetPadding(depth);
+        // public override bool SetAsProperty(
+        //     Reflector reflector,
+        //     ref object? obj,
+        //     Type fallbackType,
+        //     PropertyInfo propertyInfo,
+        //     SerializedMember? value,
+        //     int depth = 0,
+        //     StringBuilder? stringBuilder = null,
+        //     BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+        //     ILogger? logger = null)
+        // {
+        //     var padding = StringUtils.GetPadding(depth);
 
-            if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as property type='{propertyInfo.PropertyType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
+        //     if (logger?.IsEnabled(LogLevel.Trace) == true)
+        //         logger.LogTrace($"{StringUtils.GetPadding(depth)}Set as property type='{propertyInfo.PropertyType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
 
-            var refObj = value?.valueJsonElement.ToObjectRef().FindObject();
+        //     var refObj = value?.valueJsonElement.ToObjectRef().FindObject();
 
-            // Validate if refObj is castable to the propertyInfo type
-            var castable = propertyInfo.PropertyType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.Material));
-            if (!castable)
-            {
-                if (logger?.IsEnabled(LogLevel.Error) == true)
-                    logger.LogError($"{padding}Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to property type '{propertyInfo.PropertyType.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}");
+        //     // Validate if refObj is castable to the propertyInfo type
+        //     var castable = propertyInfo.PropertyType.IsAssignableFrom(refObj?.GetType() ?? typeof(UnityEngine.Material));
+        //     if (!castable)
+        //     {
+        //         if (logger?.IsEnabled(LogLevel.Error) == true)
+        //             logger.LogError($"{padding}Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to property type '{propertyInfo.PropertyType.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}");
 
-                stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to property type '{propertyInfo.PropertyType.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}");
-                return false;
-            }
+        //         stringBuilder?.AppendLine($"{padding}[Error] Cannot set property '{value?.name.ValueOrNull()}' for object with type '{fallbackType.GetTypeName(pretty: false)}'. Because the provided value with type '{refObj?.GetType().GetTypeName(pretty: false)}' is not assignable to property type '{propertyInfo.PropertyType.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}");
+        //         return false;
+        //     }
 
-            propertyInfo.SetValue(obj, refObj);
-            stringBuilder?.AppendLine($"{padding}[Success] Property '{value?.name.ValueOrNull()}' modified to instanceID='{refObj?.GetInstanceID() ?? 0}'. Convertor: {GetType().GetTypeShortName()}");
-            return true;
-        }
+        //     propertyInfo.SetValue(obj, refObj);
+        //     stringBuilder?.AppendLine($"{padding}[Success] Property '{value?.name.ValueOrNull()}' modified to instanceID='{refObj?.GetInstanceID() ?? 0}'. Convertor: {GetType().GetTypeShortName()}");
+        //     return true;
+        // }
     }
 }
 #endif

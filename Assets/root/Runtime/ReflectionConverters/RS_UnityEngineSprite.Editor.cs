@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
     {
-        public override StringBuilder Populate(
+        public override bool TryPopulate(
             Reflector reflector,
             ref object obj,
             SerializedMember data,
@@ -37,12 +37,22 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 if (logger?.IsEnabled(LogLevel.Error) == true)
                     logger.LogError($"{padding}InstanceID not found. Set 'instanceID` as 0 if you want to set it to null. Convertor: {GetType().GetTypeShortName()}");
 
-                return stringBuilder?.AppendLine($"{padding}[Error] InstanceID not found. Set 'instanceID` as 0 if you want to set it to null. Convertor: {GetType().GetTypeShortName()}");
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] InstanceID not found. Set 'instanceID` as 0 if you want to set it to null. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
             }
             if (instanceID == 0)
             {
                 obj = null;
-                return stringBuilder?.AppendLine($"{padding}[Success] InstanceID is 0. Cleared the reference. Convertor: {GetType().GetTypeShortName()}");
+
+                if (logger?.IsEnabled(LogLevel.Trace) == true)
+                    logger.LogTrace($"{padding}[Success] InstanceID is 0. Cleared the reference. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Success] InstanceID is 0. Cleared the reference. Convertor: {GetType().GetTypeShortName()}");
+
+                return true;
             }
             var textureOrSprite = EditorUtility.InstanceIDToObject(instanceID);
             if (textureOrSprite == null)
@@ -50,7 +60,10 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 if (logger?.IsEnabled(LogLevel.Error) == true)
                     logger.LogError($"{padding}InstanceID {instanceID} not found. Convertor: {GetType().GetTypeShortName()}");
 
-                return stringBuilder?.AppendLine($"{padding}[Error] InstanceID {instanceID} not found. Convertor: {GetType().GetTypeShortName()}");
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] InstanceID {instanceID} not found. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
             }
 
             if (textureOrSprite is UnityEngine.Texture2D texture)
@@ -64,22 +77,36 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     if (logger?.IsEnabled(LogLevel.Error) == true)
                         logger.LogError($"{padding}No sprites found for texture at path: {path}. Convertor: {GetType().GetTypeShortName()}");
 
-                    return stringBuilder?.AppendLine($"{padding}[Error] No sprites found for texture at path: {path}. Convertor: {GetType().GetTypeShortName()}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] No sprites found for texture at path: {path}. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
                 }
 
                 obj = sprites[0]; // Assign the first sprite found
-                return stringBuilder?.AppendLine($"{padding}[Success] Assigned sprite from texture: {path}. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Success] Assigned sprite from texture: {path}. Convertor: {GetType().GetTypeShortName()}");
+
+                return true;
             }
             if (textureOrSprite is UnityEngine.Sprite sprite)
             {
                 obj = sprite;
-                return stringBuilder?.AppendLine($"{padding}[Success] Assigned sprite: {sprite.name}. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Success] Assigned sprite: {sprite.name}. Convertor: {GetType().GetTypeShortName()}");
+
+                return true;
             }
 
             if (logger?.IsEnabled(LogLevel.Error) == true)
                 logger.LogError($"{padding}InstanceID {instanceID} is not a Texture2D or Sprite. Convertor: {GetType().GetTypeShortName()}");
 
-            return stringBuilder?.AppendLine($"{padding}[Error] InstanceID {instanceID} is not a Texture2D or Sprite. Convertor: {GetType().GetTypeShortName()}");
+            if (stringBuilder != null)
+                stringBuilder.AppendLine($"{padding}[Error] InstanceID {instanceID} is not a Texture2D or Sprite. Convertor: {GetType().GetTypeShortName()}");
+
+            return false;
         }
     }
 }

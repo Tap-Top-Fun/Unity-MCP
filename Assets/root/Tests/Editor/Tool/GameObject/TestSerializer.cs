@@ -14,6 +14,7 @@ using UnityEngine.TestTools;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Convertor;
 using com.IvanMurzak.ReflectorNet.Utils;
+using System.Text;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -88,10 +89,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             serialized.SetPropertyValue("_Color", colorValue);
 
             var objMaterial = (object)material;
-            Reflector.Instance.Populate(ref objMaterial, serialized);
+            var stringBuilder = new StringBuilder();
+            Reflector.Instance.TryPopulate(
+                ref objMaterial,
+                data: serialized,
+                stringBuilder: stringBuilder,
+                logger: McpPlugin.Instance.Logger);
 
             Assert.AreEqual(glossinessValue, material.GetFloat("_Glossiness"), 0.001f, $"Material property '_Glossiness' should be {glossinessValue}.");
             Assert.AreEqual(colorValue, material.GetColor("_Color"), $"Material property '_Glossiness' should be {glossinessValue}.");
+
+            var stringResult = stringBuilder.ToString();
+
+            Assert.IsTrue(stringResult.Contains("[Success]"), $"String result should contain '[Success]'. Result: {stringResult}");
+            Assert.IsFalse(stringResult.Contains("[Error]"), $"String result should not contain '[Error]'. Result: {stringResult}");
 
             yield return null;
         }

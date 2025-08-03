@@ -142,7 +142,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return false;
         }
 
-        protected override StringBuilder? PopulateField(
+        protected override bool TryPopulateField(
             Reflector reflector,
             ref object obj,
             Type objType,
@@ -179,13 +179,16 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     if (logger?.IsEnabled(LogLevel.Error) == true)
                         logger.LogError($"{padding}[Error] Type not found for field '{fieldValue.name}' with type name '{fieldValue.typeName}'.");
 
-                    return stringBuilder?.AppendLine($"{padding}[Error] Type not found: '{fieldValue.typeName}'");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Type not found: '{fieldValue.typeName}'");
+
+                    return false;
                 }
 
                 // If not a component, use base method
                 if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
                 {
-                    return base.PopulateField(
+                    return base.TryPopulateField(
                         reflector,
                         obj: ref obj,
                         objType: objType,
@@ -196,11 +199,17 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                         logger: logger);
                 }
 
-                return stringBuilder?.AppendLine($"{padding}[Error] {error}");
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}[Error] {error}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] {error}");
+
+                return false;
             }
 
             var componentObject = (object)component;
-            return reflector.Populate(
+            return reflector.TryPopulate(
                 obj: ref componentObject,
                 data: fieldValue,
                 fallbackObjType: type,
