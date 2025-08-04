@@ -10,19 +10,10 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         {
             if (jsonElement == null)
                 return null;
-
             try
             {
-                return jsonElement.HasValue
-                    ? JsonSerializer.Deserialize<ObjectRef>(jsonElement.Value)
-                    : null;
+                return JsonSerializer.Deserialize<ObjectRef>(jsonElement.Value);
             }
-            // catch (JsonException ex)
-            // {
-            //     if (McpPluginUnity.LogLevel.IsActive(LogLevel.Error))
-            //         UnityEngine.Debug.LogError($"Failed to deserialize ObjectRef: {ex.Message}");
-            //     return null;
-            // }
             catch
             {
                 return null;

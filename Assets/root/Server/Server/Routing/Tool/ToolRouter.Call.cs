@@ -10,6 +10,7 @@ using NLog;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -37,7 +38,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 ? mcpServerService.McpRunner
                 : mcpServerService.ToolRunner;
 
-            logger.Trace("Using ToolRunner: {0}", toolRunner?.GetType().Name);
+            logger.Trace("Using ToolRunner: {0}", toolRunner?.GetType().GetTypeShortName());
 
             if (toolRunner == null)
                 return new CallToolResult().SetError($"[Error] '{nameof(toolRunner)}' is null");

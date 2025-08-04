@@ -10,7 +10,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public partial class McpPlugin : IMcpPlugin
     {
-        public const string Version = "0.8.3";
+        public const string Version = "0.13.0";
 
         readonly ILogger<McpPlugin> _logger;
         readonly IRpcRouter? _rpcRouter;

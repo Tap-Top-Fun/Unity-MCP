@@ -7,6 +7,7 @@ using ModelContextProtocol.Server;
 using NLog;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -25,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (toolRunner == null)
                 return new ListToolsResult().SetError($"[Error] '{nameof(toolRunner)}' is null");
 
-            logger.Trace("Using ToolRunner: {0}", toolRunner.GetType().Name);
+            logger.Trace("Using ToolRunner: {0}", toolRunner.GetType().GetTypeShortName());
 
             var requestData = new RequestListTool();
             var response = await toolRunner.RunListTool(requestData, cancellationToken: cancellationToken);

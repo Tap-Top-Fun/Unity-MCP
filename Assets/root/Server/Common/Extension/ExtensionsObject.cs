@@ -12,9 +12,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public static T[] MakeArray<T>(this T item) => new T[] { item };
         public static List<T> MakeList<T>(this T item) => new List<T> { item };
 
-        public static string JoinString(this IEnumerable<string> items, string seperator)
-            => string.Join(seperator, items);
-        public static string JoinString(this IEnumerable<int> items, string seperator)
-            => string.Join(seperator, items);
+        public static string JoinString(this IEnumerable<string> items, string separator)
+            => string.Join(separator, items);
+        public static string JoinString(this IEnumerable<int> items, string separator)
+            => string.Join(separator, items);
     }
 }

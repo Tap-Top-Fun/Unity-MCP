@@ -14,6 +14,7 @@ using UnityEngine.TestTools;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Convertor;
 using com.IvanMurzak.ReflectorNet.Utils;
+using System.Text;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -25,71 +26,49 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 .Select(x => $"{x.GetType()}: Priority: {x.SerializationPriority(typeof(TTarget))}")
                 .ToList()));
         }
-        static void TestSerializerChain<TTarget, TSerializer>(int countOfSerializers)
+        static void TestGetConvertor<TTarget, TSerializer>()
         {
             PrintSerializers<TTarget>();
-            TestSerializerChain(typeof(TTarget), typeof(TSerializer), countOfSerializers);
+            TestGetConvertor(typeof(TTarget), typeof(TSerializer));
 
             PrintSerializers<IEnumerable<TTarget>>();
-            TestSerializerChain(typeof(IEnumerable<TTarget>), typeof(RS_ArrayUnity), countOfSerializers);
+            TestGetConvertor(typeof(IEnumerable<TTarget>), typeof(RS_ArrayUnity));
 
             PrintSerializers<List<TTarget>>();
-            TestSerializerChain(typeof(List<TTarget>), typeof(RS_ArrayUnity), countOfSerializers);
+            TestGetConvertor(typeof(List<TTarget>), typeof(RS_ArrayUnity));
 
             PrintSerializers<TTarget[]>();
-            TestSerializerChain(typeof(TTarget[]), typeof(RS_ArrayUnity), countOfSerializers);
+            TestGetConvertor(typeof(TTarget[]), typeof(RS_ArrayUnity));
 
             Debug.Log($"-------------------------------------------");
         }
-        static void TestSerializerChain(Type type, Type serializerType, int countOfSerializers)
+        static void TestGetConvertor(Type type, Type serializerType)
         {
-            var serializers = Reflector.Instance.Convertors.BuildSerializersChain(type).ToList();
-            Assert.AreEqual(countOfSerializers, serializers.Count, $"{type}: Only {countOfSerializers} serializer should be used.");
-            Assert.AreEqual(serializerType, serializers[0].GetType(), $"{type}: The first serializer should be {serializerType}.");
-        }
-        static void TestPopulatorChain<TTarget, TSerializer>(int countOfSerializers)
-        {
-            PrintSerializers<TTarget>();
-            TestPopulatorChain(typeof(TTarget), typeof(TSerializer), countOfSerializers);
-
-            PrintSerializers<IEnumerable<TTarget>>();
-            TestPopulatorChain(typeof(IEnumerable<TTarget>), typeof(RS_ArrayUnity), countOfSerializers);
-
-            PrintSerializers<List<TTarget>>();
-            TestPopulatorChain(typeof(List<TTarget>), typeof(RS_ArrayUnity), countOfSerializers);
-
-            PrintSerializers<TTarget[]>();
-            TestPopulatorChain(typeof(TTarget[]), typeof(RS_ArrayUnity), countOfSerializers);
-
-            Debug.Log($"-------------------------------------------");
-        }
-        static void TestPopulatorChain(Type type, Type serializerType, int countOfSerializers)
-        {
-            var serializers = Reflector.Instance.Convertors.BuildPopulatorsChain(type).ToList();
-            Assert.AreEqual(countOfSerializers, serializers.Count, $"{type.Name}: Only {countOfSerializers} serializer should be used.");
-            Assert.AreEqual(serializerType, serializers[0].GetType(), $"{type.Name}: The first serializer should be {serializerType.Name}.");
+            var converter = Reflector.Instance.Convertors.GetConvertor(type);
+            Assert.IsNotNull(converter, $"{type}: Converter should not be null.");
+            Assert.AreEqual(serializerType, converter.GetType(), $"{type}: The convertor should be {serializerType}.");
         }
 
         [UnityTest]
         public IEnumerator RS_SerializersOrder()
         {
-            TestSerializerChain<int, PrimitiveReflectionConvertor>(1);
-            TestSerializerChain<float, PrimitiveReflectionConvertor>(1);
-            TestSerializerChain<bool, PrimitiveReflectionConvertor>(1);
-            TestSerializerChain<string, PrimitiveReflectionConvertor>(1);
-            TestSerializerChain<DateTime, PrimitiveReflectionConvertor>(1);
-            TestSerializerChain<CultureTypes, PrimitiveReflectionConvertor>(1); // enum
-            TestSerializerChain<object, RS_GenericUnity<object>>(1);
-            TestSerializerChain<ObjectRef, RS_GenericUnity<object>>(1);
+            TestGetConvertor<int, PrimitiveReflectionConvertor>();
+            TestGetConvertor<float, PrimitiveReflectionConvertor>();
+            TestGetConvertor<bool, PrimitiveReflectionConvertor>();
+            TestGetConvertor<string, PrimitiveReflectionConvertor>();
+            TestGetConvertor<DateTime, PrimitiveReflectionConvertor>();
+            TestGetConvertor<CultureTypes, PrimitiveReflectionConvertor>(); // enum
+            TestGetConvertor<object, RS_GenericUnity<object>>();
+            TestGetConvertor<ObjectRef, RS_GenericUnity<object>>();
 
-            TestSerializerChain<UnityEngine.Object, RS_UnityEngineObject>(1);
-            TestSerializerChain<UnityEngine.Vector3, RS_UnityEngineVector3>(1);
-            TestSerializerChain<UnityEngine.Rigidbody, RS_UnityEngineComponent>(1);
-            TestSerializerChain<UnityEngine.Animation, RS_UnityEngineComponent>(1);
-            TestSerializerChain<UnityEngine.Material, RS_UnityEngineMaterial>(1);
-            TestSerializerChain<UnityEngine.Transform, RS_UnityEngineTransform>(1);
-            TestSerializerChain<UnityEngine.SpriteRenderer, RS_UnityEngineRenderer>(1);
-            TestSerializerChain<UnityEngine.MeshRenderer, RS_UnityEngineRenderer>(1);
+            TestGetConvertor<UnityEngine.Object, RS_UnityEngineObject>();
+            TestGetConvertor<UnityEngine.Vector3, RS_UnityEngineVector3>();
+            TestGetConvertor<UnityEngine.Rigidbody, RS_UnityEngineComponent>();
+            TestGetConvertor<UnityEngine.Animation, RS_UnityEngineComponent>();
+            TestGetConvertor<UnityEngine.Material, RS_UnityEngineMaterial>();
+            TestGetConvertor<UnityEngine.Transform, RS_UnityEngineTransform>();
+            TestGetConvertor<UnityEngine.SpriteRenderer, RS_UnityEngineRenderer>();
+            TestGetConvertor<UnityEngine.MeshRenderer, RS_UnityEngineRenderer>();
 
             yield return null;
         }
@@ -110,10 +89,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             serialized.SetPropertyValue("_Color", colorValue);
 
             var objMaterial = (object)material;
-            Reflector.Instance.Populate(ref objMaterial, serialized);
+            var stringBuilder = new StringBuilder();
+            Reflector.Instance.TryPopulate(
+                ref objMaterial,
+                data: serialized,
+                stringBuilder: stringBuilder,
+                logger: McpPlugin.Instance.Logger);
 
             Assert.AreEqual(glossinessValue, material.GetFloat("_Glossiness"), 0.001f, $"Material property '_Glossiness' should be {glossinessValue}.");
             Assert.AreEqual(colorValue, material.GetColor("_Color"), $"Material property '_Glossiness' should be {glossinessValue}.");
+
+            var stringResult = stringBuilder.ToString();
+
+            Assert.IsTrue(stringResult.Contains("[Success]"), $"String result should contain '[Success]'. Result: {stringResult}");
+            Assert.IsFalse(stringResult.Contains("[Error]"), $"String result should not contain '[Error]'. Result: {stringResult}");
 
             yield return null;
         }

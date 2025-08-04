@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var methodInfo = classType.GetMethod(name);
 
             ResultValidation(new Tool_Reflection().MethodCall(
-                filter: new MethodPointerRef(methodInfo)));
+                filter: new MethodRef(methodInfo)));
 
             yield return null;
         }
@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var serializedObj = Reflector.Instance.Serialize(obj);
 
             ResultValidation(new Tool_Reflection().MethodCall(
-                filter: new MethodPointerRef(methodInfo),
+                filter: new MethodRef(methodInfo),
                 targetObject: serializedObj));
 
             yield return null;
@@ -44,19 +44,19 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var classType = typeof(UnityEngine.Application);
             var name = "get_" + nameof(UnityEngine.Application.platform);
             var methodInfo = classType.GetMethod(name);
-            var methodPointerRef = new MethodPointerRef(methodInfo);
+            var MethodRef = new MethodRef(methodInfo);
 
-            UnityEngine.Debug.Log($"Input: {methodPointerRef}\n");
-
-            ResultValidation(new Tool_Reflection().MethodCall(
-                filter: methodPointerRef));
+            UnityEngine.Debug.Log($"Input: {MethodRef}\n");
 
             ResultValidation(new Tool_Reflection().MethodCall(
-                filter: methodPointerRef,
+                filter: MethodRef));
+
+            ResultValidation(new Tool_Reflection().MethodCall(
+                filter: MethodRef,
                 executeInMainThread: true));
 
             ResultValidation(new Tool_Reflection().MethodCall(
-                filter: methodPointerRef,
+                filter: MethodRef,
                 executeInMainThread: true,
                 methodNameMatchLevel: 6));
 
@@ -68,9 +68,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var classType = typeof(UnityEngine.Transform);
             var name = nameof(UnityEngine.Transform.LookAt);
             var methodInfo = classType.GetMethod(name, new[] { typeof(UnityEngine.Transform) });
-            var methodPointerRef = new MethodPointerRef(methodInfo);
+            var MethodRef = new MethodRef(methodInfo);
 
-            UnityEngine.Debug.Log($"Input: {methodPointerRef}\n");
+            UnityEngine.Debug.Log($"Input: {MethodRef}\n");
 
             var go1 = new UnityEngine.GameObject("1");
             var go2 = new UnityEngine.GameObject("2");
@@ -82,7 +82,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var serializedTransform2 = Reflector.Instance.Serialize(go2.transform, logger: McpPlugin.Instance.Logger, name: "target");
 
             ResultValidation(new Tool_Reflection().MethodCall(
-                filter: methodPointerRef,
+                filter: MethodRef,
                 targetObject: serializedTransform1,
                 inputParameters: new SerializedMemberList(serializedTransform2),
                 executeInMainThread: true));
@@ -94,7 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             go1.transform.rotation = UnityEngine.Quaternion.identity;
 
             ResultValidation(new Tool_Reflection().MethodCall(
-                filter: methodPointerRef,
+                filter: MethodRef,
                 targetObject: serializedTransform1,
                 inputParameters: new SerializedMemberList(serializedTransform2),
                 executeInMainThread: true,

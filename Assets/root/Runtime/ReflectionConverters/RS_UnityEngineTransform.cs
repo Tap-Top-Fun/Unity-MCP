@@ -4,6 +4,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineTransform : RS_UnityEngineObject<UnityEngine.Transform>
     {
-
+        // public override bool AllowCascadeSerialize => false;
+        // public override bool AllowCascadePopulate => false;
     }
 }

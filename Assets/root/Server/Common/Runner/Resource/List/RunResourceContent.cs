@@ -56,7 +56,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             if (_logger?.IsEnabled(LogLevel.Trace) ?? false)
                 _logger.LogTrace("Result: {result}", JsonUtils.ToJson(result));
 
-            return result as ResponseResourceContent[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseResourceContent)}[]. Instead returned {result?.GetType().Name}.");
+            return result as ResponseResourceContent[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseResourceContent)}[]. Instead returned {result?.GetType().GetTypeShortName()}.");
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             if (_logger?.IsEnabled(LogLevel.Trace) ?? false)
                 _logger.LogTrace("Result: {result}", JsonUtils.ToJson(result));
 
-            return result as ResponseResourceContent[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseResourceContent)}[]. Instead returned {result?.GetType().Name}.");
+            return result as ResponseResourceContent[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseResourceContent)}[]. Instead returned {result?.GetType().GetTypeShortName()}.");
         }
     }
 }

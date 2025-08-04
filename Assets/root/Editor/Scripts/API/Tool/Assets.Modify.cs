@@ -1,5 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
+using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
@@ -45,7 +46,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             var obj = (object)asset;
 
-            var result = Reflector.Instance.Populate(ref obj, content);
+            var result = new StringBuilder();
+            var success = Reflector.Instance.TryPopulate(
+                ref obj,
+                data: content,
+                stringBuilder: result,
+                logger: McpPlugin.Instance.Logger);
 
             // AssetDatabase.CreateAsset(asset, assetPath);
             AssetDatabase.SaveAssets();

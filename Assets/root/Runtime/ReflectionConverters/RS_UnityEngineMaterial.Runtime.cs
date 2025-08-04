@@ -6,86 +6,109 @@ using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
+using Microsoft.Extensions.Logging;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public partial class RS_UnityEngineMaterial : RS_GenericUnity<Material>
+    public partial class RS_UnityEngineMaterial : RS_UnityEngineObject<Material>
     {
-        protected override StringBuilder? ModifyProperty(Reflector reflector, ref object obj, SerializedMember property, int depth = 0, StringBuilder? stringBuilder = null,
+        protected override bool TryPopulateProperty(
+            Reflector reflector,
+            ref object? obj,
+            Type objType,
+            SerializedMember propertyValue,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var padding = StringUtils.GetPadding(depth);
+
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}PopulateProperty property='{propertyValue.name}' type='{propertyValue.typeName}'. Convertor='{GetType().GetTypeShortName()}'.");
+
             var material = obj as Material;
-            var propType = TypeUtils.GetType(property.typeName);
+            var propType = TypeUtils.GetType(propertyValue.typeName);
             if (propType == null)
-                return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' not found. Convertor: {GetType().Name}");
+            {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}Property type '{propertyValue.typeName}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder?.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' not found. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
+            }
 
             switch (propType)
             {
                 case Type t when t == typeof(int):
-                    if (material.HasInt(property.name))
+                    if (material.HasInt(propertyValue.name))
                     {
-                        material.SetInt(property.name, property.GetValue<int>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<int>()}'. Convertor: {GetType().Name}");
+                        material.SetInt(propertyValue.name, propertyValue.GetValue<int>(reflector));
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<int>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
                 case Type t when t == typeof(float):
-                    if (material.HasFloat(property.name))
+                    if (material.HasFloat(propertyValue.name))
                     {
-                        material.SetFloat(property.name, property.GetValue<float>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<float>()}'. Convertor: {GetType().Name}");
+                        material.SetFloat(propertyValue.name, propertyValue.GetValue<float>(reflector));
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<float>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
                 case Type t when t == typeof(Color):
-                    if (material.HasColor(property.name))
+                    if (material.HasColor(propertyValue.name))
                     {
-                        material.SetColor(property.name, property.GetValue<Color>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Color>()}'. Convertor: {GetType().Name}");
+                        material.SetColor(propertyValue.name, propertyValue.GetValue<Color>(reflector));
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Color>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
                 case Type t when t == typeof(Vector4):
-                    if (material.HasVector(property.name))
+                    if (material.HasVector(propertyValue.name))
                     {
-                        material.SetVector(property.name, property.GetValue<Vector4>());
-                        return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{property.GetValue<Vector4>()}'. Convertor: {GetType().Name}");
+                        material.SetVector(propertyValue.name, propertyValue.GetValue<Vector4>(reflector));
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Vector4>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
+                        return true;
                     }
-                    return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found. Convertor: {GetType().Name}");
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found. Convertor: {GetType().GetTypeShortName()}");
+                    return false;
                 // case Type t when t == typeof(Texture):
                 //     if (material.HasTexture(property.name))
                 //     {
-                //         var instanceID = property.GetValue<InstanceID>()?.instanceID ?? property.GetValue<int>();
+                //         var instanceID = propertyValue.GetValue<InstanceID>()?.instanceID ?? propertyValue.GetValue<int>();
                 //         var texture = instanceID == 0
                 //             ? null
                 //             : UnityEditor.EditorUtility.InstanceIDToObject(instanceID) as Texture;
-                //         material.SetTexture(property.name, texture);
-                //         return stringBuilder.AppendLine($"{padding}[Success] Property '{property.name}' modified to '{texture?.name ?? "null"}'.");
+                //         material.SetTexture(propertyValue.name, texture);
+                //         return stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{texture?.name ?? "null"}'.");
                 //     }
-                //     return stringBuilder.AppendLine($"{padding}[Error] Property '{property.name}' not found.");
+                //     return stringBuilder.AppendLine($"{padding}[Error] Property '{propertyValue.name}' not found.");
                 default:
-                    return stringBuilder.AppendLine($"{padding}[Error] Property type '{property.typeName}' is not supported. Convertor: {GetType().Name}");
+                    if (logger?.IsEnabled(LogLevel.Error) == true)
+                        logger.LogError($"{padding}Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] Property type '{propertyValue.typeName}' is not supported. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
             }
-        }
-
-        public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            ILogger? logger = null)
-        {
-            var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set field '{value.name.ValueOrNull()}' for {type.FullName}. This type is not supported for setting values. Convertor: {GetType().Name}");
-            return false;
-        }
-
-        public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, int depth = 0, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            ILogger? logger = null)
-        {
-            var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set property '{value.name.ValueOrNull()}' for {type.FullName}. This type is not supported for setting values. Convertor: {GetType().Name}");
-            return false;
         }
     }
 }

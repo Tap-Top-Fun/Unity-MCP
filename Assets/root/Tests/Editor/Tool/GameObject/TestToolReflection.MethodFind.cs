@@ -26,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var methodInfo = typeof(UnityEngine.Transform).GetMethod(nameof(UnityEngine.Transform.LookAt), paramTypes);
 
             var result = new Tool_Reflection().MethodFind(
-                filter: new MethodPointerRef(methodInfo),
+                filter: new MethodRef(methodInfo),
                 knownNamespace: true,
                 typeNameMatchLevel: 6,
                 methodNameMatchLevel: 6,
@@ -43,7 +43,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var methodInfo = classType.GetProperty(name);
 
             var result = new Tool_Reflection().MethodFind(
-                filter: new MethodPointerRef(methodInfo),
+                filter: new MethodRef(methodInfo),
                 knownNamespace: true);
 
             ResultValidation(result);

@@ -6,27 +6,65 @@ using System.Reflection;
 using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
+using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
     {
-        public override StringBuilder Populate(Reflector reflector, ref object obj, SerializedMember data, Type? dataType = null, int depth = 0, StringBuilder stringBuilder = null,
+        public override bool TryPopulate(
+            Reflector reflector,
+            ref object obj,
+            SerializedMember data,
+            Type? dataType = null,
+            int depth = 0,
+            StringBuilder stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
-            var instanceID = data.GetInstanceID();
+            var padding = StringUtils.GetPadding(depth);
+
+            if (logger?.IsEnabled(LogLevel.Trace) == true)
+                logger.LogTrace($"{StringUtils.GetPadding(depth)}Populate sprite from data. Convertor='{GetType().GetTypeShortName()}'.");
+
+            if (!data.TryGetInstanceID(out var instanceID))
+            {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}InstanceID not found. Set 'instanceID` as 0 if you want to set it to null. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] InstanceID not found. Set 'instanceID` as 0 if you want to set it to null. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
+            }
             if (instanceID == 0)
             {
                 obj = null;
-                return stringBuilder?.AppendLine($"[Success] InstanceID is 0. Cleared the reference. Convertor: {GetType().Name}");
+
+                if (logger?.IsEnabled(LogLevel.Trace) == true)
+                    logger.LogTrace($"{padding}[Success] InstanceID is 0. Cleared the reference. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Success] InstanceID is 0. Cleared the reference. Convertor: {GetType().GetTypeShortName()}");
+
+                return true;
             }
             var textureOrSprite = EditorUtility.InstanceIDToObject(instanceID);
             if (textureOrSprite == null)
-                return stringBuilder?.AppendLine($"[Error] InstanceID {instanceID} not found. Convertor: {GetType().Name}");
+            {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}InstanceID {instanceID} not found. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] InstanceID {instanceID} not found. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
+            }
 
             if (textureOrSprite is UnityEngine.Texture2D texture)
             {
@@ -35,17 +73,40 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     .OfType<UnityEngine.Sprite>()
                     .ToArray();
                 if (sprites.Length == 0)
-                    return stringBuilder?.AppendLine($"[Error] No sprites found for texture at path: {path}. Convertor: {GetType().Name}");
+                {
+                    if (logger?.IsEnabled(LogLevel.Error) == true)
+                        logger.LogError($"{padding}No sprites found for texture at path: {path}. Convertor: {GetType().GetTypeShortName()}");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{padding}[Error] No sprites found for texture at path: {path}. Convertor: {GetType().GetTypeShortName()}");
+
+                    return false;
+                }
 
                 obj = sprites[0]; // Assign the first sprite found
-                return stringBuilder?.AppendLine($"[Success] Assigned sprite from texture: {path}. Convertor: {GetType().Name}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Success] Assigned sprite from texture: {path}. Convertor: {GetType().GetTypeShortName()}");
+
+                return true;
             }
             if (textureOrSprite is UnityEngine.Sprite sprite)
             {
                 obj = sprite;
-                return stringBuilder?.AppendLine($"[Success] Assigned sprite: {sprite.name}. Convertor: {GetType().Name}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Success] Assigned sprite: {sprite.name}. Convertor: {GetType().GetTypeShortName()}");
+
+                return true;
             }
-            return stringBuilder?.AppendLine($"[Error] InstanceID {instanceID} is not a Texture2D or Sprite. Convertor: {GetType().Name}");
+
+            if (logger?.IsEnabled(LogLevel.Error) == true)
+                logger.LogError($"{padding}InstanceID {instanceID} is not a Texture2D or Sprite. Convertor: {GetType().GetTypeShortName()}");
+
+            if (stringBuilder != null)
+                stringBuilder.AppendLine($"{padding}[Error] InstanceID {instanceID} is not a Texture2D or Sprite. Convertor: {GetType().GetTypeShortName()}");
+
+            return false;
         }
     }
 }

@@ -65,7 +65,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 var availableComponentsPreview = allComponents
                     .Select((c, i) => Reflector.Instance.Serialize(
                         obj: c,
-                        type: c?.GetType() ?? typeof(UnityEngine.Component),
+                        fallbackType: typeof(UnityEngine.Component),
                         name: $"[{i}]",
                         recursive: false,
                         logger: McpPlugin.Instance.Logger

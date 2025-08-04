@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -46,13 +47,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 if (clients.TryRemove(connectionId, out _))
                 {
-                    _logger.LogInformation("{0} Client '{1}' removed from connected clients for {2}.", _guid, connectionId, GetType().Name);
+                    _logger.LogInformation("{0} Client '{1}' removed from connected clients for {2}.", _guid, connectionId, GetType().GetTypeShortName());
                     var client = Clients.Client(connectionId);
                     client.SendAsync(Consts.RPC.Client.ForceDisconnect);
                 }
                 else
                 {
-                    _logger.LogWarning("{0} Client '{1}' was not found in connected clients for {2}.", _guid, connectionId, GetType().Name);
+                    _logger.LogWarning("{0} Client '{1}' was not found in connected clients for {2}.", _guid, connectionId, GetType().GetTypeShortName());
                 }
             }
         }

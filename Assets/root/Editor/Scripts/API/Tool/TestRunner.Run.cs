@@ -25,11 +25,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             "TestRunner_Run",
             Title = "Run Unity Tests"
         )]
-        [Description("Execute Unity tests and return detailed results. Supports filtering by test mode, assembly, namespace, class, and method.")]
+        [Description(@"Execute Unity tests and return detailed results. Supports filtering by test mode, assembly, namespace, class, and method.
+Be default recommended to use 'EditMode' for faster iteration during development.")]
         public async Task<string> Run
         (
-            [Description("Test mode to run. Options: 'EditMode', 'PlayMode', 'All'. Default: 'All'")]
-            string testMode = "All",
+            [Description("Test mode to run. Options: 'EditMode', 'PlayMode', 'All'. Default: 'EditMode'")]
+            string testMode = "EditMode",
             [Description("Specific test assembly name to run (optional). Example: 'Assembly-CSharp-Editor-testable'")]
             string? testAssembly = null,
             [Description("Specific test namespace to run (optional). Example: 'MyTestNamespace'")]
