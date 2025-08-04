@@ -108,6 +108,7 @@ namespace com.IvanMurzak.Unity.MCP
 
         public static void RegisterJsonConverters()
         {
+            // Unity types
             JsonUtils.AddConverter(new Color32Converter());
             JsonUtils.AddConverter(new ColorConverter());
             JsonUtils.AddConverter(new Matrix4x4Converter());
@@ -122,8 +123,10 @@ namespace com.IvanMurzak.Unity.MCP
             JsonUtils.AddConverter(new RectConverter());
             JsonUtils.AddConverter(new RectIntConverter());
 
+            // Reference types
             JsonUtils.AddConverter(new ObjectRefConverter());
             JsonUtils.AddConverter(new GameObjectRefConverter());
+            JsonUtils.AddConverter(new ComponentRefConverter());
         }
     }
 }

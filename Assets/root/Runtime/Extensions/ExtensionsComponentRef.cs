@@ -9,20 +9,20 @@ namespace com.IvanMurzak.Unity.MCP.Utils
     {
         public static bool Matches(this ComponentRef componentRef, UnityEngine.Component component, int? index = null)
         {
-            if (componentRef.InstanceID != 0)
+            if (componentRef.instanceID != 0)
             {
-                return componentRef.InstanceID == (component?.GetInstanceID() ?? 0);
+                return componentRef.instanceID == (component?.GetInstanceID() ?? 0);
             }
-            if (componentRef.Index >= 0 && index != null)
+            if (componentRef.index >= 0 && index != null)
             {
-                return componentRef.Index == index.Value;
+                return componentRef.index == index.Value;
             }
-            if (!StringUtils.IsNullOrEmpty(componentRef.TypeName))
+            if (!StringUtils.IsNullOrEmpty(componentRef.typeName))
             {
                 var type = component?.GetType() ?? typeof(UnityEngine.Component);
-                return type.IsMatch(componentRef.TypeName);
+                return type.IsMatch(componentRef.typeName);
             }
-            if (componentRef.InstanceID == 0 && component == null)
+            if (componentRef.instanceID == 0 && component == null)
             {
                 return true; // Matches null component
             }
