@@ -68,7 +68,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                         ? new ObjectRef(material.GetTexture(propName).GetInstanceID())
                         : null,
                     _ => throw new NotSupportedException($"Unsupported shader property type: '{shader.GetPropertyType(i)}'."
-                        + $" Supported types are: {string.Join(", ", Enum.GetNames(typeof(UnityEngine.Rendering.ShaderPropertyType)))}.")
+                        + " Supported types are: Int, Float, Range, Color, Vector, Texture.")
                 };
                 if (propType == null)
                 {
