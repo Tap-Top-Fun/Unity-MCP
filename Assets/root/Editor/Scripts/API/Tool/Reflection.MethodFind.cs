@@ -19,7 +19,7 @@ It looks for all assemblies in the project and finds method by its name, class n
 Even private methods are available. Use 'Reflection_MethodCall' to call the method after finding it.")]
         public string MethodFind
         (
-            MethodPointerRef filter,
+            MethodRef filter,
 
             [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
             bool knownNamespace = false,
@@ -63,7 +63,7 @@ Even private methods are available. Use 'Reflection_MethodCall' to call the meth
                 return $"[Success] Method not found. With request:\n{filter}";
 
             var methodRefs = methods
-                .Select(method => new MethodDataRef(method, justRef: false))
+                .Select(method => new MethodData(method, justRef: false))
                 .ToList();
 
             return $@"[Success] Found {methods.Count} method(s):

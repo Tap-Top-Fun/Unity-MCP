@@ -43,7 +43,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             return 0;
         }
 
-        static int Compare(ParameterInfo[] original, List<MethodPointerRef.Parameter> value)
+        static int Compare(ParameterInfo[] original, List<MethodRef.Parameter> value)
         {
             if (original == null && value == null)
                 return 2;
@@ -70,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         }
 
         static IEnumerable<MethodInfo> FindMethods(
-            MethodPointerRef filter,
+            MethodRef filter,
             bool knownNamespace = false,
             int typeNameMatchLevel = 1,
             int methodNameMatchLevel = 1,
@@ -141,7 +141,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         {
             public static string MoreThanOneMethodFound(List<MethodInfo> methods)
             {
-                var methodsString = JsonUtils.ToJson(methods.Select(method => new MethodDataRef(method, justRef: false)));
+                var methodsString = JsonUtils.ToJson(methods.Select(method => new MethodData(method, justRef: false)));
                 return @$"[Error] Found more than one method. Only single method should be targeted. Please specify the method name more precisely.
 Found {methods.Count} method(s):
 ```json

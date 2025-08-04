@@ -71,8 +71,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             ValidateType<ComponentRef>();
             ValidateType<ComponentRefList>();
 
-            ValidateType<MethodDataRef>();
-            ValidateType<MethodPointerRef>();
+            ValidateType<MethodData>();
+            ValidateType<MethodRef>();
 
             yield return null;
         }

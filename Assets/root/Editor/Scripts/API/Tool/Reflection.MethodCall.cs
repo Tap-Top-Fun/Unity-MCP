@@ -25,7 +25,7 @@ Use 'Reflection_MethodFind' to find available method before using it.
 Receives input parameters and returns result.")]
         public string MethodCall
         (
-            MethodPointerRef filter,
+            MethodRef filter,
 
             [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
             bool knownNamespace = false,
