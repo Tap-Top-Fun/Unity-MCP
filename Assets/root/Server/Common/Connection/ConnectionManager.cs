@@ -10,7 +10,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public class ConnectionManager : IConnectionManager
     {
-        public const string Version = "0.7.0";
+        public const string Version = "0.13.0";
 
         readonly string _guid = Guid.NewGuid().ToString();
         readonly ILogger<ConnectionManager> _logger;
