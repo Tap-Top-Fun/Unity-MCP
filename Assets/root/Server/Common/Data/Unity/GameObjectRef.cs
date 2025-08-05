@@ -11,10 +11,15 @@ Use one of the following properties:
 3. 'name' (string) - finds GameObject by name. It may find a wrong GameObject.")]
     public class GameObjectRef
     {
+        [JsonInclude, JsonPropertyName("instanceID")]
         [Description("GameObject 'instanceID' (int). Priority: 1. (Recommended)")]
         public int instanceID { get; set; } = 0;
+
+        [JsonInclude, JsonPropertyName("path")]
         [Description("GameObject 'path'. Priority: 2.")]
         public string? path { get; set; } = null;
+
+        [JsonInclude, JsonPropertyName("name")]
         [Description("GameObject 'name'. Priority: 3.")]
         public string? name { get; set; } = null;
 

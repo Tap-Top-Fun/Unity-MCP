@@ -7,18 +7,15 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
     [Description(@"Component reference. Used to find a Component at GameObject.")]
     public class ComponentRef
     {
-        [JsonInclude]
-        [JsonPropertyName("instanceID")]
+        [JsonInclude, JsonPropertyName("instanceID")]
         [Description("Component 'instanceID' (int). Priority: 1. (Recommended)")]
         public int instanceID { get; set; } = 0;
 
-        [JsonInclude]
-        [JsonPropertyName("index")]
+        [JsonInclude, JsonPropertyName("index")]
         [Description("Component 'index'. Priority: 2. Default value is -1.")]
         public int index { get; set; } = -1;
 
-        [JsonInclude]
-        [JsonPropertyName("typeName")]
+        [JsonInclude, JsonPropertyName("typeName")]
         [Description("Component 'type'. Priority: 3. Full name of the component type. Default value is null.")]
         public string? typeName { get; set; } = null;
 

@@ -1,5 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
@@ -11,6 +12,7 @@ Use one of the following properties:
 3. 'name' (string) - finds GameObject by name. It may find a wrong GameObject.")]
     public class GameObjectComponentsRef : GameObjectRef
     {
+        [JsonInclude, JsonPropertyName("components")]
         [Description("GameObject 'components'.")]
         public SerializedMemberList? components { get; set; }
 

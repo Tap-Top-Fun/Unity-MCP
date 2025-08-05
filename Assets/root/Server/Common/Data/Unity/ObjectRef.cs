@@ -10,17 +10,14 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
     [Description("Reference to UnityEngine.Object instance. It could be GameObject, Component, Asset, etc. Anything extended from UnityEngine.Object.")]
     public class ObjectRef
     {
-        [JsonInclude]
-        [JsonPropertyName("instanceID")]
+        [JsonInclude, JsonPropertyName("instanceID")]
         [Description("Instance ID of the UnityEngine.Object. If this is 0 and assetPath is not provided or empty or null, then it will be used as 'null'.")]
         public int instanceID;
 
-        [JsonInclude]
-        [JsonPropertyName("assetPath")]
+        [JsonInclude, JsonPropertyName("assetPath")]
         public string? assetPath;
 
-        [JsonInclude]
-        [JsonPropertyName("assetGuid")]
+        [JsonInclude, JsonPropertyName("assetGuid")]
         public string? assetGuid;
 
         public ObjectRef() : this(id: 0) { }
