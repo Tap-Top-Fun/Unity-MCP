@@ -33,9 +33,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             Assert.IsFalse(schema.ToJsonString().Contains($"\"{JsonSchema.Error}\":"),
                 $"Schema for '{type.GetTypeName(pretty: true)}' contains {JsonSchema.Error} string");
 
-            var typeNodes = JsonSchema.FindAllProperties(schema, "type");
+            var typeNodes = JsonSchema.FindAllProperties(schema, JsonSchema.Type);
             foreach (var typeNode in typeNodes)
             {
+                UnityEngine.Debug.Log($"Type node for '{type.GetTypeName(pretty: true)}': {typeNode}");
                 switch (typeNode)
                 {
                     case JsonValue value:
@@ -50,7 +51,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                             if (typeObject.TryGetPropertyValue("enum", out var enumValue))
                                 continue; // Skip enum types
                         }
-                        Assert.Fail($"Unexpected type node for '{type.GetTypeName(pretty: true)}'.\nThe 'type' node has the type '{typeNode.GetType().GetTypeShortName()}':\n{typeNode}");
+                        Assert.Fail($"Unexpected type node for '{type.GetTypeName(pretty: true)}'.\nThe '{JsonSchema.Type}' node has the type '{typeNode.GetType().GetTypeShortName()}':\n{typeNode}");
                         break;
                 }
             }
