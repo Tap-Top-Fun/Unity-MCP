@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
@@ -121,7 +120,7 @@ Required:
             {
                 var dictInputParameters = inputParameters?.ToImmutableDictionary(
                     keySelector: p => p.name,
-                    elementSelector: p => Reflector.Instance.Deserialize(p, logger: McpPlugin.Instance.Logger)
+                    elementSelector: p => McpPlugin.Instance!.McpRunner.Reflector.Deserialize(p, logger: McpPlugin.Instance.Logger)
                 );
 
                 var methodWrapper = default(MethodWrapper);
@@ -129,16 +128,16 @@ Required:
                 if (string.IsNullOrEmpty(targetObject?.typeName))
                 {
                     // No object instance needed. Probably static method.
-                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: McpPlugin.Instance.Logger, method);
+                    methodWrapper = new MethodWrapper(McpPlugin.Instance!.McpRunner.Reflector, logger: McpPlugin.Instance.Logger, method);
                 }
                 else
                 {
                     // Object instance needed. Probably instance method.
-                    var obj = Reflector.Instance.Deserialize(targetObject, logger: McpPlugin.Instance.Logger);
+                    var obj = McpPlugin.Instance!.McpRunner.Reflector.Deserialize(targetObject, logger: McpPlugin.Instance.Logger);
                     if (obj == null)
                         return $"[Error] '{nameof(targetObject)}' deserialized instance is null. Please specify the '{nameof(targetObject)}' properly.";
 
-                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: McpPlugin.Instance.Logger, targetInstance: obj, method);
+                    methodWrapper = new MethodWrapper(McpPlugin.Instance!.McpRunner.Reflector, logger: McpPlugin.Instance.Logger, targetInstance: obj, method);
                 }
 
                 if (!methodWrapper.VerifyParameters(dictInputParameters, out var error))
@@ -149,7 +148,7 @@ Required:
                     : methodWrapper.Invoke();
 
                 var result = task.Result;
-                return $"[Success] Execution result:\n```json\n{JsonUtils.ToJson(result)}\n```";
+                return $"[Success] Execution result:\n```json\n{result.ToJson(McpPlugin.Instance!.McpRunner.Reflector)}\n```";
             };
 
             if (executeInMainThread)

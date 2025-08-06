@@ -42,7 +42,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var result = Reflector.Instance.Serialize(
+            var result = McpPlugin.Instance!.McpRunner.Reflector.Serialize(
                 material,
                 name: material.name,
                 logger: McpPlugin.Instance.Logger

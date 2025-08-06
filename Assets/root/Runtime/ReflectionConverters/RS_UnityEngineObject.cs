@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             if (obj == null)
-                return SerializedMember.FromValue(type, value: null, name: name);
+                return SerializedMember.FromValue(reflector, type, value: null, name: name);
 
             var unityObject = obj as T;
 
@@ -60,12 +60,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                         depth: depth,
                         stringBuilder: stringBuilder,
                         logger: logger)
-                }.SetValue(new ObjectRef(unityObject?.GetInstanceID() ?? 0));
+                }.SetValue(reflector, new ObjectRef(unityObject?.GetInstanceID() ?? 0));
             }
             else
             {
                 var objectRef = new ObjectRef(unityObject?.GetInstanceID() ?? 0);
-                return SerializedMember.FromValue(type, objectRef, name);
+                return SerializedMember.FromValue(reflector, type, objectRef, name);
             }
         }
 

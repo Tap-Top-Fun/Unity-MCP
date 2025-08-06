@@ -51,9 +51,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 case Type t when t == typeof(int):
                     if (material.HasInt(propertyValue.name))
                     {
-                        material.SetInt(propertyValue.name, propertyValue.GetValue<int>(Reflector.Instance));
+                        material.SetInt(propertyValue.name, propertyValue.GetValue<int>(reflector));
                         if (stringBuilder != null)
-                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<int>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<int>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
                         return true;
                     }
 
@@ -65,9 +65,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 case Type t when t == typeof(float):
                     if (material.HasFloat(propertyValue.name))
                     {
-                        material.SetFloat(propertyValue.name, propertyValue.GetValue<float>(Reflector.Instance));
+                        material.SetFloat(propertyValue.name, propertyValue.GetValue<float>(reflector));
                         if (stringBuilder != null)
-                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<float>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<float>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
                         return true;
                     }
 
@@ -79,9 +79,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 case Type t when t == typeof(Color):
                     if (material.HasColor(propertyValue.name))
                     {
-                        material.SetColor(propertyValue.name, propertyValue.GetValue<Color>(Reflector.Instance));
+                        material.SetColor(propertyValue.name, propertyValue.GetValue<Color>(reflector));
                         if (stringBuilder != null)
-                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Color>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Color>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
                         return true;
                     }
 
@@ -93,9 +93,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 case Type t when t == typeof(Vector4):
                     if (material.HasVector(propertyValue.name))
                     {
-                        material.SetVector(propertyValue.name, propertyValue.GetValue<Vector4>(Reflector.Instance));
+                        material.SetVector(propertyValue.name, propertyValue.GetValue<Vector4>(reflector));
                         if (stringBuilder != null)
-                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Vector4>(Reflector.Instance)}'. Convertor: {GetType().GetTypeShortName()}");
+                            stringBuilder.AppendLine($"{padding}[Success] Property '{propertyValue.name}' modified to '{propertyValue.GetValue<Vector4>(reflector)}'. Convertor: {GetType().GetTypeShortName()}");
                         return true;
                     }
 
@@ -107,7 +107,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 case Type t when t == typeof(Texture):
                     if (material.HasTexture(propertyValue.name))
                     {
-                        var objTexture = propertyValue.GetValue<ObjectRef>(Reflector.Instance).FindObject();
+                        var objTexture = propertyValue.GetValue<ObjectRef>(reflector).FindObject();
                         var texture = objTexture as Texture;
                         material.SetTexture(propertyValue.name, texture);
                         if (stringBuilder != null)

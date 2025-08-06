@@ -2,15 +2,13 @@
 using System;
 using System.Reflection;
 using System.Text;
-using System.Text.Json;
-using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using UnityEngine;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -33,7 +31,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             if (obj == null)
-                return SerializedMember.FromValue(type, value: null, name: name);
+                return SerializedMember.FromValue(reflector, type, value: null, name: name);
 
             var padding = StringUtils.GetPadding(depth);
 
@@ -80,7 +78,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
                     continue;
                 }
-                properties.Add(SerializedMember.FromValue(propType, propValue, name: propName));
+                properties.Add(SerializedMember.FromValue(reflector, propType, propValue, name: propName));
             }
 
             return new SerializedMember()
@@ -89,11 +87,11 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 typeName = type.FullName,
                 fields = new SerializedMemberList()
                 {
-                    SerializedMember.FromValue(name: FieldName, value: material.name),
-                    SerializedMember.FromValue(name: FieldShader, value: shader.name)
+                    SerializedMember.FromValue(reflector, name: FieldName, value: material.name),
+                    SerializedMember.FromValue(reflector, name: FieldShader, value: shader.name)
                 },
                 props = properties,
-            }.SetValue(new ObjectRef(material.GetInstanceID()));
+            }.SetValue(reflector, new ObjectRef(material.GetInstanceID()));
         }
 
         protected override bool TryPopulateField(
@@ -115,7 +113,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             if (fieldValue.name == FieldName)
             {
-                material.name = fieldValue.GetValue<string>(Reflector.Instance);
+                material.name = fieldValue.GetValue<string>(reflector);
 
                 if (logger?.IsEnabled(LogLevel.Information) == true)
                     logger.LogInformation($"{padding}[Success] Material name set to '{material.name}'. Convertor: {GetType().GetTypeShortName()}");
@@ -127,7 +125,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }
             if (fieldValue.name == FieldShader)
             {
-                var shaderName = fieldValue.GetValue<string>(Reflector.Instance);
+                var shaderName = fieldValue.GetValue<string>(reflector);
 
                 // Check if the shader is already set
                 if (string.IsNullOrEmpty(shaderName) || material.shader.name == shaderName)

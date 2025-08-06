@@ -54,7 +54,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             if (obj == null)
-                return SerializedMember.FromValue(type, value: null, name: name);
+                return SerializedMember.FromValue(reflector, type, value: null, name: name);
 
             var unityObject = obj as UnityEngine.GameObject;
             if (recursive)
@@ -77,12 +77,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                         depth: depth,
                         stringBuilder: stringBuilder,
                         logger: logger)
-                }.SetValue(new GameObjectRef(unityObject.GetInstanceID()));
+                }.SetValue(reflector, new GameObjectRef(unityObject.GetInstanceID()));
             }
             else
             {
                 var objectRef = new GameObjectRef(unityObject.GetInstanceID());
-                return SerializedMember.FromValue(type, objectRef, name);
+                return SerializedMember.FromValue(reflector, type, objectRef, name);
             }
         }
 

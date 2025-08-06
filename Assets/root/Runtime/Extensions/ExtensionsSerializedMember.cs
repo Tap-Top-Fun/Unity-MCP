@@ -2,6 +2,7 @@
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
@@ -11,7 +12,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         {
             try
             {
-                var objectRef = member.GetValue<ObjectRef>(Reflector.Instance);
+                var objectRef = member.GetValue<ObjectRef>(McpPlugin.Instance!.McpRunner.Reflector);
                 if (objectRef != null)
                 {
                     instanceID = objectRef.instanceID;
@@ -28,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 var fieldValue = member.GetField(nameof(ObjectRef.instanceID));
                 if (fieldValue != null)
                 {
-                    instanceID = fieldValue.GetValue<int>(Reflector.Instance);
+                    instanceID = fieldValue.GetValue<int>(McpPlugin.Instance!.McpRunner.Reflector);
                     return true;
                 }
             }
@@ -44,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         {
             try
             {
-                var objectRef = member.GetValue<GameObjectRef>(Reflector.Instance);
+                var objectRef = member.GetValue<GameObjectRef>(McpPlugin.Instance!.McpRunner.Reflector);
                 if (objectRef != null)
                 {
                     instanceID = objectRef.instanceID;
@@ -61,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 var fieldValue = member.GetField(nameof(GameObjectRef.instanceID));
                 if (fieldValue != null)
                 {
-                    instanceID = fieldValue.GetValue<int>(Reflector.Instance);
+                    instanceID = fieldValue.GetValue<int>(McpPlugin.Instance!.McpRunner.Reflector);
                     return true;
                 }
             }
@@ -77,7 +78,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         {
             try
             {
-                var objectRef = member.GetValue<GameObjectRef>(Reflector.Instance);
+                var objectRef = member.GetValue<GameObjectRef>(McpPlugin.Instance!.McpRunner.Reflector);
                 if (objectRef != null)
                 {
                     path = objectRef.path;
@@ -94,7 +95,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 var fieldValue = member.GetField(nameof(GameObjectRef.path));
                 if (fieldValue != null)
                 {
-                    path = fieldValue.GetValue<string>(Reflector.Instance);
+                    path = fieldValue.GetValue<string>(McpPlugin.Instance!.McpRunner.Reflector);
                     return true;
                 }
             }

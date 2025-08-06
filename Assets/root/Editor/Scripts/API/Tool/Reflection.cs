@@ -141,7 +141,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         {
             public static string MoreThanOneMethodFound(List<MethodInfo> methods)
             {
-                var methodsString = JsonUtils.ToJson(methods.Select(method => new MethodData(method, justRef: false)));
+                var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+                var methodsString = methods
+                    .Select(method => new MethodData(reflector, method, justRef: false))
+                    .ToJson(reflector);
+
                 return @$"[Error] Found more than one method. Only single method should be targeted. Please specify the method name more precisely.
 Found {methods.Count} method(s):
 ```json

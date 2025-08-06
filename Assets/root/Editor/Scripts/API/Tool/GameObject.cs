@@ -45,16 +45,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             public static string NotFoundComponent(int componentInstanceID, IEnumerable<UnityEngine.Component> allComponents)
             {
                 var availableComponentsPreview = allComponents
-                    .Select((c, i) => Reflector.Instance.Serialize(
+                    .Select((c, i) => McpPlugin.Instance!.McpRunner.Reflector.Serialize(
                         c,
                         name: $"[{i}]",
                         recursive: false,
                         logger: McpPlugin.Instance.Logger
                     ))
                     .ToList();
-                var previewJson = JsonUtils.ToJson(availableComponentsPreview);
+                var previewJson = availableComponentsPreview.ToJson(McpPlugin.Instance!.McpRunner.Reflector);
 
-                var instanceIdSample = JsonSerializer.Serialize(new { componentData = availableComponentsPreview[0] });
+                var instanceIdSample = new { componentData = availableComponentsPreview[0] }.ToJson(McpPlugin.Instance!.McpRunner.Reflector);
                 var helpMessage = $"Use 'name=[index]' to specify the component. Or use 'instanceID' to specify the component.\n{instanceIdSample}";
 
                 return $"[Error] No component with instanceID '{componentInstanceID}' found in GameObject.\n{helpMessage}\nAvailable components preview:\n{previewJson}";
@@ -63,7 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             {
                 var componentInstanceIDsString = string.Join(", ", componentRefs.Select(cr => cr.ToString()));
                 var availableComponentsPreview = allComponents
-                    .Select((c, i) => Reflector.Instance.Serialize(
+                    .Select((c, i) => McpPlugin.Instance!.McpRunner.Reflector.Serialize(
                         obj: c,
                         fallbackType: typeof(UnityEngine.Component),
                         name: $"[{i}]",
@@ -71,7 +71,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                         logger: McpPlugin.Instance.Logger
                     ))
                     .ToList();
-                var previewJson = JsonUtils.ToJson(availableComponentsPreview);
+                var previewJson = availableComponentsPreview.ToJson(McpPlugin.Instance!.McpRunner.Reflector);
 
                 return $"[Error] No components with instanceIDs [{componentInstanceIDsString}] found in GameObject.\nAvailable components preview:\n{previewJson}";
             }

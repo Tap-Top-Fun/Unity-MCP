@@ -1,6 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
-using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.Unity.MCP.Common;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.ReflectorNet.Model
@@ -13,7 +13,7 @@ namespace com.IvanMurzak.ReflectorNet.Model
                 return response;
 
             foreach (var item in response)
-                logger.LogInformation(ex, $"{item.Name}\n{item.ToJsonOrEmptyJsonObject()}");
+                logger.LogInformation(ex, $"{item.Name}\n{item.ToJsonOrEmptyJsonObject(McpPlugin.Instance?.McpRunner.Reflector)}");
 
             return response;
         }

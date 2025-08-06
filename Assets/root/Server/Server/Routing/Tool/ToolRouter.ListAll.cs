@@ -8,6 +8,7 @@ using NLog;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.Unity.MCP.Common;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -48,7 +49,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             };
 
             if (logger.IsTraceEnabled)
-                logger.Trace("ListAll, result: {0}", JsonUtils.ToJson(result));
+                logger.Trace("ListAll, result: {0}", result.ToJson(McpPlugin.Instance?.McpRunner.Reflector));
 
             return result;
         }

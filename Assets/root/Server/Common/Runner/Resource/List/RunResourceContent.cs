@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
@@ -54,7 +53,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             var result = await Invoke(parameters);
 
             if (_logger?.IsEnabled(LogLevel.Trace) ?? false)
-                _logger.LogTrace("Result: {result}", JsonUtils.ToJson(result));
+                _logger.LogTrace("Result: {result}", result.ToJson(_reflector));
 
             return result as ResponseResourceContent[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseResourceContent)}[]. Instead returned {result?.GetType().GetTypeShortName()}.");
         }
@@ -70,7 +69,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             var result = await InvokeDict(namedParameters?.ToImmutableDictionary(x => x.Key, x => x.Value));
 
             if (_logger?.IsEnabled(LogLevel.Trace) ?? false)
-                _logger.LogTrace("Result: {result}", JsonUtils.ToJson(result));
+                _logger.LogTrace("Result: {result}", result.ToJson(_reflector));
 
             return result as ResponseResourceContent[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseResourceContent)}[]. Instead returned {result?.GetType().GetTypeShortName()}.");
         }

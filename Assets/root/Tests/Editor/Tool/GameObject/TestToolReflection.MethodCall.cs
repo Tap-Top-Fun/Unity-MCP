@@ -30,7 +30,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var methodInfo = classType.GetMethod(name);
 
             var obj = new UnityEditor.Build.NamedBuildTarget();
-            var serializedObj = Reflector.Instance.Serialize(obj);
+            var serializedObj = McpPlugin.Instance!.McpRunner.Reflector.Serialize(obj);
 
             ResultValidation(new Tool_Reflection().MethodCall(
                 filter: new MethodRef(methodInfo),
@@ -78,8 +78,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             go1.transform.position = new UnityEngine.Vector3(0, 0, 0);
             go2.transform.position = new UnityEngine.Vector3(1, 0, 0);
 
-            var serializedTransform1 = Reflector.Instance.Serialize(go1.transform, logger: McpPlugin.Instance.Logger);
-            var serializedTransform2 = Reflector.Instance.Serialize(go2.transform, logger: McpPlugin.Instance.Logger, name: "target");
+            var serializedTransform1 = McpPlugin.Instance!.McpRunner.Reflector.Serialize(go1.transform, logger: McpPlugin.Instance.Logger);
+            var serializedTransform2 = McpPlugin.Instance!.McpRunner.Reflector.Serialize(go2.transform, logger: McpPlugin.Instance.Logger, name: "target");
 
             ResultValidation(new Tool_Reflection().MethodCall(
                 filter: MethodRef,

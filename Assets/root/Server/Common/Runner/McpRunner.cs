@@ -6,8 +6,8 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
@@ -17,13 +17,17 @@ namespace com.IvanMurzak.Unity.MCP.Common
         static readonly JsonElement EmptyInputSchema = JsonDocument.Parse("{\"type\":\"object\"}").RootElement;
 
         protected readonly ILogger<McpRunner> _logger;
+        protected readonly Reflector _reflector;
         readonly ToolRunnerCollection _tools;
         readonly ResourceRunnerCollection _resources;
 
-        public McpRunner(ILogger<McpRunner> logger, ToolRunnerCollection tools, ResourceRunnerCollection resources)
+        public Reflector Reflector => _reflector;
+
+        public McpRunner(ILogger<McpRunner> logger, Reflector reflector, ToolRunnerCollection tools, ResourceRunnerCollection resources)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("Ctor.");
+            _reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
             _tools = tools ?? throw new ArgumentNullException(nameof(tools));
             _resources = resources ?? throw new ArgumentNullException(nameof(resources));
 
@@ -94,7 +98,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                         Name = kvp.Key,
                         Title = kvp.Value.Title,
                         Description = kvp.Value.Description,
-                        InputSchema = kvp.Value.InputSchema?.ToJsonElement() ?? EmptyInputSchema,
+                        InputSchema = kvp.Value.InputSchema.ToJsonElement() ?? EmptyInputSchema,
                     })
                     .ToArray();
 
