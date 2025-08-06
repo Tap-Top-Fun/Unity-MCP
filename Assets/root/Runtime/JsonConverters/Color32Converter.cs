@@ -14,7 +14,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(Color32).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonSchema.Id] = Id,
             [JsonSchema.Type] = JsonSchema.Object,
             [JsonSchema.Properties] = new JsonObject
             {
@@ -43,11 +42,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                     [JsonSchema.Maximum] = 255
                 }
             },
-            [JsonSchema.Required] = new JsonArray { "r", "g", "b", "a" }
+            [JsonSchema.Required] = new JsonArray { "r", "g", "b", "a" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonSchema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override Color32 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

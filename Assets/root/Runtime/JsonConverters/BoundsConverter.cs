@@ -14,7 +14,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(Bounds).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonSchema.Id] = Id,
             [JsonSchema.Type] = JsonSchema.Object,
             [JsonSchema.Properties] = new JsonObject
             {
@@ -41,11 +40,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                     [JsonSchema.Required] = new JsonArray { "x", "y", "z" }
                 }
             },
-            [JsonSchema.Required] = new JsonArray { "center", "size" }
+            [JsonSchema.Required] = new JsonArray { "center", "size" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonSchema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override Bounds Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

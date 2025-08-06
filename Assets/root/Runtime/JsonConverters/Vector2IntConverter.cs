@@ -14,18 +14,18 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(Vector2Int).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonSchema.Id] = Id,
             [JsonSchema.Type] = JsonSchema.Object,
             [JsonSchema.Properties] = new JsonObject
             {
-                ["x"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
-                ["y"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number }
+                ["x"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
+                ["y"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer }
             },
-            [JsonSchema.Required] = new JsonArray { "x", "y" }
+            [JsonSchema.Required] = new JsonArray { "x", "y" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonSchema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override Vector2Int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

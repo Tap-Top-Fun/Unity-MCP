@@ -90,7 +90,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         {
             var reflector = McpPlugin.Instance.McpRunner.Reflector;
 
-            // ValidateType<object>();
             ValidateType<ObjectRef>(reflector);
 
             ValidateType<GameObjectRef>(reflector);

@@ -14,7 +14,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(Matrix4x4).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonSchema.Id] = Id,
             [JsonSchema.Type] = JsonSchema.Object,
             [JsonSchema.Properties] = new JsonObject
             {
@@ -41,11 +40,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                 "m10", "m11", "m12", "m13",
                 "m20", "m21", "m22", "m23",
                 "m30", "m31", "m32", "m33"
-            }
+            },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonSchema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override Matrix4x4 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

@@ -14,7 +14,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(Vector3).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonSchema.Id] = Id,
             [JsonSchema.Type] = JsonSchema.Object,
             [JsonSchema.Properties] = new JsonObject
             {
@@ -22,11 +21,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                 ["y"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
                 ["z"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number }
             },
-            [JsonSchema.Required] = new JsonArray { "x", "y", "z" }
+            [JsonSchema.Required] = new JsonArray { "x", "y", "z" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonSchema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override Vector3 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

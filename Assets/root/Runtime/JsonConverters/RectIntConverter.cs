@@ -14,7 +14,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(RectInt).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonSchema.Id] = Id,
             [JsonSchema.Type] = JsonSchema.Object,
             [JsonSchema.Properties] = new JsonObject
             {
@@ -23,11 +22,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                 ["width"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
                 ["height"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer }
             },
-            [JsonSchema.Required] = new JsonArray { "x", "y", "width", "height" }
+            [JsonSchema.Required] = new JsonArray { "x", "y", "width", "height" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonSchema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override RectInt Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
