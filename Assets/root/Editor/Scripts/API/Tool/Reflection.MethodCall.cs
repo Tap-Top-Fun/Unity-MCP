@@ -118,9 +118,11 @@ Required:
 
             Func<string> action = () =>
             {
+                var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+
                 var dictInputParameters = inputParameters?.ToImmutableDictionary(
                     keySelector: p => p.name,
-                    elementSelector: p => McpPlugin.Instance!.McpRunner.Reflector.Deserialize(p, logger: McpPlugin.Instance.Logger)
+                    elementSelector: p => reflector.Deserialize(p, logger: McpPlugin.Instance.Logger)
                 );
 
                 var methodWrapper = default(MethodWrapper);
@@ -128,16 +130,20 @@ Required:
                 if (string.IsNullOrEmpty(targetObject?.typeName))
                 {
                     // No object instance needed. Probably static method.
-                    methodWrapper = new MethodWrapper(McpPlugin.Instance!.McpRunner.Reflector, logger: McpPlugin.Instance.Logger, method);
+                    methodWrapper = new MethodWrapper(reflector, logger: McpPlugin.Instance.Logger, method);
                 }
                 else
                 {
                     // Object instance needed. Probably instance method.
-                    var obj = McpPlugin.Instance!.McpRunner.Reflector.Deserialize(targetObject, logger: McpPlugin.Instance.Logger);
+                    var obj = reflector.Deserialize(targetObject, logger: McpPlugin.Instance.Logger);
                     if (obj == null)
                         return $"[Error] '{nameof(targetObject)}' deserialized instance is null. Please specify the '{nameof(targetObject)}' properly.";
 
-                    methodWrapper = new MethodWrapper(McpPlugin.Instance!.McpRunner.Reflector, logger: McpPlugin.Instance.Logger, targetInstance: obj, method);
+                    methodWrapper = new MethodWrapper(
+                        reflector: reflector,
+                        logger: McpPlugin.Instance.Logger,
+                        targetInstance: obj,
+                        methodInfo: method);
                 }
 
                 if (!methodWrapper.VerifyParameters(dictInputParameters, out var error))
