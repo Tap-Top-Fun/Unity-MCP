@@ -66,8 +66,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// <returns>The result of the method execution, or null if the method is void.</returns>
         public async Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters)
         {
-            var result = await InvokeDict(namedParameters
-                ?.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value));
+            var finalParameters = namedParameters?.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value);
+            var result = await InvokeDict(finalParameters);
             return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
         }
     }

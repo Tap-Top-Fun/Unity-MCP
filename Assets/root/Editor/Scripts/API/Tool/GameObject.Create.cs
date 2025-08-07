@@ -22,6 +22,7 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
         (
             [Description("Name of the new GameObject.")]
             string name,
+            [Description("Parent GameObject reference. If not provided, the GameObject will be created at the root of the scene or prefab.")]
             GameObjectRef? parentGameObjectRef = null,
             [Description("Transform position of the GameObject.")]
             Vector3? position = null,
@@ -47,6 +48,8 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
                     return error;
             }
 
+            Debug.Log($"Create GameObject with scale = {scale}");
+
             position ??= Vector3.zero;
             rotation ??= Vector3.zero;
             scale ??= Vector3.one;
@@ -62,14 +65,17 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
                 _ => new GameObject(name)
             };
             go.name = name;
+
+            // Set parent if provided
+            if (parentGo != null)
+                go.transform.SetParent(parentGo.transform, false);
+
+            // Set the transform properties
             go.SetTransform(
                 position: position,
                 rotation: rotation,
                 scale: scale,
                 isLocalSpace: isLocalSpace);
-
-            if (parentGo != null)
-                go.transform.SetParent(parentGo.transform, false);
 
             EditorUtility.SetDirty(go);
             EditorApplication.RepaintHierarchyWindow();
