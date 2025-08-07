@@ -24,11 +24,11 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
             string name,
             GameObjectRef? parentGameObjectRef = null,
             [Description("Transform position of the GameObject.")]
-            Vector3? position = default,
+            Vector3? position = null,
             [Description("Transform rotation of the GameObject. Euler angles in degrees.")]
-            Vector3? rotation = default,
+            Vector3? rotation = null,
             [Description("Transform scale of the GameObject.")]
-            Vector3? scale = default,
+            Vector3? scale = null,
             [Description("World or Local space of transform.")]
             bool isLocalSpace = false,
             [Description("-1 - No primitive type; 0 - Cube; 1 - Sphere; 2 - Capsule; 3 - Cylinder; 4 - Plane; 5 - Quad.")]
@@ -47,6 +47,10 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
                     return error;
             }
 
+            position ??= Vector3.zero;
+            rotation ??= Vector3.zero;
+            scale ??= Vector3.one;
+
             var go = primitiveType switch
             {
                 0 => GameObject.CreatePrimitive(PrimitiveType.Cube),
@@ -58,7 +62,11 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
                 _ => new GameObject(name)
             };
             go.name = name;
-            go.SetTransform(position, rotation, scale, isLocalSpace);
+            go.SetTransform(
+                position: position,
+                rotation: rotation,
+                scale: scale,
+                isLocalSpace: isLocalSpace);
 
             if (parentGo != null)
                 go.transform.SetParent(parentGo.transform, false);

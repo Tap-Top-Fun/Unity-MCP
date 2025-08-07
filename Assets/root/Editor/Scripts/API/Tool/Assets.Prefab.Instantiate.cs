@@ -46,6 +46,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     return Tool_GameObject.Error.NotFoundGameObjectAtPath(parentPath);
             }
 
+            position ??= Vector3.zero;
+            rotation ??= Vector3.zero;
+            scale ??= Vector3.one;
+
             var go = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
             go.name = name ?? prefab.name;
             if (parentGo != null)

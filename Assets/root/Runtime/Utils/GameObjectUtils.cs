@@ -206,7 +206,11 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             }
             return bounds;
         }
-        public static GameObject SetTransform(this GameObject go, Vector3? position = default, Vector3? rotation = default, Vector3? scale = default, bool isLocalSpace = false)
+        public static GameObject SetTransform(this GameObject go,
+            Vector3? position = default,
+            Vector3? rotation = default,
+            Vector3? scale = default,
+            bool isLocalSpace = false)
         {
             if (isLocalSpace)
             {

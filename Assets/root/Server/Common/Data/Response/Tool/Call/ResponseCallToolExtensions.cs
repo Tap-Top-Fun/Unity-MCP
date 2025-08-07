@@ -10,9 +10,9 @@ namespace com.IvanMurzak.ReflectorNet.Model
         public static ResponseCallTool Log(this ResponseCallTool target, ILogger logger, Exception? ex = null)
         {
             if (target.IsError)
-                logger.LogError(ex, target.Content.FirstOrDefault()?.Text ?? "Tool execution error.");
+                logger.LogError(ex, $"Response to AI:\n{target.Content.FirstOrDefault()?.Text}");
             else
-                logger.LogInformation(ex, target.Content.FirstOrDefault()?.Text ?? "Tool executed successfully.");
+                logger.LogInformation(ex, $"Response to AI:\n{target.Content.FirstOrDefault()?.Text}");
 
             return target;
         }
