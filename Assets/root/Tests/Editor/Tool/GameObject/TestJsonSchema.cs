@@ -75,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator Primitives()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             ValidateType<int>(reflector);
             ValidateType<float>(reflector);
@@ -89,7 +89,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator Classes()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             ValidateType<ObjectRef>(reflector);
 
@@ -112,7 +112,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator Structs()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             ValidateType<DateTime>(reflector);
             ValidateType<TimeSpan>(reflector);
@@ -123,7 +123,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator UnityStructs()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             ValidateType<UnityEngine.Color32>(reflector);
             ValidateType<UnityEngine.Color>(reflector);
@@ -144,7 +144,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator Unity()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             ValidateType<UnityEngine.Object>(reflector);
             ValidateType<UnityEngine.Rigidbody>(reflector);

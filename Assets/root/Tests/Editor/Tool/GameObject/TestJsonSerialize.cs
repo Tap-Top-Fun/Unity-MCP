@@ -13,7 +13,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
     {
         static void ValidateType<T>(T sourceValue)
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             var serializedValue = sourceValue.ToJson(reflector);
             var deserializedValue = reflector.JsonSerializer.Deserialize<T>(serializedValue);

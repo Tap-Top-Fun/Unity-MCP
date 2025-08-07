@@ -76,7 +76,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator SerializeMaterial()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             var material = new Material(Shader.Find("Standard"));
 
@@ -113,7 +113,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator SerializeMaterialArray()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             var material1 = new Material(Shader.Find("Standard"));
             var material2 = new Material(Shader.Find("Standard"));
@@ -141,11 +141,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
         void Test_Serialize_Deserialize<T>(T sourceObj)
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             var type = typeof(T);
-            var serializedObj = McpPlugin.Instance!.McpRunner.Reflector.Serialize(sourceObj, logger: McpPlugin.Instance.Logger);
-            var deserializedObj = McpPlugin.Instance!.McpRunner.Reflector.Deserialize(serializedObj, logger: McpPlugin.Instance.Logger);
+            var serializedObj = reflector.Serialize(sourceObj, logger: McpPlugin.Instance.Logger);
+            var deserializedObj = reflector.Deserialize(serializedObj, logger: McpPlugin.Instance.Logger);
 
             Debug.Log($"[{type.Name}] Source:\n```json\n{sourceObj.ToJson(reflector)}\n```");
             Debug.Log($"[{type.Name}] Serialized:\n```json\n{serializedObj.ToJson(reflector)}\n```");

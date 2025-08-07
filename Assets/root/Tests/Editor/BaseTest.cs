@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using NUnit.Framework;
 using UnityEngine;
@@ -42,7 +41,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
         protected virtual IResponseData<ResponseCallTool> RunTool(string toolName, string json)
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             Debug.Log($"{toolName} Started with JSON:\n{json}");
 

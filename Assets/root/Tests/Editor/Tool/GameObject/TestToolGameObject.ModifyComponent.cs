@@ -9,7 +9,6 @@ using com.IvanMurzak.ReflectorNet.Model;
 using System.Text.Json;
 using System.Linq;
 using System.Collections.Generic;
-using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
 using UnityEditor;
@@ -21,7 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator ModifyComponent_Vector3()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             var child = new GameObject(GO_ParentName).AddChild(GO_Child1Name);
             var newPosition = new Vector3(1, 2, 3);
@@ -72,7 +71,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator ModifyComponent_Material()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
             // "Standard" shader is always available in a Unity project.
             // Doesn't matter whether it's built-in or URP/HDRP.
