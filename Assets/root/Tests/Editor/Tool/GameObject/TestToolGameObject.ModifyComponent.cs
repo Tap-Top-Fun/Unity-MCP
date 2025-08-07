@@ -131,7 +131,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator ModifyJson_SolarSystem_Sun_NameComponent()
         {
             var go = new GameObject(GO_ParentName);
-            go.AddComponent<SolarSystem>();
+            var solarSystem = go.AddComponent<SolarSystem>();
             var sunGo = new GameObject("Sun");
 
             var json = $@"
@@ -164,6 +164,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             }}";
             var result = ModifyByJson(json);
             ValidateResult(result);
+
+            Assert.IsTrue(solarSystem.sun == sunGo, $"SolarSystem.sun should be set to the GameObject with name 'Sun'. Expected: {sunGo.name}, Actual: {solarSystem.sun?.name}");
             yield return null;
         }
 
@@ -171,7 +173,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator ModifyJson_SolarSystem_Sun_NameIndex()
         {
             var go = new GameObject(GO_ParentName);
-            go.AddComponent<SolarSystem>();
+            var solarSystem = go.AddComponent<SolarSystem>();
             var sunGo = new GameObject("Sun");
 
             var json = $@"
@@ -204,12 +206,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             }}";
             var result = ModifyByJson(json);
             ValidateResult(result);
+
+            Assert.IsTrue(solarSystem.sun == sunGo, $"SolarSystem.sun should be set to the GameObject with name 'Sun'. Expected: {sunGo.name}, Actual: {solarSystem.sun?.name}");
             yield return null;
         }
         [UnityTest]
         public IEnumerator ModifyJson_SolarSystem_PlanetsArray()
         {
-            var reflector = McpPlugin.Instance.McpRunner.Reflector;
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
             var goName = "Solar System";
             var go = new GameObject(goName);
             var solarSystem = go.AddComponent<SolarSystem>();
@@ -434,7 +438,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             Assert.AreEqual(planets.Length, solarSystem.planets.Length, "Planets array length should match the input data.");
 
             for (int i = 0; i < planets.Length; i++)
+            {
                 Assert.NotNull(solarSystem.planets[i], $"Planet[{i}] should not be null.");
+                Assert.IsTrue(solarSystem.planets[i].planet == planets[i], $"Planet[{i}] GameObject should match the input data.");
+            }
 
             Assert.AreEqual(orbitRadius, solarSystem.planets[0].orbitRadius, "First planet's orbit radius should match the input data.");
             Assert.AreEqual(orbitTilt, solarSystem.planets[0].orbitTilt, "First planet's orbit tilt should match the input data.");
