@@ -174,7 +174,6 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         public override object CreateInstance(Reflector reflector, Type type)
         {
-            UnityEngine.Debug.Log($"Creating instance of {type.GetTypeName(pretty: true)}.");
             return new Material(Shader.Find("Standard"));
         }
     }
