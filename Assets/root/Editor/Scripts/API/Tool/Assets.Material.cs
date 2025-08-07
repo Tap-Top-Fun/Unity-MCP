@@ -9,7 +9,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
     {
         public static class Error
         {
-            static string MaterialsPrinted => string.Join("\n", AssetDatabase.FindAssets("t:Material"));
         }
     }
 }

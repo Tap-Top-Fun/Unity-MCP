@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
+using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -118,6 +119,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         }
 
         IResponseData<ResponseCallTool> ModifyByJson(string json) => RunTool("GameObject_Modify", json);
+        void ValidateResult(IResponseData<ResponseCallTool> result)
+        {
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsError, "Modification failed");
+            Assert.IsTrue(result.Message.Contains("[Success]"), "Result should contain success message.");
+            Assert.IsFalse(result.Message.Contains("[Error]"), "Result should not contain error message.");
+        }
 
         [UnityTest]
         public IEnumerator ModifyJson_SolarSystem_Sun_NameComponent()
@@ -154,7 +162,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 }}
               ]
             }}";
-            ModifyByJson(json);
+            var result = ModifyByJson(json);
+            ValidateResult(result);
             yield return null;
         }
 
@@ -193,7 +202,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 }}
               ]
             }}";
-            ModifyByJson(json);
+            var result = ModifyByJson(json);
+            ValidateResult(result);
             yield return null;
         }
         [UnityTest]
@@ -417,7 +427,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             Assert.AreEqual(firstPlaneInstanceId, firstPlaneInstanceIdFromSerialized, "InstanceID from JSON parsing and SerializedMember should match.");
             Assert.AreEqual(planets[0].GetInstanceID(), firstPlaneInstanceIdFromSerialized, "Planet InstanceID should match the serialized member data.");
 
-            ModifyByJson(json);
+            var result = ModifyByJson(json);
+            ValidateResult(result);
 
             Assert.NotNull(solarSystem.planets);
             Assert.AreEqual(planets.Length, solarSystem.planets.Length, "Planets array length should match the input data.");
@@ -434,6 +445,60 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                     $"Planet[{i}] InstanceID should match the input data.");
             }
 
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator SetMaterial()
+        {
+            var assetPath = "Assets/Materials/TestMaterial.mat";
+            var material = new Material(Shader.Find("Standard"));
+            AssetDatabase.CreateAsset(material, assetPath);
+            try
+            {
+                var go = new GameObject("TestGameObject");
+                var meshRenderer = go.AddComponent<MeshRenderer>();
+
+                var json = $@"
+{{
+  ""gameObjectRefs"": [
+    {{
+      ""instanceID"": {go.GetInstanceID()}
+    }}
+  ],
+  ""gameObjectDiffs"": [
+  {{
+    ""typeName"": ""UnityEngine.GameObject"",
+    ""fields"": [
+      {{
+        ""typeName"": ""UnityEngine.MeshRenderer"",
+        ""name"": ""MeshRenderer"",
+        ""props"": [
+          {{
+            ""name"": ""{nameof(MeshRenderer.sharedMaterial)}"",
+            ""typeName"": ""UnityEngine.Material"",
+            ""value"":
+              {{
+                  ""instanceID"": {material.GetInstanceID()}
+              }}
+            }}
+          ]
+        }}
+      ]
+    }}
+  ]
+}}";
+
+                var result = ModifyByJson(json);
+                ValidateResult(result);
+
+                Assert.IsTrue(meshRenderer.sharedMaterial == material, $"MeshRenderer.sharedMaterial should be set to the created material. Expected: {material.name}, Actual: {meshRenderer.sharedMaterial.name}");
+            }
+            finally
+            {
+                AssetDatabase.DeleteAsset(assetPath);
+                AssetDatabase.Refresh();
+            }
             yield return null;
         }
     }

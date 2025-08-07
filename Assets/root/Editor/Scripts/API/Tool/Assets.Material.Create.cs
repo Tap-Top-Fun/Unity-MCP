@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Create Material asset"
         )]
         [Description(@"Create new material asset with default parameters. Creates folders recursively if they do not exist. Provide proper 'shaderName', to find the shader, use 'Shader.Find' method.")]
-        public string Create
+        public string CreateMaterial
         (
             [Description("Asset path. Starts with 'Assets/'. Ends with '.mat'.")]
             string assetPath,

@@ -134,11 +134,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
-            if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set value type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
-
             var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+
+            if (logger?.IsEnabled(LogLevel.Warning) == true)
+                logger.LogWarning($"{padding}Cannot set value for '{type.GetTypeShortName()}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+
+            if (stringBuilder != null)
+                stringBuilder.AppendLine($"{padding}[Warning] Cannot set value for '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+
             return false;
         }
 

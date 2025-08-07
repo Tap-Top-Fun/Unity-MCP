@@ -38,6 +38,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 => $"[Error] Asset path must end with '.mat'. Path: '{assetPath}'.";
             public static string ShaderNotFound(string shaderName)
                 => $"[Error] Shader not found. Name: '{shaderName}'. Please check if the shader is in the project and the name is correct.";
+
+            // public static string MaterialsPrinted => string.Join("\n", AssetDatabase.FindAssets("t:Material"));
         }
     }
 }

@@ -20,7 +20,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         public override bool AllowCascadeSerialization => false;
         public override bool AllowSetValue => true;
 
-        protected override SerializedMember InternalSerialize(Reflector reflector,
+        protected override SerializedMember InternalSerialize(
+            Reflector reflector,
             object? obj,
             Type type,
             string name = null,
@@ -173,6 +174,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         public override object CreateInstance(Reflector reflector, Type type)
         {
+            UnityEngine.Debug.Log($"Creating instance of {type.GetTypeName(pretty: true)}.");
             return new Material(Shader.Find("Standard"));
         }
     }

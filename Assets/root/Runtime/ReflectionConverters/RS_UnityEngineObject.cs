@@ -98,10 +98,6 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
                 return false;
             }
-
-            // if (stringBuilder != null)
-            //     stringBuilder.AppendLine($"{padding}[Warning] Cannot set value for type '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead. Convertor: {GetType().GetTypeShortName()}");
-            // return false;
         }
 
         public override object? Deserialize(
