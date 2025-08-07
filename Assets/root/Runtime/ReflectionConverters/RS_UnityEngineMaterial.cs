@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         const string FieldName = "name";
 
         public override bool AllowCascadeSerialization => false;
-        public override bool AllowSetValue => true;
+        public override bool AllowSetValue => false;
 
         protected override SerializedMember InternalSerialize(
             Reflector reflector,
