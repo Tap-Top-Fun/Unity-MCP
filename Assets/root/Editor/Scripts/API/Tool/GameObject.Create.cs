@@ -48,8 +48,6 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
                     return error;
             }
 
-            Debug.Log($"Create GameObject with scale = {scale}");
-
             position ??= Vector3.zero;
             rotation ??= Vector3.zero;
             scale ??= Vector3.one;

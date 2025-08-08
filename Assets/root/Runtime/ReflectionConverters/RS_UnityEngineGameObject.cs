@@ -279,7 +279,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 ?? data.valueJsonElement.ToObjectRef().FindObject() as GameObject;
         }
 
-        protected override object DeserializeValueAsJsonElement(Reflector reflector, SerializedMember data, Type type, int depth = 0, StringBuilder stringBuilder = null, ILogger logger = null)
+        protected override object DeserializeValueAsJsonElement(
+            Reflector reflector,
+            SerializedMember data,
+            Type type,
+            int depth = 0,
+            StringBuilder stringBuilder = null,
+            ILogger logger = null)
         {
             return data.valueJsonElement.ToGameObjectRef().FindGameObject()
                 ?? data.valueJsonElement.ToObjectRef().FindObject() as GameObject;

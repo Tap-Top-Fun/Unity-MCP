@@ -7,8 +7,8 @@ namespace com.IvanMurzak.ReflectorNet.Model
 {
     public class ResponseCallTool : IResponseCallTool
     {
-        public bool IsError { get; set; }
-        public List<ResponseCallToolContent> Content { get; set; } = new List<ResponseCallToolContent>();
+        public virtual bool IsError { get; set; }
+        public virtual List<ResponseCallToolContent> Content { get; set; } = new List<ResponseCallToolContent>();
 
         public ResponseCallTool() { }
         public ResponseCallTool(bool isError, List<ResponseCallToolContent> content)

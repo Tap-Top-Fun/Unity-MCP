@@ -7,7 +7,6 @@ using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEngine;
 using Microsoft.Extensions.Logging;

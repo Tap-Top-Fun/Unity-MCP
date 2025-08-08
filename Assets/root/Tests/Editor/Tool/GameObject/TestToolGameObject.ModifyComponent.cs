@@ -118,6 +118,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         }
 
         IResponseData<ResponseCallTool> ModifyByJson(string json) => RunTool("GameObject_Modify", json);
+        IResponseData<ResponseCallTool> CreateGameObjectByJson(string json) => RunTool("GameObject_Create", json);
         void ValidateResult(IResponseData<ResponseCallTool> result)
         {
             Assert.IsNotNull(result);
@@ -505,6 +506,83 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 AssetDatabase.DeleteAsset(assetPath);
                 AssetDatabase.Refresh();
             }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator CreateGameObject_Default()
+        {
+            var goName = "TestGameObject";
+            var json = $@"{{
+                ""name"": ""{goName}""
+            }}";
+
+            var result = CreateGameObjectByJson(json);
+            ValidateResult(result);
+
+            var go = new GameObjectRef() { name = goName }.FindGameObject();
+
+            Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
+            Assert.IsTrue(go.transform.position == Vector3.zero, $"GameObject '{goName}' position should be (0, 0, 0). Actual: {go.transform.position}");
+            Assert.IsTrue(go.transform.rotation == Quaternion.identity, $"GameObject '{goName}' rotation should be (0, 0, 0). Actual: {go.transform.rotation.eulerAngles}");
+            Assert.IsTrue(go.transform.localScale == Vector3.one, $"GameObject '{goName}' scale should be (1, 1, 1). Actual: {go.transform.localScale}");
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator CreateGameObject_ExplicitDefaultTransform()
+        {
+            var goName = "TestGameObject";
+            int pX = 0, pY = 0, pZ = 0;
+            int rX = 0, rY = 0, rZ = 0;
+            int sX = 1, sY = 1, sZ = 1;
+
+            var json = $@"{{
+                ""name"": ""{goName}"",
+                ""position"": {{ ""x"": {pX}, ""y"": {pY}, ""z"": {pZ} }},
+                ""rotation"": {{ ""x"": {rX}, ""y"": {rY}, ""z"": {rZ} }},
+                ""scale"": {{ ""x"": {sX}, ""y"": {sY}, ""z"": {sZ} }}
+            }}";
+
+            var result = CreateGameObjectByJson(json);
+            ValidateResult(result);
+
+            var go = new GameObjectRef() { name = goName }.FindGameObject();
+
+            Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
+            Assert.IsTrue(go.transform.position == new Vector3(pX, pY, pZ), $"GameObject '{goName}' position should be ({pX}, {pY}, {pZ}). Actual: {go.transform.position}");
+            Assert.IsTrue(go.transform.rotation == Quaternion.Euler(rX, rY, rZ), $"GameObject '{goName}' rotation should be ({rX}, {rY}, {rZ}). Actual: {go.transform.rotation.eulerAngles}");
+            Assert.IsTrue(go.transform.localScale == new Vector3(sX, sY, sZ), $"GameObject '{goName}' scale should be ({sX}, {sY}, {sZ}). Actual: {go.transform.localScale}");
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator CreateGameObject_ExplicitTransform()
+        {
+            var goName = "TestGameObject";
+            int pX = 1, pY = 2, pZ = 3;
+            int rX = 0, rY = 90, rZ = 0;
+            int sX = 2, sY = 2, sZ = 2;
+
+            var json = $@"{{
+                ""name"": ""{goName}"",
+                ""position"": {{ ""x"": {pX}, ""y"": {pY}, ""z"": {pZ} }},
+                ""rotation"": {{ ""x"": {rX}, ""y"": {rY}, ""z"": {rZ} }},
+                ""scale"": {{ ""x"": {sX}, ""y"": {sY}, ""z"": {sZ} }}
+            }}";
+
+            var result = CreateGameObjectByJson(json);
+            ValidateResult(result);
+
+            var go = new GameObjectRef() { name = goName }.FindGameObject();
+
+            Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
+            Assert.IsTrue(go.transform.position == new Vector3(pX, pY, pZ), $"GameObject '{goName}' position should be ({pX}, {pY}, {pZ}). Actual: {go.transform.position}");
+            Assert.IsTrue(go.transform.rotation == Quaternion.Euler(rX, rY, rZ), $"GameObject '{goName}' rotation should be ({rX}, {rY}, {rZ}). Actual: {go.transform.rotation.eulerAngles}");
+            Assert.IsTrue(go.transform.localScale == new Vector3(sX, sY, sZ), $"GameObject '{goName}' scale should be ({sX}, {sY}, {sZ}). Actual: {go.transform.localScale}");
+
             yield return null;
         }
     }

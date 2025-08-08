@@ -9,6 +9,8 @@ using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -19,6 +21,16 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         public override bool AllowCascadeSerialization => false;
         public override bool AllowSetValue => false;
+
+        public override IEnumerable<string> GetAdditionalSerializableFields(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
+        {
+            return base.GetAdditionalSerializableFields(reflector, objType, flags, logger)
+                .Concat(new[]
+                {
+                    FieldShader,
+                    FieldName,
+                });
+        }
 
         protected override SerializedMember InternalSerialize(
             Reflector reflector,
