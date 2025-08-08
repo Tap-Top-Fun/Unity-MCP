@@ -1,8 +1,12 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
@@ -20,6 +24,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
     {
         public override bool AllowCascadePropertiesConversion => false;
         public override bool AllowSetValue => false;
+
+        protected virtual IEnumerable<string> RestrictedInValuePropertyNames => new[]
+        {
+            nameof(SerializedMember.fields),
+            nameof(SerializedMember.props)
+        };
 
         protected override SerializedMember InternalSerialize(
             Reflector reflector,
@@ -69,6 +79,105 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }
         }
 
+        public override bool TryPopulate(
+            Reflector reflector,
+            ref object obj,
+            SerializedMember data,
+            Type fallbackType = null,
+            int depth = 0,
+            StringBuilder stringBuilder = null,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger logger = null)
+        {
+            if (!FixJsonValueBody(
+                reflector: reflector,
+                obj: ref obj,
+                data: data,
+                fallbackType: fallbackType,
+                depth: depth,
+                stringBuilder: stringBuilder,
+                flags: flags,
+                logger: logger))
+            {
+                return false;
+            }
+            return base.TryPopulate(reflector, ref obj, data, fallbackType, depth, stringBuilder, flags, logger);
+        }
+
+        protected virtual bool FixJsonValueBody(
+            Reflector reflector,
+            ref object obj,
+            SerializedMember data,
+            Type fallbackType = null,
+            int depth = 0,
+            StringBuilder stringBuilder = null,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger logger = null)
+        {
+            if (data?.valueJsonElement == null)
+                return true;
+
+            if (data.valueJsonElement.Value.ValueKind != JsonValueKind.Object)
+                return true;
+
+            var isRestricted = data.valueJsonElement.Value.EnumerateObject()
+                .Any(jsonElement => RestrictedInValuePropertyNames
+                    .Any(name => name == jsonElement.Name));
+
+            if (!isRestricted)
+                return true;
+
+            var node = JsonNode.Parse(data.valueJsonElement.Value.GetRawText()).AsObject();
+
+            foreach (var restrictedPropertyName in RestrictedInValuePropertyNames)
+            {
+                if (node.TryGetPropertyValue(restrictedPropertyName, out var restrictedValue) && restrictedValue != null)
+                {
+                    if (restrictedPropertyName == nameof(SerializedMember.fields))
+                    {
+                        if (logger?.IsEnabled(LogLevel.Warning) == true)
+                            logger.LogWarning($"{StringUtils.GetPadding(depth)}'{restrictedPropertyName}' should be moved from '{SerializedMember.ValueName}'. Fixing the hierarchy automatically.");
+
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] '{restrictedPropertyName}' should be moved from '{SerializedMember.ValueName}'. Fixing the hierarchy automatically.");
+
+                        // handle 'fields' property
+                        data.fields ??= new SerializedMemberList();
+                        data.fields.AddRange(restrictedValue.Deserialize<SerializedMemberList>(reflector.JsonSerializerOptions));
+                        node.Remove(restrictedPropertyName);
+                    }
+                    else if (restrictedPropertyName == nameof(SerializedMember.props))
+                    {
+                        if (logger?.IsEnabled(LogLevel.Warning) == true)
+                            logger.LogWarning($"{StringUtils.GetPadding(depth)}'{restrictedPropertyName}' should be moved from '{SerializedMember.ValueName}'. Fixing the hierarchy automatically.");
+
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] '{restrictedPropertyName}' should be moved from '{SerializedMember.ValueName}'. Fixing the hierarchy automatically.");
+
+                        // handle 'props' property
+                        data.props ??= new SerializedMemberList();
+                        data.props.AddRange(restrictedValue.Deserialize<SerializedMemberList>(reflector.JsonSerializerOptions));
+                        node.Remove(restrictedPropertyName);
+                    }
+                    else
+                    {
+                        if (logger?.IsEnabled(LogLevel.Error) == true)
+                            logger.LogError($"{StringUtils.GetPadding(depth)}Restricted property '{restrictedPropertyName}' found in '{SerializedMember.ValueName}'.");
+
+                        if (stringBuilder != null)
+                            stringBuilder.AppendLine($"{StringUtils.GetPadding(depth)}[Error] Restricted property '{restrictedPropertyName}' found in '{SerializedMember.ValueName}'.");
+
+                        // If we found another restricted property, we need to stop processing
+                        return false;
+                    }
+                }
+            }
+
+            // Update json value to the updated json
+            data.valueJsonElement = node.ToJsonElement();
+            return true;
+        }
+
         protected override bool SetValue(
             Reflector reflector,
             ref object obj,
@@ -85,7 +194,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             try
             {
-                obj = value.Deserialize<ObjectRef>(reflector)?.FindObject();
+                obj = value.ToObjectRef(reflector, suppressException: false)?.FindObject();
                 return true;
             }
             catch (Exception ex)
@@ -109,7 +218,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
-            return data.valueJsonElement.ToObjectRef().FindObject();
+            return data.valueJsonElement.ToObjectRef(reflector).FindObject();
         }
 
         protected override object? DeserializeValueAsJsonElement(
@@ -120,7 +229,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
-            return data.valueJsonElement.ToObjectRef().FindObject();
+            return data.valueJsonElement.ToObjectRef(reflector).FindObject();
         }
     }
 }

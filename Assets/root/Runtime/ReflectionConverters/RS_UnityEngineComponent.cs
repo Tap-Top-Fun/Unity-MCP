@@ -7,7 +7,6 @@ using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -31,7 +30,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder stringBuilder = null,
             ILogger logger = null)
         {
-            return data.valueJsonElement.ToObjectRef().FindObject() as UnityEngine.Component;
+            return data.valueJsonElement.ToObjectRef(reflector).FindObject() as UnityEngine.Component;
         }
     }
 }
