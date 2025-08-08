@@ -12,7 +12,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             if (jsonElement == null)
                 return null;
 
-            if (suppressException)
+            if (!suppressException)
                 return JsonSerializer.Deserialize<GameObjectRef>(jsonElement.Value, reflector.JsonSerializerOptions);
 
             try
@@ -29,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             if (jsonElement == null)
                 return null;
 
-            if (suppressException)
+            if (!suppressException)
                 return JsonSerializer.Deserialize<ComponentRef>(jsonElement.Value, reflector.JsonSerializerOptions);
 
             try
@@ -46,7 +46,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             if (jsonElement == null)
                 return null;
 
-            if (suppressException)
+            if (!suppressException)
                 return JsonSerializer.Deserialize<ObjectRef>(jsonElement.Value, reflector.JsonSerializerOptions);
 
             try
