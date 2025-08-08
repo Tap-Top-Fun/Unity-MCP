@@ -8,8 +8,6 @@
 ## Build results
 bin/
 obj/
-bin~/
-obj~/
 
 ## OS-generated files
 .DS_Store
