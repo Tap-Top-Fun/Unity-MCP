@@ -7,10 +7,12 @@ using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
-using Microsoft.Extensions.Logging;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -19,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         const string FieldShader = "shader";
         const string FieldName = "name";
 
-        public override bool AllowCascadeSerialization => false;
+        // public override bool AllowCascadeSerialization => false;
         public override bool AllowSetValue => false;
 
         public override IEnumerable<string> GetAdditionalSerializableFields(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
@@ -105,6 +107,42 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 },
                 props = properties,
             }.SetValue(reflector, new ObjectRef(material.GetInstanceID()));
+        }
+
+        public override bool TryPopulate(Reflector reflector, ref object obj, SerializedMember data, Type fallbackType = null, int depth = 0, StringBuilder stringBuilder = null, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, ILogger logger = null)
+        {
+            if (obj is Material material)
+            {
+                if (data.TryGetInstanceID(out var instanceID))
+                {
+                    if (instanceID == 0)
+                    {
+                        // Recognized as a command to remove material
+                        obj = null;
+                        return true;
+                    }
+                    if (instanceID == material.GetInstanceID())
+                    {
+                        // Recognized as a command to update material
+                        return base.TryPopulate(reflector, ref obj, data, fallbackType, depth, stringBuilder, flags, logger);
+                    }
+                    // Need to set new material after and maybe to populate the new material.
+                    var newMaterial = reflector.Deserialize(
+                        data,
+                        fallbackType: obj?.GetType() ?? typeof(Material),
+                        fallbackName: null,
+                        depth: depth,
+                        stringBuilder: stringBuilder,
+                        logger: logger);
+
+                    var success = base.TryPopulate(reflector, ref newMaterial, data, fallbackType, depth, stringBuilder, flags, logger);
+                    if (success)
+                        obj = newMaterial;
+
+                    return success;
+                }
+            }
+            return base.TryPopulate(reflector, ref obj, data, fallbackType, depth, stringBuilder, flags, logger);
         }
 
         protected override bool TryPopulateField(
