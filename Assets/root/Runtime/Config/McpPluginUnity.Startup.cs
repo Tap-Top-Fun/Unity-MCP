@@ -103,30 +103,30 @@ namespace com.IvanMurzak.Unity.MCP
             reflector.Convertors.Add(new RS_UnityEngineMaterial());
             reflector.Convertors.Add(new RS_UnityEngineSprite());
 
-            return reflector;
-        }
+            // Json Converters
+            // ---------------------------------------------------------
 
-        public static void RegisterJsonConverters()
-        {
             // Unity types
-            JsonUtils.AddConverter(new Color32Converter());
-            JsonUtils.AddConverter(new ColorConverter());
-            JsonUtils.AddConverter(new Matrix4x4Converter());
-            JsonUtils.AddConverter(new QuaternionConverter());
-            JsonUtils.AddConverter(new Vector2Converter());
-            JsonUtils.AddConverter(new Vector2IntConverter());
-            JsonUtils.AddConverter(new Vector3Converter());
-            JsonUtils.AddConverter(new Vector3IntConverter());
-            JsonUtils.AddConverter(new Vector4Converter());
-            JsonUtils.AddConverter(new BoundsConverter());
-            JsonUtils.AddConverter(new BoundsIntConverter());
-            JsonUtils.AddConverter(new RectConverter());
-            JsonUtils.AddConverter(new RectIntConverter());
+            reflector.JsonSerializer.AddConverter(new Color32Converter());
+            reflector.JsonSerializer.AddConverter(new ColorConverter());
+            reflector.JsonSerializer.AddConverter(new Matrix4x4Converter());
+            reflector.JsonSerializer.AddConverter(new QuaternionConverter());
+            reflector.JsonSerializer.AddConverter(new Vector2Converter());
+            reflector.JsonSerializer.AddConverter(new Vector2IntConverter());
+            reflector.JsonSerializer.AddConverter(new Vector3Converter());
+            reflector.JsonSerializer.AddConverter(new Vector3IntConverter());
+            reflector.JsonSerializer.AddConverter(new Vector4Converter());
+            reflector.JsonSerializer.AddConverter(new BoundsConverter());
+            reflector.JsonSerializer.AddConverter(new BoundsIntConverter());
+            reflector.JsonSerializer.AddConverter(new RectConverter());
+            reflector.JsonSerializer.AddConverter(new RectIntConverter());
 
             // Reference types
-            JsonUtils.AddConverter(new ObjectRefConverter());
-            JsonUtils.AddConverter(new GameObjectRefConverter());
-            JsonUtils.AddConverter(new ComponentRefConverter());
+            reflector.JsonSerializer.AddConverter(new ObjectRefConverter());
+            reflector.JsonSerializer.AddConverter(new GameObjectRefConverter());
+            reflector.JsonSerializer.AddConverter(new ComponentRefConverter());
+
+            return reflector;
         }
     }
 }

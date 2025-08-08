@@ -53,9 +53,17 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// <returns>The result of the method execution, or null if the method is void.</returns>
         public async Task<ResponseCallTool> Run(params object?[] parameters)
         {
-            // Invoke the method (static or instance)
-            var result = await Invoke(parameters);
-            return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
+            try
+            {
+                // Invoke the method (static or instance)
+                var result = await Invoke(parameters);
+                return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, $"Failed to run tool: {ex.Message}\n{ex.StackTrace}");
+                return ResponseCallTool.Error($"Failed to run tool: {ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         /// <summary>
@@ -66,9 +74,21 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// <returns>The result of the method execution, or null if the method is void.</returns>
         public async Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters)
         {
-            var result = await InvokeDict(namedParameters
-                ?.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value));
-            return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
+            try
+            {
+                var finalParameters = namedParameters?.ToDictionary(
+                    keySelector: kvp => kvp.Key,
+                    elementSelector: kvp => (object?)kvp.Value);
+
+                // Invoke the method (static or instance)
+                var result = await InvokeDict(finalParameters);
+                return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, $"Failed to run tool: {ex.Message}\n{ex.StackTrace}");
+                return ResponseCallTool.Error($"Failed to run tool: {ex.Message}\n{ex.StackTrace}");
+            }
         }
     }
 }

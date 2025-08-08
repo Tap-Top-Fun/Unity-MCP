@@ -9,8 +9,9 @@ using com.IvanMurzak.ReflectorNet.Model;
 using System.Text.Json;
 using System.Linq;
 using System.Collections.Generic;
-using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.Unity.MCP.Common;
+using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -19,18 +20,24 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator ModifyComponent_Vector3()
         {
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+
             var child = new GameObject(GO_ParentName).AddChild(GO_Child1Name);
             var newPosition = new Vector3(1, 2, 3);
 
             var data = SerializedMember.FromValue(
+                    reflector: reflector,
                     name: child.name,
                     type: typeof(GameObject),
                     value: new GameObjectRef(child.GetInstanceID()))
                 .AddField(SerializedMember.FromValue(
+                    reflector: reflector,
                     name: nameof(child.transform),
                     type: typeof(Transform),
                     value: new ComponentRef(child.transform.GetInstanceID()))
-                .AddProperty(SerializedMember.FromValue(name: nameof(child.transform.position),
+                .AddProperty(SerializedMember.FromValue(
+                    reflector: reflector,
+                    name: nameof(child.transform.position),
                     value: newPosition)));
 
             var result = new Tool_GameObject().Modify(
@@ -64,6 +71,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator ModifyComponent_Material()
         {
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+
             // "Standard" shader is always available in a Unity project.
             // Doesn't matter whether it's built-in or URP/HDRP.
             var sharedMaterial = new Material(Shader.Find("Standard"));
@@ -72,19 +81,22 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var component = go.AddComponent<MeshRenderer>();
 
             var data = SerializedMember.FromValue(
+                    reflector: reflector,
                     name: go.name,
                     type: typeof(GameObject),
                     value: new GameObjectRef(go.GetInstanceID()))
                 .AddField(SerializedMember.FromValue(
+                    reflector: reflector,
                     name: null,
                     type: typeof(MeshRenderer),
                     value: new ComponentRef(component.GetInstanceID()))
                 .AddProperty(SerializedMember.FromValue(
+                    reflector: reflector,
                     name: nameof(component.sharedMaterial),
                     type: typeof(Material),
                     value: new ObjectRef(sharedMaterial.GetInstanceID()))));
 
-            Debug.Log($"Data:\n{JsonUtils.ToJson(data)}\n");
+            Debug.Log($"Data:\n{data.ToJson(reflector)}\n");
 
             var result = new Tool_GameObject().Modify(
                 gameObjectDiffs: new SerializedMemberList(data),
@@ -106,12 +118,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         }
 
         IResponseData<ResponseCallTool> ModifyByJson(string json) => RunTool("GameObject_Modify", json);
+        IResponseData<ResponseCallTool> CreateGameObjectByJson(string json) => RunTool("GameObject_Create", json);
+        void ValidateResult(IResponseData<ResponseCallTool> result)
+        {
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsError, "Modification failed");
+            Assert.IsTrue(result.Message.Contains("[Success]"), "Result should contain success message.");
+            Assert.IsFalse(result.Message.Contains("[Error]"), "Result should not contain error message.");
+        }
 
         [UnityTest]
         public IEnumerator ModifyJson_SolarSystem_Sun_NameComponent()
         {
             var go = new GameObject(GO_ParentName);
-            go.AddComponent<SolarSystem>();
+            var solarSystem = go.AddComponent<SolarSystem>();
             var sunGo = new GameObject("Sun");
 
             var json = $@"
@@ -142,7 +162,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 }}
               ]
             }}";
-            ModifyByJson(json);
+            var result = ModifyByJson(json);
+            ValidateResult(result);
+
+            Assert.IsTrue(solarSystem.sun == sunGo, $"SolarSystem.sun should be set to the GameObject with name 'Sun'. Expected: {sunGo.name}, Actual: {solarSystem.sun?.name}");
             yield return null;
         }
 
@@ -150,7 +173,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator ModifyJson_SolarSystem_Sun_NameIndex()
         {
             var go = new GameObject(GO_ParentName);
-            go.AddComponent<SolarSystem>();
+            var solarSystem = go.AddComponent<SolarSystem>();
             var sunGo = new GameObject("Sun");
 
             var json = $@"
@@ -181,12 +204,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 }}
               ]
             }}";
-            ModifyByJson(json);
+            var result = ModifyByJson(json);
+            ValidateResult(result);
+
+            Assert.IsTrue(solarSystem.sun == sunGo, $"SolarSystem.sun should be set to the GameObject with name 'Sun'. Expected: {sunGo.name}, Actual: {solarSystem.sun?.name}");
             yield return null;
         }
         [UnityTest]
         public IEnumerator ModifyJson_SolarSystem_PlanetsArray()
         {
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
             var goName = "Solar System";
             var go = new GameObject(goName);
             var solarSystem = go.AddComponent<SolarSystem>();
@@ -373,7 +400,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
               ]
             }}";
 
-            var parameters = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            var parameters = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
             var firstPlaneInstanceId = parameters["gameObjectDiffs"]
                 .EnumerateArray().First() // first go diff
@@ -391,26 +418,30 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             Assert.AreEqual(planets[0].GetInstanceID(), firstPlaneInstanceId, "Planet InstanceID should match the input data.");
 
             var serializedMemberJson = parameters["gameObjectDiffs"].GetRawText();
-            var serializedMember = JsonUtils.Deserialize<SerializedMemberList>(serializedMemberJson);
+            var serializedMember = reflector.JsonSerializer.Deserialize<SerializedMemberList>(serializedMemberJson);
 
             // Get the same instanceID but from serializedMember structure
             var firstPlaneInstanceIdFromSerialized = serializedMember[0]
                 .GetField("SolarSystem") // SolarSystem component
                 ?.GetField("planets") // planets field
-                ?.GetValue<SerializedMember[]>(Reflector.Instance)?.FirstOrDefault() // first planet
+                ?.GetValue<SerializedMember[]>(McpPlugin.Instance!.McpRunner.Reflector)?.FirstOrDefault() // first planet
                 ?.GetField("planet") // planet GameObject field
-                ?.GetValue<ObjectRef>(Reflector.Instance)?.instanceID ?? 0; // instanceID
+                ?.GetValue<ObjectRef>(McpPlugin.Instance!.McpRunner.Reflector)?.instanceID ?? 0; // instanceID
 
             Assert.AreEqual(firstPlaneInstanceId, firstPlaneInstanceIdFromSerialized, "InstanceID from JSON parsing and SerializedMember should match.");
             Assert.AreEqual(planets[0].GetInstanceID(), firstPlaneInstanceIdFromSerialized, "Planet InstanceID should match the serialized member data.");
 
-            ModifyByJson(json);
+            var result = ModifyByJson(json);
+            ValidateResult(result);
 
             Assert.NotNull(solarSystem.planets);
             Assert.AreEqual(planets.Length, solarSystem.planets.Length, "Planets array length should match the input data.");
 
             for (int i = 0; i < planets.Length; i++)
+            {
                 Assert.NotNull(solarSystem.planets[i], $"Planet[{i}] should not be null.");
+                Assert.IsTrue(solarSystem.planets[i].planet == planets[i], $"Planet[{i}] GameObject should match the input data.");
+            }
 
             Assert.AreEqual(orbitRadius, solarSystem.planets[0].orbitRadius, "First planet's orbit radius should match the input data.");
             Assert.AreEqual(orbitTilt, solarSystem.planets[0].orbitTilt, "First planet's orbit tilt should match the input data.");
@@ -420,6 +451,137 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 Assert.AreEqual(planets[i].GetInstanceID(), solarSystem.planets[i].planet.GetInstanceID(),
                     $"Planet[{i}] InstanceID should match the input data.");
             }
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator SetMaterial()
+        {
+            var assetPath = "Assets/Materials/TestMaterial.mat";
+            var material = new Material(Shader.Find("Standard"));
+            AssetDatabase.CreateAsset(material, assetPath);
+            try
+            {
+                var go = new GameObject("TestGameObject");
+                var meshRenderer = go.AddComponent<MeshRenderer>();
+
+                var json = $@"
+{{
+  ""gameObjectRefs"": [
+    {{
+      ""instanceID"": {go.GetInstanceID()}
+    }}
+  ],
+  ""gameObjectDiffs"": [
+  {{
+    ""typeName"": ""UnityEngine.GameObject"",
+    ""fields"": [
+      {{
+        ""typeName"": ""UnityEngine.MeshRenderer"",
+        ""name"": ""MeshRenderer"",
+        ""props"": [
+          {{
+            ""name"": ""{nameof(MeshRenderer.sharedMaterial)}"",
+            ""typeName"": ""UnityEngine.Material"",
+            ""value"":
+              {{
+                  ""instanceID"": {material.GetInstanceID()}
+              }}
+            }}
+          ]
+        }}
+      ]
+    }}
+  ]
+}}";
+
+                var result = ModifyByJson(json);
+                ValidateResult(result);
+
+                Assert.IsTrue(meshRenderer.sharedMaterial == material, $"MeshRenderer.sharedMaterial should be set to the created material. Expected: {material.name}, Actual: {meshRenderer.sharedMaterial.name}");
+            }
+            finally
+            {
+                AssetDatabase.DeleteAsset(assetPath);
+                AssetDatabase.Refresh();
+            }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator CreateGameObject_Default()
+        {
+            var goName = "TestGameObject";
+            var json = $@"{{
+                ""name"": ""{goName}""
+            }}";
+
+            var result = CreateGameObjectByJson(json);
+            ValidateResult(result);
+
+            var go = new GameObjectRef() { name = goName }.FindGameObject();
+
+            Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
+            Assert.IsTrue(go.transform.position == Vector3.zero, $"GameObject '{goName}' position should be (0, 0, 0). Actual: {go.transform.position}");
+            Assert.IsTrue(go.transform.rotation == Quaternion.identity, $"GameObject '{goName}' rotation should be (0, 0, 0). Actual: {go.transform.rotation.eulerAngles}");
+            Assert.IsTrue(go.transform.localScale == Vector3.one, $"GameObject '{goName}' scale should be (1, 1, 1). Actual: {go.transform.localScale}");
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator CreateGameObject_ExplicitDefaultTransform()
+        {
+            var goName = "TestGameObject";
+            int pX = 0, pY = 0, pZ = 0;
+            int rX = 0, rY = 0, rZ = 0;
+            int sX = 1, sY = 1, sZ = 1;
+
+            var json = $@"{{
+                ""name"": ""{goName}"",
+                ""position"": {{ ""x"": {pX}, ""y"": {pY}, ""z"": {pZ} }},
+                ""rotation"": {{ ""x"": {rX}, ""y"": {rY}, ""z"": {rZ} }},
+                ""scale"": {{ ""x"": {sX}, ""y"": {sY}, ""z"": {sZ} }}
+            }}";
+
+            var result = CreateGameObjectByJson(json);
+            ValidateResult(result);
+
+            var go = new GameObjectRef() { name = goName }.FindGameObject();
+
+            Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
+            Assert.IsTrue(go.transform.position == new Vector3(pX, pY, pZ), $"GameObject '{goName}' position should be ({pX}, {pY}, {pZ}). Actual: {go.transform.position}");
+            Assert.IsTrue(go.transform.rotation == Quaternion.Euler(rX, rY, rZ), $"GameObject '{goName}' rotation should be ({rX}, {rY}, {rZ}). Actual: {go.transform.rotation.eulerAngles}");
+            Assert.IsTrue(go.transform.localScale == new Vector3(sX, sY, sZ), $"GameObject '{goName}' scale should be ({sX}, {sY}, {sZ}). Actual: {go.transform.localScale}");
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator CreateGameObject_ExplicitTransform()
+        {
+            var goName = "TestGameObject";
+            int pX = 1, pY = 2, pZ = 3;
+            int rX = 0, rY = 90, rZ = 0;
+            int sX = 2, sY = 2, sZ = 2;
+
+            var json = $@"{{
+                ""name"": ""{goName}"",
+                ""position"": {{ ""x"": {pX}, ""y"": {pY}, ""z"": {pZ} }},
+                ""rotation"": {{ ""x"": {rX}, ""y"": {rY}, ""z"": {rZ} }},
+                ""scale"": {{ ""x"": {sX}, ""y"": {sY}, ""z"": {sZ} }}
+            }}";
+
+            var result = CreateGameObjectByJson(json);
+            ValidateResult(result);
+
+            var go = new GameObjectRef() { name = goName }.FindGameObject();
+
+            Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
+            Assert.IsTrue(go.transform.position == new Vector3(pX, pY, pZ), $"GameObject '{goName}' position should be ({pX}, {pY}, {pZ}). Actual: {go.transform.position}");
+            Assert.IsTrue(go.transform.rotation == Quaternion.Euler(rX, rY, rZ), $"GameObject '{goName}' rotation should be ({rX}, {rY}, {rZ}). Actual: {go.transform.rotation.eulerAngles}");
+            Assert.IsTrue(go.transform.localScale == new Vector3(sX, sY, sZ), $"GameObject '{goName}' scale should be ({sX}, {sY}, {sZ}). Actual: {go.transform.localScale}");
 
             yield return null;
         }

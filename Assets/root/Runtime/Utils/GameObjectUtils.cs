@@ -5,6 +5,8 @@ using System.Text;
 using UnityEngine;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.Unity.MCP.Common;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
@@ -178,7 +180,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         }
         public static string Print(this GameObject go) => go == null
             ? null
-            : $"instanceID: {go.GetInstanceID()}, path: {go.GetPath()}, bounds: {JsonUtils.ToJson(go.CalculateBounds())}";
+            : $"instanceID: {go.GetInstanceID()}, path: {go.GetPath()}, bounds: {go.CalculateBounds().ToJson(McpPlugin.Instance!.McpRunner.Reflector)}";
 
         public static string Print(this IEnumerable<GameObject> gos)
         {
@@ -204,7 +206,11 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             }
             return bounds;
         }
-        public static GameObject SetTransform(this GameObject go, Vector3? position = default, Vector3? rotation = default, Vector3? scale = default, bool isLocalSpace = false)
+        public static GameObject SetTransform(this GameObject go,
+            Vector3? position = default,
+            Vector3? rotation = default,
+            Vector3? scale = default,
+            bool isLocalSpace = false)
         {
             if (isLocalSpace)
             {

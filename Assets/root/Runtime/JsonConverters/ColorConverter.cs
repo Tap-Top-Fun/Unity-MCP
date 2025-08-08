@@ -14,40 +14,40 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(Color).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonUtils.Schema.Id] = Id,
-            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
-            [JsonUtils.Schema.Properties] = new JsonObject
+            [JsonSchema.Type] = JsonSchema.Object,
+            [JsonSchema.Properties] = new JsonObject
             {
                 ["r"] = new JsonObject
                 {
-                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Number,
-                    [JsonUtils.Schema.Minimum] = 0,
-                    [JsonUtils.Schema.Maximum] = 1
+                    [JsonSchema.Type] = JsonSchema.Number,
+                    [JsonSchema.Minimum] = 0,
+                    [JsonSchema.Maximum] = 1
                 },
                 ["g"] = new JsonObject
                 {
-                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Number,
-                    [JsonUtils.Schema.Minimum] = 0,
-                    [JsonUtils.Schema.Maximum] = 1
+                    [JsonSchema.Type] = JsonSchema.Number,
+                    [JsonSchema.Minimum] = 0,
+                    [JsonSchema.Maximum] = 1
                 },
                 ["b"] = new JsonObject
                 {
-                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Number,
-                    [JsonUtils.Schema.Minimum] = 0,
-                    [JsonUtils.Schema.Maximum] = 1
+                    [JsonSchema.Type] = JsonSchema.Number,
+                    [JsonSchema.Minimum] = 0,
+                    [JsonSchema.Maximum] = 1
                 },
                 ["a"] = new JsonObject
                 {
-                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Number,
-                    [JsonUtils.Schema.Minimum] = 0,
-                    [JsonUtils.Schema.Maximum] = 1
+                    [JsonSchema.Type] = JsonSchema.Number,
+                    [JsonSchema.Minimum] = 0,
+                    [JsonSchema.Maximum] = 1
                 }
             },
-            [JsonUtils.Schema.Required] = new JsonArray { "r", "g", "b", "a" }
+            [JsonSchema.Required] = new JsonArray { "r", "g", "b", "a" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonUtils.Schema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

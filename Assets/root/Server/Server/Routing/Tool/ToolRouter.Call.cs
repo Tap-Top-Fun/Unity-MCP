@@ -9,7 +9,6 @@ using ModelContextProtocol.Server;
 using NLog;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Server
@@ -48,14 +47,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             var requestData = new RequestCallTool(request.Params.Name, request.Params.Arguments);
             if (logger.IsTraceEnabled)
-                logger.Trace("Call remote tool '{0}':\n{1}", request.Params.Name, requestData.ToJsonOrEmptyJsonObject());
+                logger.Trace("Call remote tool '{0}':\n{1}", request.Params.Name, requestData.ToJsonOrEmptyJsonObject(McpPlugin.Instance?.McpRunner.Reflector));
 
             var response = await toolRunner.RunCallTool(requestData, cancellationToken: cancellationToken);
             if (response == null)
                 return new CallToolResult().SetError($"[Error] '{nameof(response)}' is null");
 
             if (logger.IsTraceEnabled)
-                logger.Trace("Call tool response:\n{0}", response.ToJsonOrEmptyJsonObject());
+                logger.Trace("Call tool response:\n{0}", response.ToJsonOrEmptyJsonObject(McpPlugin.Instance?.McpRunner.Reflector));
 
             if (response.IsError)
                 return new CallToolResult().SetError(response.Message ?? "[Error] Got an error during running tool");
@@ -74,7 +73,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             return CallWithJson(name, args =>
             {
                 foreach (var kvp in arguments)
-                    args[kvp.Key] = kvp.Value.ToJsonElement();
+                    args[kvp.Key] = kvp.Value.ToJsonElement(McpPlugin.Instance?.McpRunner.Reflector);
             });
         }
 

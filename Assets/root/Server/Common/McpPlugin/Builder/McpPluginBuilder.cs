@@ -5,11 +5,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
@@ -36,36 +34,14 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             _services.AddTransient<IConnectionManager, ConnectionManager>();
             _services.AddSingleton<IMcpPlugin, McpPlugin>();
+            _services.AddSingleton<IHubEndpointConnectionBuilder, HubEndpointConnectionBuilder>();
 
-            Func<string, Task<HubConnection>> hubConnectionBuilder = (string endpoint) =>
+            // The Func for backward compatibility
+            _services.AddSingleton<Func<string, Task<HubConnection>>>(provider =>
             {
-                if (ServiceProvider == null)
-                    throw new InvalidOperationException("ServiceProvider is not initialized. Call Build() before using this method.");
-
-                var connectionConfig = ServiceProvider.GetRequiredService<IOptions<ConnectionConfig>>().Value;
-                var hubConnection = new HubConnectionBuilder()
-                    .WithUrl(connectionConfig.Endpoint + endpoint)
-                    .WithAutomaticReconnect(new FixedRetryPolicy(TimeSpan.FromSeconds(1)))
-                    .WithServerTimeout(TimeSpan.FromSeconds(5))
-                    .AddJsonProtocol(options =>
-                    {
-                        options.PayloadSerializerOptions.DefaultIgnoreCondition = JsonUtils.JsonSerializerOptions.DefaultIgnoreCondition;
-                        options.PayloadSerializerOptions.PropertyNamingPolicy = JsonUtils.JsonSerializerOptions.PropertyNamingPolicy;
-                        options.PayloadSerializerOptions.WriteIndented = JsonUtils.JsonSerializerOptions.WriteIndented;
-
-                        foreach (var converter in JsonUtils.JsonSerializerOptions.Converters)
-                            options.PayloadSerializerOptions.Converters.Add(converter);
-                    })
-                    .ConfigureLogging(logging =>
-                    {
-                        // logging.AddNLog();
-                        logging.SetMinimumLevel(LogLevel.Trace);
-                    })
-                    .Build();
-
-                return Task.FromResult(hubConnection);
-            };
-            _services.AddSingleton(hubConnectionBuilder);
+                var factory = provider.GetRequiredService<IHubEndpointConnectionBuilder>();
+                return factory.CreateConnectionAsync;
+            });
         }
 
         public IMcpPluginBuilder WithTool(string name, Type classType, MethodInfo method)
@@ -179,6 +155,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             if (isBuilt)
                 throw new InvalidOperationException("The builder has already been built.");
+
+            if (reflector == null)
+                throw new ArgumentNullException(nameof(reflector));
+
+            _services.AddSingleton(reflector);
 
             _services.AddSingleton(new ToolRunnerCollection(reflector, _logger)
                 .Add(_toolMethods)

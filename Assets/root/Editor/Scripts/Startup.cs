@@ -8,7 +8,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor
     {
         static Startup()
         {
-            McpPluginUnity.RegisterJsonConverters();
             McpPluginUnity.BuildAndStart();
             BuildServerIfNeeded(force: true);
         }

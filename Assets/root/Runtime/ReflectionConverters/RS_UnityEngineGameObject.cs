@@ -54,7 +54,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             if (obj == null)
-                return SerializedMember.FromValue(type, value: null, name: name);
+                return SerializedMember.FromValue(reflector, type, value: null, name: name);
 
             var unityObject = obj as UnityEngine.GameObject;
             if (recursive)
@@ -77,12 +77,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                         depth: depth,
                         stringBuilder: stringBuilder,
                         logger: logger)
-                }.SetValue(new GameObjectRef(unityObject.GetInstanceID()));
+                }.SetValue(reflector, new GameObjectRef(unityObject.GetInstanceID()));
             }
             else
             {
                 var objectRef = new GameObjectRef(unityObject.GetInstanceID());
-                return SerializedMember.FromValue(type, objectRef, name);
+                return SerializedMember.FromValue(reflector, type, objectRef, name);
             }
         }
 
@@ -134,11 +134,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
-            if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Set value type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
-
             var padding = StringUtils.GetPadding(depth);
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+
+            if (logger?.IsEnabled(LogLevel.Warning) == true)
+                logger.LogWarning($"{padding}Cannot set value for '{type.GetTypeShortName()}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+
+            if (stringBuilder != null)
+                stringBuilder.AppendLine($"{padding}[Warning] Cannot set value for '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead.");
+
             return false;
         }
 
@@ -276,7 +279,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 ?? data.valueJsonElement.ToObjectRef().FindObject() as GameObject;
         }
 
-        protected override object DeserializeValueAsJsonElement(Reflector reflector, SerializedMember data, Type type, int depth = 0, StringBuilder stringBuilder = null, ILogger logger = null)
+        protected override object DeserializeValueAsJsonElement(
+            Reflector reflector,
+            SerializedMember data,
+            Type type,
+            int depth = 0,
+            StringBuilder stringBuilder = null,
+            ILogger logger = null)
         {
             return data.valueJsonElement.ToGameObjectRef().FindGameObject()
                 ?? data.valueJsonElement.ToObjectRef().FindObject() as GameObject;

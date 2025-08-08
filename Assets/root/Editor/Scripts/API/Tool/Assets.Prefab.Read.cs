@@ -50,7 +50,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             var components = prefab.GetComponents<UnityEngine.Component>();
             var componentsPreview = components
-                .Select((c, i) => Reflector.Instance.Serialize(
+                .Select((c, i) => McpPlugin.Instance!.McpRunner.Reflector.Serialize(
                     c,
                     name: $"[{i}]",
                     recursive: false,
@@ -60,10 +60,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             return @$"[Success] Found Prefab at '{prefabAssetPath}'.
 # Components preview:
-{JsonUtils.ToJson(componentsPreview)}
+{componentsPreview.ToJson(McpPlugin.Instance!.McpRunner.Reflector)}
 
 # GameObject bounds:
-{JsonUtils.ToJson(prefab.CalculateBounds())}
+{prefab.CalculateBounds().ToJson(McpPlugin.Instance!.McpRunner.Reflector)}
 
 # GameObject information:
 {prefab.ToMetadata(includeChildrenDepth).Print()}";

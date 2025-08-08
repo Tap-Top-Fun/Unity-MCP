@@ -68,7 +68,7 @@ You can modify multiple GameObjects at once. Just provide the same number of Gam
                     objToModify = component;
                 }
 
-                var success = Reflector.Instance.TryPopulate(
+                var success = McpPlugin.Instance!.McpRunner.Reflector.TryPopulate(
                     ref objToModify,
                     data: gameObjectDiffs[i],
                     stringBuilder: stringBuilder,

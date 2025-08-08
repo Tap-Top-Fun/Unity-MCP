@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -62,13 +62,14 @@ Even private methods are available. Use 'Reflection_MethodCall' to call the meth
             if (methods.Count == 0)
                 return $"[Success] Method not found. With request:\n{filter}";
 
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+
             var methodRefs = methods
-                .Select(method => new MethodData(method, justRef: false))
-                .ToList();
+                .Select(method => new MethodData(reflector, method, justRef: false));
 
             return $@"[Success] Found {methods.Count} method(s):
 ```json
-{JsonUtils.ToJson(methodRefs)}
+{methodRefs.ToJson(reflector)}
 ```";
         }
     }

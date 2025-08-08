@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -13,10 +13,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
     {
         static void ValidateType<T>(T sourceValue)
         {
-            var serializedValue = JsonUtils.ToJson(sourceValue);
-            var deserializedValue = JsonUtils.Deserialize<T>(serializedValue);
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
-            var areEqual = Reflector.Instance.AreEqual(sourceValue, deserializedValue);
+            var serializedValue = sourceValue.ToJson(reflector);
+            var deserializedValue = reflector.JsonSerializer.Deserialize<T>(serializedValue);
+
+            var areEqual = reflector.AreEqual(sourceValue, deserializedValue);
             Assert.IsTrue(areEqual, $"Serialized and deserialized values do not match for type '{typeof(T).GetTypeName(pretty: true)}'");
         }
 

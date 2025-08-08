@@ -47,7 +47,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             var obj = (object)asset;
 
             var result = new StringBuilder();
-            var success = Reflector.Instance.TryPopulate(
+            var success = McpPlugin.Instance!.McpRunner.Reflector.TryPopulate(
                 ref obj,
                 data: content,
                 stringBuilder: result,

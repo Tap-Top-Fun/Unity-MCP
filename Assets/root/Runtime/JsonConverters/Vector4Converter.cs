@@ -14,20 +14,20 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(Vector4).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonUtils.Schema.Id] = Id,
-            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
-            [JsonUtils.Schema.Properties] = new JsonObject
+            [JsonSchema.Type] = JsonSchema.Object,
+            [JsonSchema.Properties] = new JsonObject
             {
-                ["x"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["y"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["z"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["w"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number }
+                ["x"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["y"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["z"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["w"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number }
             },
-            [JsonUtils.Schema.Required] = new JsonArray { "x", "y", "z", "w" }
+            [JsonSchema.Required] = new JsonArray { "x", "y", "z", "w" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonUtils.Schema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override Vector4 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

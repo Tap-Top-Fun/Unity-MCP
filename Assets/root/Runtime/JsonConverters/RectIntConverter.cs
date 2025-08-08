@@ -14,20 +14,20 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(RectInt).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonUtils.Schema.Id] = Id,
-            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
-            [JsonUtils.Schema.Properties] = new JsonObject
+            [JsonSchema.Type] = JsonSchema.Object,
+            [JsonSchema.Properties] = new JsonObject
             {
-                ["x"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
-                ["y"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
-                ["width"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
-                ["height"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer }
+                ["x"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
+                ["y"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
+                ["width"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
+                ["height"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer }
             },
-            [JsonUtils.Schema.Required] = new JsonArray { "x", "y", "width", "height" }
+            [JsonSchema.Required] = new JsonArray { "x", "y", "width", "height" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonUtils.Schema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override RectInt Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

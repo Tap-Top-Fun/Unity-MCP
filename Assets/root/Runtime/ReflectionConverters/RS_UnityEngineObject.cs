@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             if (obj == null)
-                return SerializedMember.FromValue(type, value: null, name: name);
+                return SerializedMember.FromValue(reflector, type, value: null, name: name);
 
             var unityObject = obj as T;
 
@@ -60,12 +60,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                         depth: depth,
                         stringBuilder: stringBuilder,
                         logger: logger)
-                }.SetValue(new ObjectRef(unityObject?.GetInstanceID() ?? 0));
+                }.SetValue(reflector, new ObjectRef(unityObject?.GetInstanceID() ?? 0));
             }
             else
             {
                 var objectRef = new ObjectRef(unityObject?.GetInstanceID() ?? 0);
-                return SerializedMember.FromValue(type, objectRef, name);
+                return SerializedMember.FromValue(reflector, type, objectRef, name);
             }
         }
 
@@ -83,8 +83,21 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             if (logger?.IsEnabled(LogLevel.Trace) == true)
                 logger.LogTrace($"{padding}Set value type='{type.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
 
-            stringBuilder?.AppendLine($"{padding}[Warning] Cannot set value for type '{type.GetTypeName(pretty: false)}'. This type is not supported for setting values. Maybe did you want to set a field or a property? If so, set the value in the '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}' property instead. Convertor: {GetType().GetTypeShortName()}");
-            return false;
+            try
+            {
+                obj = value.Deserialize<ObjectRef>(reflector)?.FindObject();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError(ex, $"{padding}[Error] Failed to deserialize value for type '{type.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}. Exception: {ex.Message}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] Failed to set value for type '{type.GetTypeName(pretty: false)}'. Convertor: {GetType().GetTypeShortName()}. Exception: {ex.Message}");
+
+                return false;
+            }
         }
 
         public override object? Deserialize(

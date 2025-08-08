@@ -40,14 +40,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 if (go == null)
                     throw new System.Exception($"[Error] GameObject '{path}' not found.");
 
+                var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+
                 return ResponseResourceContent.CreateText(
                     uri,
-                    JsonUtils.ToJson(
-                        Reflector.Instance.Serialize(
-                            go,
-                            logger: McpPlugin.Instance.Logger
-                        )
-                    ),
+                    reflector.Serialize(
+                        go,
+                        logger: McpPlugin.Instance.Logger
+                    ).ToJson(reflector),
                     Consts.MimeType.TextJson
                 ).MakeArray();
             });

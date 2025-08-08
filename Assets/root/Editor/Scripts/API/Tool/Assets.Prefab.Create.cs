@@ -47,7 +47,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             EditorUtility.SetDirty(go);
             EditorApplication.RepaintHierarchyWindow();
 
-            var result = Reflector.Instance.Serialize(
+            var result = McpPlugin.Instance!.McpRunner.Reflector.Serialize(
                 prefabGo,
                 recursive: false,
                 logger: McpPlugin.Instance.Logger

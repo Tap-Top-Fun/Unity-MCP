@@ -29,12 +29,12 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             if (obj == null)
-                return SerializedMember.FromValue(type, value: null, name: name);
+                return SerializedMember.FromValue(reflector, type, value: null, name: name);
 
             if (obj is UnityEngine.Texture2D texture)
             {
                 var objectRef = new ObjectRef(texture.GetInstanceID());
-                return SerializedMember.FromValue(type, objectRef, name);
+                return SerializedMember.FromValue(reflector, type, objectRef, name);
             }
 
             return base.InternalSerialize(reflector,

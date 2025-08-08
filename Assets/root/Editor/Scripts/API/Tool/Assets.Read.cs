@@ -39,13 +39,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (asset == null)
                 return Error.NotFoundAsset(assetPath, assetGuid);
 
-            var serialized = Reflector.Instance.Serialize(
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+
+            var serialized = reflector.Serialize(
                 asset,
                 name: asset.name,
                 recursive: true,
                 logger: McpPlugin.Instance.Logger
             );
-            var json = JsonUtils.ToJson(serialized);
+            var json = serialized.ToJson(reflector);
 
             return $"[Success] Loaded asset at path '{assetPath}'.\n{json}";
 

@@ -1,35 +1,13 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Json;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
-using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
-    public class ObjectRefConverter : JsonConverter<ObjectRef>, IJsonSchemaConverter
+    public class ObjectRefConverter : JsonConverter<ObjectRef>
     {
-        public string Id => typeof(ObjectRef).GetTypeId();
-        public JsonNode GetScheme() => new JsonObject
-        {
-            [JsonUtils.Schema.Id] = Id,
-            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
-            [JsonUtils.Schema.Properties] = new JsonObject
-            {
-                [nameof(ObjectRef.instanceID)] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
-                [nameof(ObjectRef.assetPath)] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.String },
-                [nameof(ObjectRef.assetGuid)] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.String }
-            },
-            [JsonUtils.Schema.Required] = new JsonArray { nameof(ObjectRef.instanceID) }
-        };
-        public JsonNode GetSchemeRef() => new JsonObject
-        {
-            [JsonUtils.Schema.Ref] = Id
-        };
-
         public override ObjectRef? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.Null)

@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         readonly string _guid = Guid.NewGuid().ToString();
         readonly ILogger<ConnectionManager> _logger;
         readonly ReactiveProperty<HubConnection?> _hubConnection = new();
-        readonly Func<string, Task<HubConnection>> _hubConnectionBuilder;
+        readonly IHubEndpointConnectionBuilder _hubConnectionBuilder;
         readonly ReactiveProperty<HubConnectionState> _connectionState = new(HubConnectionState.Disconnected);
         readonly ReactiveProperty<bool> _continueToReconnect = new(false);
         readonly CompositeDisposable _disposables = new();
@@ -29,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public ReadOnlyReactiveProperty<bool> KeepConnected => _continueToReconnect.ToReadOnlyReactiveProperty();
         public string Endpoint { get; set; } = string.Empty;
 
-        public ConnectionManager(ILogger<ConnectionManager> logger, Func<string, Task<HubConnection>> hubConnectionBuilder)
+        public ConnectionManager(ILogger<ConnectionManager> logger, IHubEndpointConnectionBuilder hubConnectionBuilder)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("{0} Ctor. Version: {1}", _guid, Version);
@@ -188,7 +188,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             if (_hubConnection.Value == null)
             {
                 _logger.LogDebug("{0} Creating new HubConnection instance {1}.", _guid, Endpoint);
-                var hubConnection = await _hubConnectionBuilder(Endpoint);
+                var hubConnection = await _hubConnectionBuilder.CreateConnectionAsync(Endpoint);
                 if (hubConnection == null)
                 {
                     _logger.LogError("{0} Can't create connection instance. Something may be wrong with Connection Config {1}.", _guid, Endpoint);

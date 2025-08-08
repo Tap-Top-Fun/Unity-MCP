@@ -14,38 +14,38 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(BoundsInt).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonUtils.Schema.Id] = Id,
-            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
-            [JsonUtils.Schema.Properties] = new JsonObject
+            [JsonSchema.Type] = JsonSchema.Object,
+            [JsonSchema.Properties] = new JsonObject
             {
                 ["position"] = new JsonObject
                 {
-                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
-                    [JsonUtils.Schema.Properties] = new JsonObject
+                    [JsonSchema.Type] = JsonSchema.Object,
+                    [JsonSchema.Properties] = new JsonObject
                     {
-                        ["x"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
-                        ["y"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
-                        ["z"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer }
+                        ["x"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
+                        ["y"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
+                        ["z"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer }
                     },
-                    [JsonUtils.Schema.Required] = new JsonArray { "x", "y", "z" }
+                    [JsonSchema.Required] = new JsonArray { "x", "y", "z" }
                 },
                 ["size"] = new JsonObject
                 {
-                    [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
-                    [JsonUtils.Schema.Properties] = new JsonObject
+                    [JsonSchema.Type] = JsonSchema.Object,
+                    [JsonSchema.Properties] = new JsonObject
                     {
-                        ["x"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
-                        ["y"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer },
-                        ["z"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Integer }
+                        ["x"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
+                        ["y"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer },
+                        ["z"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Integer }
                     },
-                    [JsonUtils.Schema.Required] = new JsonArray { "x", "y", "z" }
+                    [JsonSchema.Required] = new JsonArray { "x", "y", "z" }
                 }
             },
-            [JsonUtils.Schema.Required] = new JsonArray { "position", "size" }
+            [JsonSchema.Required] = new JsonArray { "position", "size" },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonUtils.Schema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override BoundsInt Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

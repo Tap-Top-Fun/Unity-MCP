@@ -2,15 +2,15 @@
 using System;
 using System.Reflection;
 using System.Text;
-using System.Text.Json;
-using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using UnityEngine;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -22,7 +22,18 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         public override bool AllowCascadeSerialization => false;
         public override bool AllowSetValue => false;
 
-        protected override SerializedMember InternalSerialize(Reflector reflector,
+        public override IEnumerable<string> GetAdditionalSerializableFields(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
+        {
+            return base.GetAdditionalSerializableFields(reflector, objType, flags, logger)
+                .Concat(new[]
+                {
+                    FieldShader,
+                    FieldName,
+                });
+        }
+
+        protected override SerializedMember InternalSerialize(
+            Reflector reflector,
             object? obj,
             Type type,
             string name = null,
@@ -33,7 +44,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             if (obj == null)
-                return SerializedMember.FromValue(type, value: null, name: name);
+                return SerializedMember.FromValue(reflector, type, value: null, name: name);
 
             var padding = StringUtils.GetPadding(depth);
 
@@ -80,7 +91,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
                     continue;
                 }
-                properties.Add(SerializedMember.FromValue(propType, propValue, name: propName));
+                properties.Add(SerializedMember.FromValue(reflector, propType, propValue, name: propName));
             }
 
             return new SerializedMember()
@@ -89,11 +100,11 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 typeName = type.FullName,
                 fields = new SerializedMemberList()
                 {
-                    SerializedMember.FromValue(name: FieldName, value: material.name),
-                    SerializedMember.FromValue(name: FieldShader, value: shader.name)
+                    SerializedMember.FromValue(reflector, name: FieldName, value: material.name),
+                    SerializedMember.FromValue(reflector, name: FieldShader, value: shader.name)
                 },
                 props = properties,
-            }.SetValue(new ObjectRef(material.GetInstanceID()));
+            }.SetValue(reflector, new ObjectRef(material.GetInstanceID()));
         }
 
         protected override bool TryPopulateField(
@@ -115,7 +126,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             if (fieldValue.name == FieldName)
             {
-                material.name = fieldValue.GetValue<string>(Reflector.Instance);
+                material.name = fieldValue.GetValue<string>(reflector);
 
                 if (logger?.IsEnabled(LogLevel.Information) == true)
                     logger.LogInformation($"{padding}[Success] Material name set to '{material.name}'. Convertor: {GetType().GetTypeShortName()}");
@@ -127,7 +138,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }
             if (fieldValue.name == FieldShader)
             {
-                var shaderName = fieldValue.GetValue<string>(Reflector.Instance);
+                var shaderName = fieldValue.GetValue<string>(reflector);
 
                 // Check if the shader is already set
                 if (string.IsNullOrEmpty(shaderName) || material.shader.name == shaderName)

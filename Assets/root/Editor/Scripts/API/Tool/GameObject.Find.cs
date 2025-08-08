@@ -35,13 +35,15 @@ Also, it returns Components preview just for the target GameObject.")]
                 if (error != null)
                     return error;
 
-                var serializedGo = Reflector.Instance.Serialize(
+                var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+
+                var serializedGo = reflector.Serialize(
                     obj: go,
                     name: go.name,
                     recursive: !briefData,
                     logger: McpPlugin.Instance.Logger
                 );
-                var json = JsonUtils.ToJson(serializedGo);
+                var json = serializedGo.ToJson(reflector);
                 return @$"[Success] Found GameObject.
 # Data:
 ```json
@@ -50,7 +52,7 @@ Also, it returns Components preview just for the target GameObject.")]
 
 # Bounds:
 ```json
-{JsonUtils.ToJson(go.CalculateBounds())}
+{go.CalculateBounds().ToJson(reflector)}
 ```
 
 # Hierarchy:

@@ -1,6 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
-using com.IvanMurzak.ReflectorNet;
+using System.IO;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using UnityEditor;
@@ -14,8 +14,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             "Assets_Material_Create",
             Title = "Create Material asset"
         )]
-        [Description(@"Create new material asset with default parameters. Right 'shaderName' should be set. To find the shader, use 'Shader.Find' method.")]
-        public string Create
+        [Description(@"Create new material asset with default parameters. Creates folders recursively if they do not exist. Provide proper 'shaderName', to find the shader, use 'Shader.Find' method.")]
+        public string CreateMaterial
         (
             [Description("Asset path. Starts with 'Assets/'. Ends with '.mat'.")]
             string assetPath,
@@ -38,11 +38,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 return Error.ShaderNotFound(shaderName);
 
             var material = new UnityEngine.Material(shader);
+
+            // Create all folders in the path if they do not exist
+            var directory = Path.GetDirectoryName(assetPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+                AssetDatabase.Refresh();
+            }
+
             AssetDatabase.CreateAsset(material, assetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var result = Reflector.Instance.Serialize(
+            var result = McpPlugin.Instance!.McpRunner.Reflector.Serialize(
                 material,
                 name: material.name,
                 logger: McpPlugin.Instance.Logger

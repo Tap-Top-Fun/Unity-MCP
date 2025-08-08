@@ -14,38 +14,38 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
         public string Id => typeof(Matrix4x4).GetTypeId();
         public JsonNode GetScheme() => new JsonObject
         {
-            [JsonUtils.Schema.Id] = Id,
-            [JsonUtils.Schema.Type] = JsonUtils.Schema.Object,
-            [JsonUtils.Schema.Properties] = new JsonObject
+            [JsonSchema.Type] = JsonSchema.Object,
+            [JsonSchema.Properties] = new JsonObject
             {
-                ["m00"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m01"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m02"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m03"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m10"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m11"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m12"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m13"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m20"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m21"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m22"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m23"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m30"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m31"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m32"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number },
-                ["m33"] = new JsonObject { [JsonUtils.Schema.Type] = JsonUtils.Schema.Number }
+                ["m00"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m01"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m02"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m03"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m10"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m11"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m12"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m13"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m20"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m21"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m22"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m23"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m30"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m31"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m32"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number },
+                ["m33"] = new JsonObject { [JsonSchema.Type] = JsonSchema.Number }
             },
-            [JsonUtils.Schema.Required] = new JsonArray
+            [JsonSchema.Required] = new JsonArray
             {
                 "m00", "m01", "m02", "m03",
                 "m10", "m11", "m12", "m13",
                 "m20", "m21", "m22", "m23",
                 "m30", "m31", "m32", "m33"
-            }
+            },
+            [JsonSchema.AdditionalProperties] = false
         };
         public JsonNode GetSchemeRef() => new JsonObject
         {
-            [JsonUtils.Schema.Ref] = Id
+            [JsonSchema.Ref] = JsonSchema.RefValue + Id
         };
 
         public override Matrix4x4 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
