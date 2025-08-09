@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>com.IvanMurzak.Unity.MCP.Common</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- <PackageReference Include="com.IvanMurzak.ReflectorNet" Version="1.0.1" /> -->
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+    <PackageReference Include="ModelContextProtocol" Version="0.3.0-preview.1" />
+    <PackageReference Include="R3" Version="1.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ReflectorNet">
+      <HintPath>ReflectorNet.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
