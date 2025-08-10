@@ -9,7 +9,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         static Startup()
         {
             McpPluginUnity.BuildAndStart();
-            BuildServerIfNeeded(force: true);
         }
     }
 }

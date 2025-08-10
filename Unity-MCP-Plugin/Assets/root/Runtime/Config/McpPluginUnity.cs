@@ -24,9 +24,19 @@ namespace com.IvanMurzak.Unity.MCP
 
         public static void Init()
         {
-            instance ??= GetOrCreateInstance();
             if (instance == null)
-                Debug.LogWarning("[McpPluginUnity] ConnectionConfig instance is null");
+            {
+                instance = GetOrCreateInstance(out var wasCreated);
+                if (instance == null)
+                {
+                    Debug.LogWarning("[McpPluginUnity] ConnectionConfig instance is null");
+                    return;
+                }
+                else if (wasCreated)
+                {
+                    Save();
+                }
+            }
         }
 
         public static bool IsLogActive(LogLevel level)

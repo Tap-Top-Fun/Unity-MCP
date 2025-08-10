@@ -14,8 +14,10 @@ namespace com.IvanMurzak.Unity.MCP
         public static void InvalidateAssetFile() => UnityEditor.AssetDatabase.ImportAsset(AssetsFilePath, UnityEditor.ImportAssetOptions.ForceUpdate);
 #endif
 
-        public static McpPluginUnity GetOrCreateInstance()
+        public static McpPluginUnity GetOrCreateInstance() => GetOrCreateInstance(out _);
+        public static McpPluginUnity GetOrCreateInstance(out bool wasCreated)
         {
+            wasCreated = false;
             try
             {
 #if UNITY_EDITOR
@@ -38,6 +40,7 @@ namespace com.IvanMurzak.Unity.MCP
                 {
                     Debug.Log($"[McpPluginUnity] <color=orange><b>Creating {ResourcesFileName}</b> file at <i>{AssetsFilePath}</i></color>");
                     config = new Data();
+                    wasCreated = true;
                 }
                 return new McpPluginUnity() { data = config };
             }

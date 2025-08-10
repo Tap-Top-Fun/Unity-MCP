@@ -237,13 +237,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             var rawJsonField = root.Query<TextField>("rawJsonConfiguration").First();
             rawJsonField.value = Startup.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutMs);
-
-            // Rebuild MCP Server
-            // -----------------------------------------------------------------
-            root.Query<Button>("btnRebuildServer").First().RegisterCallback<ClickEvent>(async evt =>
-            {
-                await Startup.BuildServer(force: true);
-            });
         }
     }
 }

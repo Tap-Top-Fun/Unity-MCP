@@ -56,8 +56,6 @@
                 <ui:TextField name="rawJsonConfiguration" multiline="true" readonly="true" selectOnFocus="true" value="This is a multi-line, read-only, selectable text box.&#10;You can copy from here." style="margin-top: 4px; margin-right: 0; margin-left: 0; margin-bottom: 4px;" />
             </ui:VisualElement>
             <ui:VisualElement name="divider" class="Divider" style="flex-grow: 1;" />
-            <ui:Button name="btnRebuildServer" text="Rebuild MCP Server" class="Button-Primary" />
-            <ui:Label text="Please check the logs to see the operation result." class="section-desc" />
         </ui:VisualElement>
     </ui:ScrollView>
 </ui:UXML>
