@@ -9,8 +9,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public partial class McpPlugin : IMcpPlugin
     {
-        public const string Version = "0.13.0";
-
         readonly ILogger<McpPlugin> _logger;
         readonly IRpcRouter? _rpcRouter;
         readonly CompositeDisposable _disposables = new();
@@ -26,7 +24,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public McpPlugin(ILogger<McpPlugin> logger, IMcpRunner mcpRunner, IRpcRouter? rpcRouter = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogTrace("{0} Ctor. Version: {Version}", typeof(McpPlugin).Name, Version);
+            _logger.LogTrace("{0} Ctor.", typeof(McpPlugin).Name);
 
             McpRunner = mcpRunner ?? throw new ArgumentNullException(nameof(mcpRunner));
 

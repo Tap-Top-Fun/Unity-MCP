@@ -9,8 +9,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public class ConnectionManager : IConnectionManager
     {
-        public const string Version = "0.13.0";
-
         readonly string _guid = Guid.NewGuid().ToString();
         readonly ILogger<ConnectionManager> _logger;
         readonly ReactiveProperty<HubConnection?> _hubConnection = new();
@@ -31,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public ConnectionManager(ILogger<ConnectionManager> logger, IHubEndpointConnectionBuilder hubConnectionBuilder)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogTrace("{0} Ctor. Version: {1}", _guid, Version);
+            _logger.LogTrace("{0} Ctor.", _guid);
 
             _hubConnectionBuilder = hubConnectionBuilder ?? throw new ArgumentNullException(nameof(hubConnectionBuilder));
             _hubConnection.Subscribe(hubConnection =>
