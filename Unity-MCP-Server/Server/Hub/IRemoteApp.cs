@@ -1,4 +1,3 @@
-#if !UNITY_5_3_OR_NEWER
 using System;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet.Model;
@@ -24,4 +23,3 @@ namespace com.IvanMurzak.Unity.MCP.Server
         // Task RespondOnListResourceTemplates(IResponseData<List<IResponseResourceTemplate>> data, CancellationToken cancellationToken = default);
     }
 }
-#endif

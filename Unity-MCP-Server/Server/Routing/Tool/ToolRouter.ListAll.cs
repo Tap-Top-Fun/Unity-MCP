@@ -1,4 +1,3 @@
-#if !UNITY_5_3_OR_NEWER
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,4 +54,3 @@ namespace com.IvanMurzak.Unity.MCP.Server
         }
     }
 }
-#endif

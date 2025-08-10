@@ -1,4 +1,3 @@
-#if !UNITY_5_3_OR_NEWER
 using System;
 using com.IvanMurzak.ReflectorNet.Model;
 using ModelContextProtocol.Protocol;
@@ -24,4 +23,3 @@ namespace com.IvanMurzak.Unity.MCP.Server
         }
     }
 }
-#endif

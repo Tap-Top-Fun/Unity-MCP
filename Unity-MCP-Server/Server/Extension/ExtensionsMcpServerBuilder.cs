@@ -1,4 +1,3 @@
-#if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,4 +20,3 @@ namespace com.IvanMurzak.Unity.MCP.Server
         }
     }
 }
-#endif

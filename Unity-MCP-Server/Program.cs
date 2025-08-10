@@ -1,5 +1,4 @@
-﻿#if !UNITY_5_3_OR_NEWER
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -125,4 +124,3 @@ namespace com.IvanMurzak.Unity.MCP.Server
         }
     }
 }
-#endif
