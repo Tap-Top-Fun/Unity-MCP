@@ -113,34 +113,35 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             if (obj is Material material)
             {
-                if (data.TryGetInstanceID(out var instanceID))
+                var unityObject = data.valueJsonElement
+                    .ToObjectRef(reflector, suppressException: true)
+                    ?.FindObject();
+
+                if (unityObject == null)
                 {
-                    if (instanceID == 0)
-                    {
-                        // Recognized as a command to remove material
-                        obj = null;
-                        return true;
-                    }
-                    if (instanceID == material.GetInstanceID())
-                    {
-                        // Recognized as a command to update material
-                        return base.TryPopulate(reflector, ref obj, data, fallbackType, depth, stringBuilder, flags, logger);
-                    }
-                    // Need to set new material after and maybe to populate the new material.
-                    var newMaterial = reflector.Deserialize(
-                        data,
-                        fallbackType: obj?.GetType() ?? typeof(Material),
-                        fallbackName: null,
-                        depth: depth,
-                        stringBuilder: stringBuilder,
-                        logger: logger);
-
-                    var success = base.TryPopulate(reflector, ref newMaterial, data, fallbackType, depth, stringBuilder, flags, logger);
-                    if (success)
-                        obj = newMaterial;
-
-                    return success;
+                    // Recognized as a command to remove material
+                    obj = null;
+                    return true;
                 }
+                if (material.GetInstanceID() == unityObject?.GetInstanceID())
+                {
+                    // Recognized as a command to update material
+                    return base.TryPopulate(reflector, ref obj, data, fallbackType, depth, stringBuilder, flags, logger);
+                }
+                // Need to set new material after and maybe to populate the new material.
+                var newMaterial = reflector.Deserialize(
+                    data,
+                    fallbackType: obj?.GetType() ?? typeof(Material),
+                    fallbackName: null,
+                    depth: depth,
+                    stringBuilder: stringBuilder,
+                    logger: logger);
+
+                var success = base.TryPopulate(reflector, ref newMaterial, data, fallbackType, depth, stringBuilder, flags, logger);
+                if (success)
+                    obj = newMaterial;
+
+                return success;
             }
             return base.TryPopulate(reflector, ref obj, data, fallbackType, depth, stringBuilder, flags, logger);
         }
