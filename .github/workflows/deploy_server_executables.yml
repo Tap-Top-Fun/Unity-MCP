@@ -1,0 +1,43 @@
+name: deploy-server-executables
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-zip:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Make build script executable
+      run: chmod +x Unity-MCP-Server/build-all.sh
+
+    - name: Build executables for all platforms
+      run: |
+        cd Unity-MCP-Server
+        ./build-all.sh Release
+
+    - name: Create zip files for each runtime
+      run: |
+        cd Unity-MCP-Server/publish
+        for dir in */; do
+          runtime=$(basename "$dir")
+          echo "Creating zip for $runtime..."
+          zip -r "unity-mcp-server-$runtime.zip" "$dir"
+        done
+        ls -la *.zip
+
+    - name: Upload release assets
+      uses: softprops/action-gh-release@v2
+      with:
+        files: Unity-MCP-Server/publish/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
