@@ -28,7 +28,6 @@ $runtimes = @(
     "win-x86",
     "win-arm64",
     "linux-x64",
-    "linux-arm",
     "linux-arm64",
     "osx-x64",
     "osx-arm64"
@@ -77,6 +76,68 @@ if ($failed -eq 0) {
     Write-Host "`n🎉 All builds completed successfully!" -ForegroundColor Green
     Write-Host "Executables are located in: $(Resolve-Path $PublishRoot)" -ForegroundColor Yellow
     Write-Host "Per-platform folders: ./publish/{runtime}/" -ForegroundColor Yellow
+
+    Write-Host "`n📦 Creating zip archives for each runtime..." -ForegroundColor Cyan
+
+    $zipSuccess = 0
+    $zipFailed = 0
+
+    foreach ($runtime in $runtimes) {
+        $runtimePath = Join-Path $PublishRoot $runtime
+
+        if (Test-Path $runtimePath) {
+            Write-Host "🗜️  Creating zip for $runtime..." -ForegroundColor Yellow
+
+            $zipName = "unity-mcp-server-$runtime.zip"
+            $zipPath = Join-Path $PublishRoot $zipName
+
+            try {
+                # Remove existing zip if it exists
+                if (Test-Path $zipPath) {
+                    Remove-Item $zipPath -Force
+                }
+
+                # Create zip archive using .NET compression
+                Add-Type -AssemblyName System.IO.Compression.FileSystem
+                [System.IO.Compression.ZipFile]::CreateFromDirectory($runtimePath, $zipPath)
+
+                Write-Host "✅ Successfully created $zipName" -ForegroundColor Green
+                $zipSuccess++
+            }
+            catch {
+                Write-Host "❌ Failed to create $zipName : $($_.Exception.Message)" -ForegroundColor Red
+                $zipFailed++
+            }
+        }
+        else {
+            Write-Host "⚠️  Skipping $runtime - directory not found" -ForegroundColor Yellow
+            $zipFailed++
+        }
+    }
+
+    Write-Host "`n📊 Zip Creation Summary:" -ForegroundColor Cyan
+    Write-Host "Success: $zipSuccess" -ForegroundColor Green
+    Write-Host "Failed: $zipFailed" -ForegroundColor Red
+
+    if ($zipFailed -eq 0) {
+        Write-Host "`n🎉 All zip archives created successfully!" -ForegroundColor Green
+        Write-Host "📁 Zip files are located in: $(Resolve-Path $PublishRoot)" -ForegroundColor Yellow
+        Write-Host "📋 Created files:" -ForegroundColor Cyan
+
+        $zipFiles = Get-ChildItem -Path $PublishRoot -Filter "*.zip" -ErrorAction SilentlyContinue
+        if ($zipFiles) {
+            foreach ($zipFile in $zipFiles) {
+                $sizeKB = [math]::Round($zipFile.Length / 1KB, 2)
+                Write-Host "  $($zipFile.Name) ($sizeKB KB)" -ForegroundColor White
+            }
+        }
+        else {
+            Write-Host "  No zip files found" -ForegroundColor Yellow
+        }
+    }
+    else {
+        Write-Host "`n⚠️  Some zip creations failed. Check the output above." -ForegroundColor Yellow
+    }
 }
 else {
     Write-Host "`n⚠️  Some builds failed. Check the output above." -ForegroundColor Yellow
