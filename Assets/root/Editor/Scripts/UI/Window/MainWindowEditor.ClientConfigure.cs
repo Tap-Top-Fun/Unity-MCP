@@ -163,7 +163,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             var targetPort = McpPluginUnity.Port.ToString();
             var targetTimeout = McpPluginUnity.TimeoutMs.ToString();
-            
+
             var foundPort = false;
             var foundTimeout = false;
 
@@ -171,7 +171,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             for (int i = 0; i < args.Count; i++)
             {
                 var arg = args[i]?.GetValue<string>();
-                if (string.IsNullOrEmpty(arg)) 
+                if (string.IsNullOrEmpty(arg))
                     continue;
 
                 // Check positional format
@@ -179,7 +179,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     foundPort = true;
                 else if (i == 1 && arg == targetTimeout)
                     foundTimeout = true;
-                
+
                 // Check named format
                 else if (arg.StartsWith("--port=") && arg.Substring(7) == targetPort)
                     foundPort = true;
@@ -199,6 +199,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             {
                 if (!File.Exists(configPath))
                 {
+                    // Create all necessary directories
+                    Directory.CreateDirectory(Path.GetDirectoryName(configPath));
+
                     // Create the file if it doesn't exist
                     File.WriteAllText(configPath, Startup.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs));
                     return true;
