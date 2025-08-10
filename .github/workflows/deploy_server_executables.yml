@@ -25,16 +25,6 @@ jobs:
         cd Unity-MCP-Server
         ./build-all.sh Release
 
-    - name: Create zip files for each runtime
-      run: |
-        cd Unity-MCP-Server/publish
-        for dir in */; do
-          runtime=$(basename "$dir")
-          echo "Creating zip for $runtime..."
-          zip -r "unity-mcp-server-$runtime.zip" "$dir"
-        done
-        ls -la *.zip
-
     - name: Upload release assets
       uses: softprops/action-gh-release@v2
       with:
