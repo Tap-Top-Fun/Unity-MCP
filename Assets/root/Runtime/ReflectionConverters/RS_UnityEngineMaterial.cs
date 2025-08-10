@@ -123,7 +123,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     obj = null;
                     return true;
                 }
-                if (material.GetInstanceID() == unityObject?.GetInstanceID())
+                if (material.GetInstanceID() == unityObject.GetInstanceID())
                 {
                     // Recognized as a command to update material
                     return base.TryPopulate(reflector, ref obj, data, fallbackType, depth, stringBuilder, flags, logger);
