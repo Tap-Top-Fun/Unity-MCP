@@ -5,7 +5,6 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "com.IvanMurzak.Unity.MCP.Runtime",
-        "com.IvanMurzak.Unity.MCP.Common",
         "com.IvanMurzak.Unity.MCP.TestFiles",
         "com.IvanMurzak.Unity.MCP.Editor"
     ],
@@ -19,7 +18,8 @@
         "nunit.framework.dll",
         "System.Text.Json.dll",
         "Microsoft.Extensions.Logging.Abstractions.dll",
-        "ReflectorNet.dll"
+        "ReflectorNet.dll",
+        "Unity-MCP-Common.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

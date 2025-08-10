@@ -23,4 +23,9 @@
     </Reference>
   </ItemGroup>
 
+  <Target Name="Deploy dll to Unity" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="$(TargetDir)$(TargetFileName)"
+          DestinationFolder="../Unity-MCP-Plugin/Assets/root/Plugins/com.IvanMurzak.Unity.MCP.Common" />
+  </Target>
+
 </Project>
