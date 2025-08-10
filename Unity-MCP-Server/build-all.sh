@@ -24,6 +24,7 @@ runtimes=(
     "win-x86"
     "win-arm64"
     "linux-x64"
+    "linux-arm"
     "linux-arm64"
     "osx-x64"
     "osx-arm64"
@@ -63,6 +64,6 @@ if [ $failed -eq 0 ]; then
     echo "📁 Executables are located in: ${PUBLISH_ROOT}/{runtime}/"
 else
     echo ""
-    echo "⚠️  Some builds failed. Check the output above. Partial outputs: ${PUBLISH_ROOT}" 
+    echo "⚠️  Some builds failed. Check the output above. Partial outputs: ${PUBLISH_ROOT}"
     exit 1
 fi

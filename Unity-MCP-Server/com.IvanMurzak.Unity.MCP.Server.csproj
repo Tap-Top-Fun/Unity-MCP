@@ -6,6 +6,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>com.IvanMurzak.Unity.MCP.Server</RootNamespace>
+    <AssemblyName>unity-mcp-server</AssemblyName>
   </PropertyGroup>
 
   <!-- Disable static web assets manifests & strip debug symbols for lean Release output -->
