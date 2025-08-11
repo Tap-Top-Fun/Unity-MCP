@@ -18,12 +18,12 @@ jobs:
         dotnet-version: '9.0.x'
 
     - name: Make build script executable
-      run: chmod +x Unity-MCP-Server/build-all.sh
+      run: chmod +x ./Unity-MCP-Server/build-all.sh
 
     - name: Build executables for all platforms
       run: |
         cd Unity-MCP-Server
-        ./Unity-MCP-Server/build-all.sh Release
+        ./build-all.sh Release
 
     - name: Upload release assets
       uses: softprops/action-gh-release@v2
