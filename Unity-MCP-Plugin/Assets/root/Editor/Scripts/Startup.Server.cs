@@ -131,10 +131,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     var archiveFilePath = Path.GetFullPath($"{Application.temporaryCachePath}/{ExecutableName.ToLowerInvariant()}-{PlatformName}-{Version}.zip");
                     Debug.Log($"Temporary archive file path: <color=yellow>{archiveFilePath}</color>");
 
-                    // var tempDir = Directory.GetParent(archiveFilePath);
-                    // if (tempDir != null && !tempDir.Exists)
-                    //     tempDir.Create();
-
                     // Download the zip file from the GitHub release notes
                     using (var client = new WebClient())
                     {
