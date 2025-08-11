@@ -122,7 +122,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             public static async Task<bool> DownloadAndUnpackBinary()
             {
-                Debug.Log($"Downloading Unity-MCP-Server binary to: {ExecutableFolderPath}");
+                Debug.Log($"Downloading Unity-MCP-Server binary from: {ExecutableZipUrl}");
 
                 try
                 {
@@ -143,6 +143,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     }
 
                     // Unpack zip archive
+                    Debug.Log($"Unpacking Unity-MCP-Server binary to: {ExecutableFolderPath}");
                     ZipFile.ExtractToDirectory(archiveFilePath, ExecutableFolderPath);
 
                     if (!File.Exists(ExecutableFullPath))
