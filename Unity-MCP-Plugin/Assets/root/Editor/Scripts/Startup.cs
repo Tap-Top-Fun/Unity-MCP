@@ -1,4 +1,5 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,6 +17,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             if (Application.dataPath.Contains(" "))
                 Debug.LogError("The project path contains spaces, which may cause issues during usage of Unity-MCP. Please consider the move the project to a folder without spaces.");
+        }
+
+        static bool IsCi()
+        {
+            var ci = Environment.GetEnvironmentVariable("CI");
+            var gha = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
+            var az = Environment.GetEnvironmentVariable("TF_BUILD"); // Azure Pipelines
+            return string.Equals(ci, "true", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(gha, "true", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(az, "true", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

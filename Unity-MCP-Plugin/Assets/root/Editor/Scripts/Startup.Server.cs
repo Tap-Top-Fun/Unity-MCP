@@ -119,6 +119,17 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             public static Task<bool> DownloadServerBinaryIfNeeded()
             {
+                // if (Application.isBatchMode)
+                // {
+                //     // Ignore in batch mode
+                //     return Task.FromResult(false);
+                // }
+                if (IsCi())
+                {
+                    // Ignore in CI environment
+                    return Task.FromResult(false);
+                }
+
                 if (IsBinaryExists() && IsVersionMatches())
                     return Task.FromResult(true);
 
