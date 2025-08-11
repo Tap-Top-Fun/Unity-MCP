@@ -69,9 +69,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             public static string VersionFullPath
                 => Path.GetFullPath(
                     Path.Combine(
-                        Application.dataPath,
-                        "../Library",
-                        PlatformName,
+                        ExecutableFolderPath,
                         "version"
                     )
                 );
@@ -101,14 +99,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             public static bool IsVersionMatches()
             {
-                if (string.IsNullOrEmpty(ExecutableFullPath))
+                if (!File.Exists(VersionFullPath))
                     return false;
 
-                if (!File.Exists(ExecutableFullPath))
-                    return false;
-
-                // Check the version of the existing binary
-                var existingVersion = File.ReadAllText(ExecutableFullPath);
+                var existingVersion = File.ReadAllText(VersionFullPath);
                 return existingVersion == Version;
             }
 
@@ -134,7 +128,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     if (!Directory.Exists(ExecutableFolderPath))
                         Directory.CreateDirectory(ExecutableFolderPath);
 
-                    var archiveFilePath = $"{Application.temporaryCachePath}/{ExecutableName.ToLowerInvariant()}-{PlatformName}-{Version}.zip";
+                    var archiveFilePath = Path.GetFullPath($"{Application.temporaryCachePath}/{ExecutableName.ToLowerInvariant()}-{PlatformName}-{Version}.zip");
+                    Debug.Log($"Temporary archive file path: <color=yellow>{archiveFilePath}</color>");
+
+                    // var tempDir = Directory.GetParent(archiveFilePath);
+                    // if (tempDir != null && !tempDir.Exists)
+                    //     tempDir.Create();
 
                     // Download the zip file from the GitHub release notes
                     using (var client = new WebClient())
@@ -144,7 +143,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
                     // Unpack zip archive
                     Debug.Log($"Unpacking Unity-MCP-Server binary to: <color=yellow>{ExecutableFolderPath}</color>");
-                    ZipFile.ExtractToDirectory(archiveFilePath, ExecutableFolderPath);
+                    ZipFile.ExtractToDirectory(archiveFilePath, ExecutableFolderPath, overwriteFiles: true);
 
                     if (!File.Exists(ExecutableFullPath))
                     {
