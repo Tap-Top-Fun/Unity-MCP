@@ -1,6 +1,10 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+using System;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
@@ -39,14 +43,25 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     : string.Empty);
 
             // Full path to the server executable
-            // Sample (mac linux): ../Library/osx-x64/unity-mcp-server
-            // Sample   (windows): ../Library/win-x64/unity-mcp-server.exe
-            public static string ExecutableFullPath
+            // Sample (mac linux): ../Library/mcp-server/osx-x64
+            // Sample   (windows): ../Library/mcp-server/win-x64
+            public static string ExecutableFolderPath
                 => Path.GetFullPath(
                     Path.Combine(
                         Application.dataPath,
                         "../Library",
-                        PlatformName,
+                        "mcp-server",
+                        PlatformName
+                    )
+                );
+
+            // Full path to the server executable
+            // Sample (mac linux): ../Library/mcp-server/osx-x64/unity-mcp-server
+            // Sample   (windows): ../Library/mcp-server/win-x64/unity-mcp-server.exe
+            public static string ExecutableFullPath
+                => Path.GetFullPath(
+                    Path.Combine(
+                        ExecutableFolderPath,
                         ExecutableFullName
                     )
                 );
@@ -61,7 +76,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     )
                 );
 
-            // -------------------------------------------------------------------------------------------------------------------------------------------------
+            // ------------------------------------------------------------------------------------------------------------------------------------
 
             public static string RawJsonConfiguration(int port, string bodyName = "mcpServers", int? timeoutMs = null)
                 => Consts.MCP.Config(
@@ -71,8 +86,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     timeoutMs
                 );
 
-            public static string ServerExecutableUrl
-                => $"https://github.com/IvanMurzak/Unity-MCP/releases/download/{Version}/{ExecutableFullName}";
+            public static string ExecutableZipUrl
+                => $"https://github.com/IvanMurzak/Unity-MCP/releases/download/{Version}/{ExecutableName.ToLowerInvariant()}-{PlatformName}.zip";
+
+            // ------------------------------------------------------------------------------------------------------------------------------------
 
             public static bool IsBinaryExists()
             {
@@ -87,9 +104,63 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 if (string.IsNullOrEmpty(ExecutableFullPath))
                     return false;
 
+                if (!File.Exists(ExecutableFullPath))
+                    return false;
+
                 // Check the version of the existing binary
                 var existingVersion = File.ReadAllText(ExecutableFullPath);
                 return existingVersion == Version;
+            }
+
+            public static Task<bool> DownloadServerBinaryIfNeeded()
+            {
+                if (IsBinaryExists() && IsVersionMatches())
+                    return Task.FromResult(true);
+
+                return DownloadAndUnpackBinary();
+            }
+
+            public static async Task<bool> DownloadAndUnpackBinary()
+            {
+                Debug.Log($"Downloading Unity-MCP-Server binary to: {ExecutableFolderPath}");
+
+                try
+                {
+                    // Clear existed server folder
+                    if (Directory.Exists(ExecutableFolderPath))
+                        Directory.Delete(ExecutableFolderPath, true);
+
+                    // Create folder if needed
+                    if (!Directory.Exists(ExecutableFolderPath))
+                        Directory.CreateDirectory(ExecutableFolderPath);
+
+                    var archiveFilePath = $"{Application.temporaryCachePath}/{ExecutableName.ToLowerInvariant()}-{PlatformName}-{Version}.zip";
+
+                    // Download the zip file from the GitHub release notes
+                    using (var client = new WebClient())
+                    {
+                        await client.DownloadFileTaskAsync(ExecutableZipUrl, archiveFilePath);
+                    }
+
+                    // Unpack zip archive
+                    ZipFile.ExtractToDirectory(archiveFilePath, ExecutableFolderPath);
+
+                    if (!File.Exists(ExecutableFullPath))
+                    {
+                        Debug.LogError($"Failed to unpack server binary to: {ExecutableFullPath}");
+                        return false;
+                    }
+
+                    File.WriteAllText(VersionFullPath, Version);
+
+                    return IsBinaryExists() && IsVersionMatches();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Failed to download and unpack server binary: {ex.Message}");
+                    Debug.LogException(ex);
+                    return false;
+                }
             }
         }
     }
