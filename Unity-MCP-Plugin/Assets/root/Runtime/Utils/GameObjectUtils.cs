@@ -24,7 +24,11 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 error = "[Error] GameObjectRef is not valid. At least one of the properties should be set.";
                 return null;
             }
-            return FindBy(gameObjectRef.instanceID, gameObjectRef.path, gameObjectRef.name, out error);
+            return FindBy(
+                instanceID: gameObjectRef.instanceID,
+                path: gameObjectRef.path,
+                name: gameObjectRef.name,
+                error: out error);
         }
 
         public static GameObject FindBy(int? instanceID, string? path, string? name, out string error)
