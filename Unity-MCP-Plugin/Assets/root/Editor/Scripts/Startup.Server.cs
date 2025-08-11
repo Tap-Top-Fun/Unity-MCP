@@ -49,14 +49,24 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     : string.Empty);
 
             // Full path to the server executable
+            // Sample (mac linux): ../Library/mcp-server
+            // Sample   (windows): ../Library/mcp-server
+            public static string ExecutableFolderRootPath
+                => Path.GetFullPath(
+                    Path.Combine(
+                        Application.dataPath,
+                        "../Library",
+                        "mcp-server"
+                    )
+                );
+
+            // Full path to the server executable
             // Sample (mac linux): ../Library/mcp-server/osx-x64
             // Sample   (windows): ../Library/mcp-server/win-x64
             public static string ExecutableFolderPath
                 => Path.GetFullPath(
                     Path.Combine(
-                        Application.dataPath,
-                        "../Library",
-                        "mcp-server",
+                        ExecutableFolderRootPath,
                         PlatformName
                     )
                 );
@@ -119,11 +129,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             public static Task<bool> DownloadServerBinaryIfNeeded()
             {
-                // if (Application.isBatchMode)
-                // {
-                //     // Ignore in batch mode
-                //     return Task.FromResult(false);
-                // }
                 if (IsCi())
                 {
                     // Ignore in CI environment
@@ -161,11 +166,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
                     // Unpack zip archive
                     Debug.Log($"Unpacking Unity-MCP-Server binary to: <color=yellow>{ExecutableFolderPath}</color>");
-                    ZipFile.ExtractToDirectory(archiveFilePath, ExecutableFolderPath, overwriteFiles: true);
+                    ZipFile.ExtractToDirectory(archiveFilePath, ExecutableFolderRootPath, overwriteFiles: true);
 
                     if (!File.Exists(ExecutableFullPath))
                     {
-                        Debug.LogError($"Failed to unpack server binary to: {ExecutableFullPath}");
+                        Debug.LogError($"Failed to unpack server binary to: {ExecutableFolderRootPath}");
+                        Debug.LogError($"Binary file not found at: {ExecutableFullPath}");
                         return false;
                     }
 
