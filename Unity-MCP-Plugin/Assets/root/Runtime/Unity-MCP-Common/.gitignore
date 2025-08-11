@@ -7,6 +7,7 @@ obj/
 ~bin.meta
 ~obj.meta
 
+
 # User-specific files
 *.user
 *.suo
@@ -49,5 +50,7 @@ _ReSharper*/
 [Ll]ogs/
 [Mm]emoryCaptures/
 
-# Crashlytics generated file
-crashlytics-build.properties
+# Unity-MCP-Common.csproj
+!Unity-MCP-Common.csproj
+
+Unity-MCP-Common.sln*
