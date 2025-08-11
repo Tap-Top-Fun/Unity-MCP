@@ -2,6 +2,8 @@
 # Build results
 bin/
 obj/
+~bin/
+~obj/
 
 # User-specific files
 *.user
@@ -11,6 +13,8 @@ obj/
 
 # Visual Studio Code
 .vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
 
 # Rider
 .idea/

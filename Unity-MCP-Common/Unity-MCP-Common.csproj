@@ -6,6 +6,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>9.0</LangVersion>
+    <OutputPath>~bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,10 +23,5 @@
       <Private>true</Private>
     </Reference>
   </ItemGroup> -->
-
-  <Target Name="Deploy dll to Unity" AfterTargets="PostBuildEvent">
-    <Copy SourceFiles="$(TargetDir)$(TargetFileName)"
-          DestinationFolder="../Unity-MCP-Plugin/Assets/root/Plugins/com.IvanMurzak.Unity.MCP.Common" />
-  </Target>
 
 </Project>
