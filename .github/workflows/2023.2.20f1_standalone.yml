@@ -23,9 +23,9 @@ jobs:
         github.event_name == 'pull_request' ||
         (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'ci-ok'))
 
-    uses: ./.github/workflows/main.yml
+    uses: ./.github/workflows/unity_tests.yml
     with:
-      projectPath: './'
+      projectPath: './Unity-MCP-Plugin'
       unityVersion: '2023.2.20f1'
       testMode: 'standalone'
     secrets: inherit
