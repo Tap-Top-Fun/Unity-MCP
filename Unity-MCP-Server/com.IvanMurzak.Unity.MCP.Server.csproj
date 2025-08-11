@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Unity-MCP-Common\Unity-MCP-Common.csproj" />
+    <ProjectReference Include="..\Unity-MCP-Plugin\Assets\root\Runtime\Unity-MCP-Common\Unity-MCP-Common.csproj" />
   </ItemGroup>
 
   <!-- <ItemGroup>
