@@ -31,3 +31,6 @@ jobs:
         files: ./Unity-MCP-Server/publish/*.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Clean up publish folder
+      run: rm -rf ./Unity-MCP-Server/publish
