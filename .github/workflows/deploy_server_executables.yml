@@ -23,11 +23,11 @@ jobs:
     - name: Build executables for all platforms
       run: |
         cd Unity-MCP-Server
-        ./build-all.sh Release
+        ./Unity-MCP-Server/build-all.sh Release
 
     - name: Upload release assets
       uses: softprops/action-gh-release@v2
       with:
-        files: Unity-MCP-Server/publish/*.zip
+        files: ./Unity-MCP-Server/publish/*.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

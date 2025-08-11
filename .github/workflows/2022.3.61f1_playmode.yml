@@ -25,7 +25,7 @@ jobs:
 
     uses: ./.github/workflows/unity_tests.yml
     with:
-      projectPath: './'
+      projectPath: './Unity-MCP-Plugin'
       unityVersion: '2022.3.61f1'
       testMode: 'playmode'
     secrets: inherit
