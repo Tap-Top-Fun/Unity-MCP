@@ -62,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
                 // Update the raw JSON configuration display
                 var rawJsonField = root.Query<TextField>("rawJsonConfiguration").First();
-                rawJsonField.value = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutMs);
+                rawJsonField.value = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutMs).ToString();
 
                 SaveChanges($"[AI Connector] Timeout Changed: {newValue} ms");
                 McpPluginUnity.BuildAndStart();
@@ -236,7 +236,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             // -----------------------------------------------------------------
 
             var rawJsonField = root.Query<TextField>("rawJsonConfiguration").First();
-            rawJsonField.value = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutMs);
+            rawJsonField.value = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutMs).ToString();
         }
     }
 }

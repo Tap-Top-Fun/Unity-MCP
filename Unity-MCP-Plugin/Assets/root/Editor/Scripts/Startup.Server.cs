@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -16,6 +17,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         public static class Server
         {
             public const string ExecutableName = "unity-mcp-server";
+
+            public static string McpServerName
+                => string.IsNullOrEmpty(Application.productName)
+                    ? "Unity Unknown"
+                    : $"Unity {Application.productName}";
 
             public static string OperationSystem =>
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" :
@@ -76,12 +82,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             // ------------------------------------------------------------------------------------------------------------------------------------
 
-            public static string RawJsonConfiguration(int port, string bodyName = "mcpServers", int? timeoutMs = null)
+            public static JsonNode RawJsonConfiguration(int port, string bodyName = "mcpServers", int? timeoutMs = null)
                 => Consts.MCP.Config(
-                    ExecutableFullPath.Replace('\\', '/'),
-                    bodyName,
-                    port,
-                    timeoutMs
+                    executablePath: ExecutableFullPath.Replace('\\', '/'),
+                    serverName: McpServerName,
+                    bodyName: bodyName,
+                    port: port,
+                    timeoutMs: timeoutMs
                 );
 
             public static string ExecutableZipUrl

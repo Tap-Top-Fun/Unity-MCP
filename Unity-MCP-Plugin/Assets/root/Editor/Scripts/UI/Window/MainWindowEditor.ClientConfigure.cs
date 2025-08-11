@@ -203,7 +203,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     Directory.CreateDirectory(Path.GetDirectoryName(configPath));
 
                     // Create the file if it doesn't exist
-                    File.WriteAllText(configPath, Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs));
+                    File.WriteAllText(
+                        path: configPath,
+                        contents: Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs).ToString());
                     return true;
                 }
 
@@ -215,7 +217,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     throw new Exception("Config file is not a valid JSON object.");
 
                 // Parse the injected config as JsonObject
-                var injectObj = JsonNode.Parse(Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs))?.AsObject();
+                var injectObj = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs);
                 if (injectObj == null)
                     throw new Exception("Injected config is not a valid JSON object.");
 
