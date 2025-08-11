@@ -29,28 +29,48 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator Version_Should_Match_PackageJson_Version()
         {
-            // Get package info using PackageManager
+            string packageJsonContent = null;
+            string packageJsonPath = null;
+
+            // Try to get package info using PackageManager first
             var listRequest = Client.List(
                 offlineMode: true,
                 includeIndirectDependencies: true);
 
             yield return new WaitUntil(() => listRequest.IsCompleted);
 
-            Assert.AreEqual(StatusCode.Success, listRequest.Status,
-                $"Failed to list packages: {listRequest.Error?.message}");
+            if (listRequest.Status == StatusCode.Success)
+            {
+                // Find our package
+                var package = listRequest.Result.FirstOrDefault(p => p.name == PackageName);
 
-            // Find our package
-            var package = listRequest.Result.FirstOrDefault(p => p.name == PackageName);
-            Assert.IsNotNull(package, $"Package '{PackageName}' not found in project");
+                if (package != null)
+                {
+                    // Read package.json from the package location
+                    packageJsonPath = Path.Combine(package.resolvedPath, "package.json");
+                    if (File.Exists(packageJsonPath))
+                    {
+                        packageJsonContent = File.ReadAllText(packageJsonPath);
+                        Debug.Log($"Found package.json via PackageManager at: {packageJsonPath}");
+                    }
+                }
+            }
 
-            // Read package.json from the package location
-            var packageJsonPath = Path.Combine(package.resolvedPath, "package.json");
-            Assert.IsTrue(File.Exists(packageJsonPath),
-                $"package.json not found at: {packageJsonPath}");
+            // Fallback: try to read from Assets/root/package.json (for source project testing)
+            if (string.IsNullOrEmpty(packageJsonContent))
+            {
+                var fallbackPath = Path.Combine(Application.dataPath, "root", "package.json");
+                if (File.Exists(fallbackPath))
+                {
+                    packageJsonContent = File.ReadAllText(fallbackPath);
+                    packageJsonPath = fallbackPath;
+                    Debug.Log($"Found package.json via fallback path at: {fallbackPath}");
+                }
+            }
 
-            var packageJsonContent = File.ReadAllText(packageJsonPath);
+            // Ensure we found a package.json file
             Assert.IsFalse(string.IsNullOrEmpty(packageJsonContent),
-                "package.json content is empty");
+                $"package.json not found. Tried PackageManager location and fallback path: Assets/root/package.json");
 
             // Parse JSON to extract version
             var packageJson = JsonUtility.FromJson<PackageJsonData>(packageJsonContent);
@@ -60,9 +80,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             // Compare versions
             var startupVersion = Startup.Version;
             Assert.AreEqual(packageJson.version, startupVersion,
-                $"Version mismatch: package.json has '{packageJson.version}' but Startup.Version is '{startupVersion}'");
+                $"Version mismatch: package.json has '{packageJson.version}' but Startup.Version is '{startupVersion}'. Package.json path: {packageJsonPath}");
 
-            Debug.Log($"Version validation passed: {startupVersion}");
+            Debug.Log($"Version validation passed: {startupVersion} (from {packageJsonPath})");
             yield return null;
         }
 
