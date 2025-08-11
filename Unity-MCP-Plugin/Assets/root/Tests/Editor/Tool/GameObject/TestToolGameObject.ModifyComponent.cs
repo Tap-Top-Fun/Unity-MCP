@@ -458,8 +458,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator SetMaterial()
         {
-            var assetPath = "Assets/Materials/TestMaterial.mat";
+            var folder = "Assets/TestMaterials";
+            var assetPath = $"{folder}/TestMaterial.mat";
             var material = new Material(Shader.Find("Standard"));
+
+            if (!AssetDatabase.IsValidFolder(folder))
+                AssetDatabase.CreateFolder("Assets", "TestMaterials");
+
             AssetDatabase.CreateAsset(material, assetPath);
             try
             {
@@ -504,6 +509,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             finally
             {
                 AssetDatabase.DeleteAsset(assetPath);
+                AssetDatabase.DeleteAsset(folder);
                 AssetDatabase.Refresh();
             }
             yield return null;
