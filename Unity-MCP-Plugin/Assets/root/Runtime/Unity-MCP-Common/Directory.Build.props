@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
-    <BaseIntermediateOutputPath>~obj\</BaseIntermediateOutputPath>
-    <RestoreOutputPath>~obj\</RestoreOutputPath>
-    <Nullable>enable</Nullable>
+    <BaseIntermediateOutputPath>../../../../Temp/obj/</BaseIntermediateOutputPath>
+    <RestoreOutputPath>../../../../Temp/obj/</RestoreOutputPath>
   </PropertyGroup>
 </Project>
