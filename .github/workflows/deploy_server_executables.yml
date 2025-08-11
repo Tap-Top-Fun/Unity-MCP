@@ -21,14 +21,14 @@ jobs:
       run: chmod +x ./Unity-MCP-Server/build-all.sh
 
     - name: Build executables for all platforms
-      run: |
-        cd Unity-MCP-Server
-        ./build-all.sh Release
+      shell: bash {0}
+      run: cd Unity-MCP-Server && ./build-all.sh Release
 
     - name: Upload release assets
       uses: softprops/action-gh-release@v2
       with:
         files: ./Unity-MCP-Server/publish/*.zip
+        tag_name: ${{ github.event.release.tag_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

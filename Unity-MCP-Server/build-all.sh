@@ -2,7 +2,7 @@
 # Universal bash script to build self-contained executables for all platforms
 # Works on macOS and Linux
 
-set -euo pipefail
+set -uo pipefail
 
 CONFIGURATION="${1:-Release}"
 PROJECT_FILE="${2:-com.IvanMurzak.Unity.MCP.Server.csproj}"
@@ -17,7 +17,7 @@ if [ -d "${PUBLISH_ROOT}" ]; then
     echo "🧹 Cleaning existing publish folder..."
     rm -rf "${PUBLISH_ROOT}" || { echo "Failed to remove publish folder"; exit 1; }
 fi
-mkdir -p "${PUBLISH_ROOT}"
+mkdir -p "${PUBLISH_ROOT}" || { echo "Failed to create publish folder"; exit 1; }
 
 runtimes=(
     "win-x64"
@@ -38,12 +38,13 @@ for runtime in "${runtimes[@]}"; do
     OUTPUT_PATH="${PUBLISH_ROOT}/${runtime}"
     mkdir -p "${OUTPUT_PATH}"
 
+    echo "Running: dotnet publish ${PROJECT_FILE} -c ${CONFIGURATION} -r ${runtime} --self-contained true -p:PublishSingleFile=true -o ${OUTPUT_PATH}"
     if dotnet publish "${PROJECT_FILE}" \
         -c "${CONFIGURATION}" \
         -r "${runtime}" \
         --self-contained true \
         -p:PublishSingleFile=true \
-        -o "${OUTPUT_PATH}"; then
+        -o "${OUTPUT_PATH}" 2>&1; then
         echo "✅ Successfully built ${runtime} -> ${OUTPUT_PATH}"
         ((success++))
     else
