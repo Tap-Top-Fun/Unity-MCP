@@ -55,15 +55,31 @@ foreach ($runtime in $runtimes) {
         "-p:PublishSingleFile=true",
         "-o", $outputPath
     )
-    # Write-Host ("dotnet " + ($publishArgs -join ' ')) -ForegroundColor DarkGray
-    $process = Start-Process -FilePath "dotnet" -ArgumentList $publishArgs -Wait -PassThru -NoNewWindow
 
-    if ($process.ExitCode -eq 0) {
+    # Use direct command execution instead of Start-Process to avoid hanging
+    $command = "dotnet " + ($publishArgs -join ' ')
+    Write-Host "Executing: $command" -ForegroundColor DarkGray
+
+    try {
+        $output = & dotnet @publishArgs 2>&1
+        $exitCode = $LASTEXITCODE
+
+        # Show some output for feedback
+        if ($output) {
+            $output | Select-Object -Last 3 | ForEach-Object { Write-Host "  $_" -ForegroundColor Gray }
+        }
+    }
+    catch {
+        Write-Host "Error executing dotnet publish: $($_.Exception.Message)" -ForegroundColor Red
+        $exitCode = 1
+    }
+
+    if ($exitCode -eq 0) {
         Write-Host "✅ Successfully built $runtime" -ForegroundColor Green
         $success++
     }
     else {
-        Write-Host "❌ Failed to build $runtime" -ForegroundColor Red
+        Write-Host "❌ Failed to build $runtime (exit code: $exitCode)" -ForegroundColor Red
         $failed++
     }
 }
