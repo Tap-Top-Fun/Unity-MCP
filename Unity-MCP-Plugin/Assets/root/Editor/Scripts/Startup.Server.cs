@@ -82,14 +82,18 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             // ------------------------------------------------------------------------------------------------------------------------------------
 
-            public static JsonNode RawJsonConfiguration(int port, string bodyName = "mcpServers", int? timeoutMs = null)
-                => Consts.MCP.Config(
+            public static JsonNode RawJsonConfiguration(
+                int port,
+                string bodyName = "mcpServers",
+                int timeoutMs = Consts.Hub.DefaultTimeoutMs)
+            {
+                return Consts.MCP.Config(
                     executablePath: ExecutableFullPath.Replace('\\', '/'),
-                    serverName: McpServerName,
                     bodyName: bodyName,
                     port: port,
                     timeoutMs: timeoutMs
                 );
+            }
 
             public static string ExecutableZipUrl
                 => $"https://github.com/IvanMurzak/Unity-MCP/releases/download/{Version}/{ExecutableName.ToLowerInvariant()}-{PlatformName}.zip";

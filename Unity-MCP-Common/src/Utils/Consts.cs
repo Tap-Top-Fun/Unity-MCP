@@ -26,8 +26,14 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             public const int LinesLimit = 1000;
 
-            public static JsonNode Config(string executablePath, string serverName, string bodyName, int port, int? timeoutMs = null)
-                => new JsonObject
+            public static JsonNode Config(
+                string executablePath,
+                string serverName = "Unity-MCP",
+                string bodyName = "mcpServers",
+                int port = Hub.DefaultPort,
+                int timeoutMs = Hub.DefaultTimeoutMs)
+            {
+                return new JsonObject
                 {
                     [bodyName] = new JsonObject
                     {
@@ -37,11 +43,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
                             ["args"] = new JsonArray
                             {
                                 $"--port={port}",
-                                $"--timeout={timeoutMs ?? Hub.DefaultTimeoutMs}"
+                                $"--timeout={timeoutMs}"
                             }
                         }
                     }
                 };
+            }
         }
     }
 }
