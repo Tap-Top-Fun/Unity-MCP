@@ -19,6 +19,8 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             if (jsonElement == null)
                 return null;
 
+
+
             if (!suppressException)
                 return JsonSerializer.Deserialize<GameObjectRef>(jsonElement.Value, reflector.JsonSerializerOptions);
             try
