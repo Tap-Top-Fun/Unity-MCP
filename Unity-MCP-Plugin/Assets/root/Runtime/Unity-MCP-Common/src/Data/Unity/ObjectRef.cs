@@ -9,8 +9,8 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
     public class ObjectRef
     {
         [JsonInclude, JsonPropertyName("instanceID")]
-        [Description("Instance ID of the UnityEngine.Object. If this is 0 and assetPath is not provided or empty or null, then it will be used as 'null'.")]
-        public int instanceID;
+        [Description("Instance ID of the UnityEngine.Object. If this is '0', then it will be used as 'null'.")]
+        public virtual int instanceID { get; set; } = 0;
 
         public ObjectRef() : this(id: 0) { }
         public ObjectRef(int id) => instanceID = id;
