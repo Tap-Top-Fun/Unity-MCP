@@ -1,40 +1,44 @@
 #nullable enable
-using System.Collections;
 using System.Collections.Generic;
-using System.Text.Json;
-using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
-using com.IvanMurzak.ReflectorNet.Utils;
-using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using com.IvanMurzak.Unity.MCP.Editor.Tests.Utils;
-using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
     public partial class AssetsMaterialTests : BaseTest
     {
-        [UnityTest]
-        public IEnumerator Material_Create()
+        [Test]
+        public void Material_Create()
         {
-            var assetPath = "Assets/Materials/TestMaterial.mat";
-            var result = new Tool_Assets().CreateMaterial(
-                assetPath: assetPath,
-                shaderName: "Standard");
-            ValidateResult(result);
+            var materialEx = new CreateMaterialExecutor(
+                materialName: "TestMaterial__.mat",
+                shaderName: "Standard",
+                "Assets", "Unity-MCP-Test", "Materials"
+            );
 
-            var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
-            Assert.IsNotNull(material, $"Material should be created at path: {assetPath}");
-            Assert.AreEqual("Standard", material.shader.name, "Material shader should be 'Standard'.");
-
-            AssetDatabase.DeleteAsset(assetPath);
-            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-
-            yield return null;
+            materialEx
+                .AddChild(new CallToolExecutor(
+                    toolName: "Assets_Material_Create",
+                    json: JsonTestUtils.Fill(@"{
+                        ""assetPath"": ""{assetPath}"",
+                        ""shaderName"": ""Standard""
+                    }",
+                    new Dictionary<string, object?>
+                    {
+                        { "{assetPath}", materialEx.AssetPath }
+                    }))
+                )
+                .AddChild(new ValidateToolResultExecutor())
+                .AddChild(() =>
+                {
+                    var material = AssetDatabase.LoadAssetAtPath<Material>(materialEx.AssetPath);
+                    Assert.IsNotNull(material, $"Material should be created at path: {materialEx.AssetPath}");
+                    Assert.AreEqual("Standard", material.shader.name, "Material shader should be 'Standard'.");
+                })
+                .Execute();
         }
 
         [Test]
