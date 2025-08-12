@@ -13,16 +13,6 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 #if UNITY_EDITOR
             if (objectRef.instanceID != 0)
                 return UnityEditor.EditorUtility.InstanceIDToObject(objectRef.instanceID);
-
-            if (!string.IsNullOrEmpty(objectRef.assetPath))
-                return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(objectRef.assetPath);
-
-            if (!string.IsNullOrEmpty(objectRef.assetGuid))
-            {
-                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(objectRef.assetGuid);
-                if (!string.IsNullOrEmpty(path))
-                    return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
-            }
 #endif
 
             return null;

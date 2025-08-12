@@ -194,7 +194,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             try
             {
-                obj = value.ToObjectRef(reflector, suppressException: false)?.FindObject();
+                obj = value.ToAssetObjectRef(reflector, suppressException: false)?.FindAssetObject();
                 return true;
             }
             catch (Exception ex)
@@ -218,7 +218,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
-            return data.valueJsonElement.ToObjectRef(reflector).FindObject();
+            return data.valueJsonElement.ToAssetObjectRef(reflector).FindAssetObject();
         }
 
         protected override object? DeserializeValueAsJsonElement(
@@ -229,7 +229,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
-            return data.valueJsonElement.ToObjectRef(reflector).FindObject();
+            return data.valueJsonElement.ToAssetObjectRef(reflector).FindAssetObject();
         }
     }
 }

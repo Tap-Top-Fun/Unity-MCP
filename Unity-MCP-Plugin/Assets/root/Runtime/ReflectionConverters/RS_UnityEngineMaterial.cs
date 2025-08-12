@@ -114,8 +114,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             if (obj is Material material)
             {
                 var unityObject = data.valueJsonElement
-                    .ToObjectRef(reflector, suppressException: true)
-                    ?.FindObject();
+                    .ToAssetObjectRef(reflector, suppressException: true)
+                    ?.FindAssetObject();
 
                 if (unityObject == null)
                 {
