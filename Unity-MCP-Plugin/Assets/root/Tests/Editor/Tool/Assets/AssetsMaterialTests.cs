@@ -21,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
             materialEx
                 .AddChild(new CallToolExecutor(
-                    toolName: "Assets_Material_Create",
+                    toolMethod: typeof(Tool_Assets).GetMethod(nameof(Tool_Assets.CreateMaterial)),
                     json: JsonTestUtils.Fill(@"{
                         ""assetPath"": ""{assetPath}"",
                         ""shaderName"": ""Standard""
@@ -55,7 +55,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
             materialEx
                 .AddChild(new CallToolExecutor(
-                    toolName: "Assets_Modify",
+                    toolMethod: typeof(Tool_Assets).GetMethod(nameof(Tool_Assets.Modify)),
                     json: JsonTestUtils.Fill(@"{
                         ""assetPath"": ""{assetPath}"",
                         ""content"":

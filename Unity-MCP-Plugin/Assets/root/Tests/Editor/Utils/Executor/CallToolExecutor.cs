@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.Json;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
@@ -11,6 +12,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
 {
     public class CallToolExecutor : LazyNodeExecutor
     {
+        public CallToolExecutor(MethodInfo toolMethod, string json, Reflector? reflector = null) : this(
+            toolName: toolMethod.GetCustomAttribute<McpPluginToolAttribute>()?.Name
+                ?? throw new ArgumentException("Tool method must have a McpPluginTool attribute."),
+            json: json,
+            reflector: reflector)
+        {
+            // none
+        }
+
         public CallToolExecutor(string toolName, string json, Reflector? reflector = null) : base()
         {
             if (toolName == null) throw new ArgumentNullException(nameof(toolName));
