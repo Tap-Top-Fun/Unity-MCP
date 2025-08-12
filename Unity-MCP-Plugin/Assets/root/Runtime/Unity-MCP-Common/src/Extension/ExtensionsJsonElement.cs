@@ -13,6 +13,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             this JsonElement? jsonElement,
             Reflector reflector,
             bool suppressException = true,
+            int depth = 0,
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
@@ -36,6 +37,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             this JsonElement? jsonElement,
             Reflector reflector,
             bool suppressException = true,
+            int depth = 0,
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
@@ -57,6 +59,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             this JsonElement? jsonElement,
             Reflector reflector,
             bool suppressException = true,
+            int depth = 0,
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
@@ -78,6 +81,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             this JsonElement? jsonElement,
             Reflector reflector,
             bool suppressException = true,
+            int depth = 0,
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {

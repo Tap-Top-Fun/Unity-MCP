@@ -33,6 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return data.valueJsonElement
                 .ToObjectRef(
                     reflector: reflector,
+                    depth: depth,
                     stringBuilder: stringBuilder,
                     logger: logger)
                 .FindObject() as UnityEngine.Component;

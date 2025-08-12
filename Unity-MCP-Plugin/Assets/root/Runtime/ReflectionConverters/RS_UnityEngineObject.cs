@@ -198,6 +198,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     .ToAssetObjectRef(
                         reflector: reflector,
                         suppressException: false,
+                        depth: depth,
                         stringBuilder: stringBuilder,
                         logger: logger)
                     .FindAssetObject();
@@ -227,6 +228,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return data.valueJsonElement
                 .ToAssetObjectRef(
                     reflector: reflector,
+                    depth: depth,
                     stringBuilder: stringBuilder,
                     logger: logger)
                 .FindAssetObject();
@@ -243,6 +245,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return data.valueJsonElement
                 .ToAssetObjectRef(
                     reflector: reflector,
+                    depth: depth,
                     stringBuilder: stringBuilder,
                     logger: logger)
                 .FindAssetObject();

@@ -278,6 +278,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return data.valueJsonElement
                 .ToGameObjectRef(
                     reflector: reflector,
+                    depth: depth,
                     stringBuilder: stringBuilder,
                     logger: logger)
                 .FindGameObject();
@@ -294,6 +295,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return data.valueJsonElement
                 .ToGameObjectRef(
                     reflector: reflector,
+                    depth: depth,
                     stringBuilder: stringBuilder,
                     logger: logger)
                 .FindGameObject();
