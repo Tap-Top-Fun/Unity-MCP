@@ -58,7 +58,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                         {
                             ""typeName"": ""UnityEngine.Material"",
                             ""value"": {
-                                ""{propertyName}"": {propertyValue},
+                                ""{propertyName}"": {propertyValue}
                             }
                         }
                     }",

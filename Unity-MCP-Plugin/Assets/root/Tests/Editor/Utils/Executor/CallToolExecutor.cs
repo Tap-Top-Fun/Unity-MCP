@@ -25,6 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
 
                 var parameters = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
                 var request = new RequestCallTool(toolName, parameters!);
+
                 var task = McpPlugin.Instance!.McpRunner.RunCallTool(request);
                 var result = task.Result;
 

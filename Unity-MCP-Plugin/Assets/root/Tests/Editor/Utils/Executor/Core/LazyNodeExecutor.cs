@@ -28,13 +28,22 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
         /// </summary>
         public object? Execute(object? input = null, TraversalOrder order = TraversalOrder.DepthFirst)
         {
-            var result = order switch
+            try
             {
-                TraversalOrder.DepthFirst => ExecuteDepthFirst(input),
-                TraversalOrder.BreadthFirst => ExecuteBreadthFirst(input),
-                _ => throw new ArgumentOutOfRangeException(nameof(order))
-            };
-            return result;
+                var result = order switch
+                {
+                    TraversalOrder.DepthFirst => ExecuteDepthFirst(input),
+                    TraversalOrder.BreadthFirst => ExecuteBreadthFirst(input),
+                    _ => throw new ArgumentOutOfRangeException(nameof(order))
+                };
+                return result;
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogException(ex);
+                UnityEngine.Debug.LogError($"Error executing LazyNode: {ex}");
+                return null;
+            }
         }
 
         protected virtual void PostExecute(object? input = null) { }
