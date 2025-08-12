@@ -11,11 +11,11 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
         public int instanceID { get; set; } = 0;
 
         [JsonInclude, JsonPropertyName("index")]
-        [Description("Component 'index'. Priority: 2. Default value is -1.")]
+        [Description("Component 'index' attached to a gameObject. The first index is '0' and that is usually Transform or RectTransform. Priority: 2. Default value is -1.")]
         public int index { get; set; } = -1;
 
         [JsonInclude, JsonPropertyName("typeName")]
-        [Description("Component 'type'. Priority: 3. Full name of the component type. Default value is null.")]
+        [Description("Component type full name. Sample 'UnityEngine.Transform'. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null.")]
         public string? typeName { get; set; } = null;
 
         [JsonIgnore]

@@ -3,23 +3,19 @@ using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
-    [Description(@"Find GameObject in opened Prefab or in a Scene.
-Use one of the following properties:
-1. 'instanceID' (int) - recommended. It finds the exact GameObject.
-2. 'path' (string) - finds GameObject by path. It may find a wrong GameObject.
-3. 'name' (string) - finds GameObject by name. It may find a wrong GameObject.")]
+    [Description(@"Find GameObject in opened Prefab or in the active Scene.")]
     public class GameObjectRef
     {
         [JsonInclude, JsonPropertyName("instanceID")]
-        [Description("GameObject 'instanceID' (int). Priority: 1. (Recommended)")]
+        [Description("GameObject 'instanceID'. Priority: 1. (Recommended)")]
         public int instanceID { get; set; } = 0;
 
         [JsonInclude, JsonPropertyName("path")]
-        [Description("GameObject 'path'. Priority: 2.")]
+        [Description("Path of a GameObject in the hierarchy Sample 'character/hand/finger/particle'. Priority: 2.")]
         public string? path { get; set; } = null;
 
         [JsonInclude, JsonPropertyName("name")]
-        [Description("GameObject 'name'. Priority: 3.")]
+        [Description("Name of a GameObject. Priority: 3.")]
         public string? name { get; set; } = null;
 
         [JsonIgnore]

@@ -4,11 +4,7 @@ using System.ComponentModel;
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
     [System.Serializable]
-    [Description(@"GameObject references. Used to specify GameObjects in opened Prefab or in a Scene.
-Use one of the following properties:
-1. 'instanceID' (int) - recommended. It finds the exact GameObject.
-2. 'path' (string) - finds GameObject by path. It may find a wrong GameObject.
-3. 'name' (string) - finds GameObject by name. It may find a wrong GameObject.")]
+    [Description(@"GameObject references array. Used to specify GameObjects in opened Prefab or in the active Scene.")]
     public class GameObjectComponentsRefList : List<GameObjectComponentsRef>
     {
         public GameObjectComponentsRefList() { }

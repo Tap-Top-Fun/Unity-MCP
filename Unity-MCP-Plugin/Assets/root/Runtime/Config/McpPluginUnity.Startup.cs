@@ -123,6 +123,7 @@ namespace com.IvanMurzak.Unity.MCP
 
             // Reference types
             reflector.JsonSerializer.AddConverter(new ObjectRefConverter());
+            reflector.JsonSerializer.AddConverter(new AssetObjectRefConverter());
             reflector.JsonSerializer.AddConverter(new GameObjectRefConverter());
             reflector.JsonSerializer.AddConverter(new ComponentRefConverter());
 
