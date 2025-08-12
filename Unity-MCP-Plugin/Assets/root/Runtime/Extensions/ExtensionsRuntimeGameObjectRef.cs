@@ -7,12 +7,17 @@ namespace com.IvanMurzak.Unity.MCP.Utils
     public static class ExtensionsRuntimeGameObjectRef
     {
         public static GameObject? FindGameObject(this GameObjectRef? objectRef)
+            => FindGameObject(objectRef, out _);
+        public static GameObject? FindGameObject(this GameObjectRef? objectRef, out string? error)
         {
             if (objectRef == null)
+            {
+                error = null;
                 return null;
+            }
 
-            return GameObjectUtils.FindBy(objectRef, out var error)
-                ?? ExtensionsRuntimeAssetObjectRef.FindAssetObject(objectRef) as GameObject;
+            return GameObjectUtils.FindBy(objectRef, out error)
+                    ?? ExtensionsRuntimeAssetObjectRef.FindAssetObject(objectRef) as GameObject;
         }
         public static GameObjectRef? ToGameObjectRef(this GameObject? obj)
         {
