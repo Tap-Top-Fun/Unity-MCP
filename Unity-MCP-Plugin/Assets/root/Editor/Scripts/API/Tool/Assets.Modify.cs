@@ -54,7 +54,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             // AssetDatabase.CreateAsset(asset, assetPath);
             AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
             return result.ToString();
 

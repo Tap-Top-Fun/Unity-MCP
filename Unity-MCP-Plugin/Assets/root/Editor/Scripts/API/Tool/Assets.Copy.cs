@@ -49,7 +49,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 }
                 stringBuilder.AppendLine($"[Success] Copied asset from {sourcePath} to {destinationPath}.");
             }
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             return stringBuilder.ToString();
         });
     }

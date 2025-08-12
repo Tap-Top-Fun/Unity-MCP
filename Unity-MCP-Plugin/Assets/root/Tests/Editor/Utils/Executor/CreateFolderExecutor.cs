@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -31,22 +32,29 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
             {
                 for (int i = 0; i < _folders.Length; i++)
                 {
-                    if (!AssetDatabase.IsValidFolder(_folders[i]))
-                    {
-                        var folderPath = string.Join("/", _folders.Take(i + 1));
-                        Debug.Log($"Creating folder: {folderPath}");
+                    var folderPath = string.Join("/", _folders.Take(i + 1));
 
-                        AssetDatabase.CreateFolder(
-                            parentFolder: _folders[i - 1],
-                            newFolderName: _folders[i]);
-                        AssetDatabase.Refresh();
+                    if (AssetDatabase.IsValidFolder(folderPath))
+                        continue;
 
-                        if (firstCreatedFolderIndex == -1)
-                        {
-                            firstCreatedFolderIndex = i;
-                        }
-                    }
+                    Debug.Log($"Creating folder: {folderPath}");
+
+                    AssetDatabase.CreateFolder(
+                        parentFolder: _folders[i - 1],
+                        newFolderName: _folders[i]);
+
+                    AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+
+                    if (firstCreatedFolderIndex == -1)
+                        firstCreatedFolderIndex = i;
                 }
+
+                // Unity's CreateFolder has some delay, so we need to make the folder on our own
+                if (Directory.Exists(_fullPath))
+                    return;
+
+                Directory.CreateDirectory(_fullPath);
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             });
         }
 
@@ -62,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
                 var folderPath = string.Join("/", _folders.Take(i + 1));
                 Debug.Log($"Deleting folder: {folderPath}");
                 AssetDatabase.DeleteAsset(folderPath);
-                AssetDatabase.Refresh();
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             }
         }
     }

@@ -48,7 +48,7 @@ Use it to organize scripts and assets in the project. Does AssetDatabase.Refresh
                 }
             }
 
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             return stringBuilder.ToString();
         });
     }

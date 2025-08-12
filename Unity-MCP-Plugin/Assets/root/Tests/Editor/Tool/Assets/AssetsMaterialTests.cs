@@ -32,7 +32,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             Assert.AreEqual("Standard", material.shader.name, "Material shader should be 'Standard'.");
 
             AssetDatabase.DeleteAsset(assetPath);
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
             yield return null;
         }

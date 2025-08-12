@@ -21,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
         {
             Debug.Log($"Deleting asset: {AssetPath}");
             AssetDatabase.DeleteAsset(AssetPath);
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             base.PostExecute(input);
         }
     }

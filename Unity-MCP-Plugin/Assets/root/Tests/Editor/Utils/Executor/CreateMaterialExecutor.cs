@@ -20,6 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
                 Debug.Log($"Creating material at path: {AssetPath} with shader: {_shaderName}");
                 Asset = new Material(Shader.Find(_shaderName));
                 AssetDatabase.CreateAsset(Asset, AssetPath);
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             });
         }
     }

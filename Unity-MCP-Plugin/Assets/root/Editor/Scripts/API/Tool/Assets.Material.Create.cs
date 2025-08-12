@@ -44,12 +44,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
-                AssetDatabase.Refresh();
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             }
 
             AssetDatabase.CreateAsset(material, assetPath);
             AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
             var result = McpPlugin.Instance!.McpRunner.Reflector.Serialize(
                 material,
