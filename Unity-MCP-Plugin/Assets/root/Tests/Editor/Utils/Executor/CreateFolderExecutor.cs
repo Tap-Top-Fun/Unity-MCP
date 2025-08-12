@@ -13,7 +13,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
 
         int firstCreatedFolderIndex = -1;
 
-        public string FullPath => _fullPath;
+        public string FolderPath => _fullPath;
 
         public CreateFolderExecutor(params string[] folders) : base()
         {
@@ -26,39 +26,43 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
 
             _folders = folders;
             _fullPath = string.Join("/", folders);
-        }
 
-        protected override void DoBefore(object? input)
-        {
-            for (int i = 0; i < _folders.Length; i++)
+            SetAction(() =>
             {
-                if (!AssetDatabase.IsValidFolder(_folders[i]))
+                for (int i = 0; i < _folders.Length; i++)
                 {
-                    var folderPath = string.Join("/", _folders.Take(i));
-                    Debug.Log($"Creating folder: {folderPath}");
-
-                    AssetDatabase.CreateFolder(
-                        parentFolder: _folders[i - 1],
-                        newFolderName: _folders[i]);
-
-                    if (firstCreatedFolderIndex == -1)
+                    if (!AssetDatabase.IsValidFolder(_folders[i]))
                     {
-                        firstCreatedFolderIndex = i;
+                        var folderPath = string.Join("/", _folders.Take(i + 1));
+                        Debug.Log($"Creating folder: {folderPath}");
+
+                        AssetDatabase.CreateFolder(
+                            parentFolder: _folders[i - 1],
+                            newFolderName: _folders[i]);
+                        AssetDatabase.Refresh();
+
+                        if (firstCreatedFolderIndex == -1)
+                        {
+                            firstCreatedFolderIndex = i;
+                        }
                     }
                 }
-            }
+            });
         }
 
-        protected override void DoAfter(object? input)
+        protected override void PostExecute(object? input)
         {
+            base.PostExecute(input);
+
             if (firstCreatedFolderIndex < 0)
                 return;
 
             for (int i = _folders.Length - 1; i > firstCreatedFolderIndex; i--)
             {
-                var folderPath = string.Join("/", _folders.Take(i));
+                var folderPath = string.Join("/", _folders.Take(i + 1));
                 Debug.Log($"Deleting folder: {folderPath}");
                 AssetDatabase.DeleteAsset(folderPath);
+                AssetDatabase.Refresh();
             }
         }
     }

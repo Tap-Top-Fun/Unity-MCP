@@ -20,7 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
                 throw new ArgumentNullException(nameof(action));
 
             // pass input through as output
-            operation = input => { action(); return input; };
+            operations.AddLast(input => { action(); return input; });
             return this;
         }
         public LazyNodeExecutor SetAction<T>(Action<T> action)
@@ -29,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
                 throw new ArgumentNullException(nameof(action));
 
             // Action doesn't produce a result — pass input through as output
-            operation = input =>
+            operations.AddLast(input =>
             {
                 if (input == null)
                 {
@@ -40,7 +40,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
                     action((T)input);
                 }
                 return input;
-            };
+            });
             return this;
         }
 
@@ -49,7 +49,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
             if (func == null)
                 throw new ArgumentNullException(nameof(func));
 
-            operation = input => func();
+            operations.AddLast(input => func());
             return this;
         }
 
@@ -58,7 +58,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
             if (func == null)
                 throw new ArgumentNullException(nameof(func));
 
-            operation = input =>
+            operations.AddLast(input =>
             {
                 if (input == null)
                 {
@@ -68,7 +68,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
                 {
                     return func((TInput)input);
                 }
-            };
+            });
             return this;
         }
 

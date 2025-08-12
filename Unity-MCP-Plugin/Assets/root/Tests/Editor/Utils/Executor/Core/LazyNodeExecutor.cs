@@ -10,7 +10,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
     /// </summary>
     public partial class LazyNodeExecutor
     {
-        private Func<object?, object?>? operation;
+        private readonly LinkedList<Func<object?, object?>> operations = new();
 
         // Sibling nodes (horizontal) — executed after the current node (sequentially).
         private readonly List<LazyNodeExecutor> _next = new();
@@ -22,8 +22,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
         private readonly List<LazyNodeExecutor> _dependencies = new();
 
         // ---- Execution ----
-
-        protected virtual void DoBefore(object? input = null) { }
 
         /// <summary>
         /// Execute the tree. The result of each step is passed to the next according to the traversal order.
@@ -39,24 +37,27 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
             return result;
         }
 
-        protected virtual void DoAfter(object? input = null) { }
+        protected virtual void PostExecute(object? input = null) { }
 
         // DFS: current -> all children (including each child's siblings) -> all siblings of the current node
         private object? ExecuteDepthFirst(object? input)
         {
-            if (operation == null)
+            if (operations == null)
                 throw new InvalidOperationException("No action set for this LazyNode.");
 
-            object? result = operation(input);
+            object? result = input;
 
             foreach (var dependency in _dependencies)
             {
-                result = dependency.Execute(result, TraversalOrder.DepthFirst);
+                result = dependency.ExecuteDepthFirst(result);
             }
 
             try
             {
-                DoBefore(input);
+                foreach (var operation in operations)
+                {
+                    result = operation(input);
+                }
 
                 // First, each "root" of the child subtree along with its own siblings
                 foreach (var childHead in _children)
@@ -69,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
             }
             finally
             {
-                DoAfter(input);
+                PostExecute(input);
             }
 
             // Then the current node's siblings
@@ -89,13 +90,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
 
             foreach (var dependency in _dependencies)
             {
-                result = dependency.Execute(result, TraversalOrder.BreadthFirst);
+                result = dependency.ExecuteBreadthFirst(result);
             }
 
             try
             {
-                DoBefore(input);
-
                 // Current level: the current node and its chain of siblings
                 var level = new List<LazyNodeExecutor>(EnumerateChain(this));
 
@@ -104,10 +103,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
                     // Execute all nodes of the level sequentially, passing the result along
                     foreach (var node in level)
                     {
-                        if (node.operation == null)
+                        if (node.operations == null)
                             throw new InvalidOperationException("No action set for this LazyNode.");
 
-                        result = node.operation(result);
+                        foreach (var operation in node.operations)
+                        {
+                            result = operation(input);
+                        }
                     }
 
                     // Build the next level: for each node of the level — all its children and their siblings
@@ -125,7 +127,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
             }
             finally
             {
-                DoAfter(input);
+                PostExecute(input);
             }
 
             return result;
