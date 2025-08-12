@@ -57,7 +57,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
             if (firstCreatedFolderIndex < 0)
                 return;
 
-            for (int i = _folders.Length - 1; i > firstCreatedFolderIndex; i--)
+            for (int i = _folders.Length - 1; i >= firstCreatedFolderIndex; i--)
             {
                 var folderPath = string.Join("/", _folders.Take(i + 1));
                 Debug.Log($"Deleting folder: {folderPath}");
