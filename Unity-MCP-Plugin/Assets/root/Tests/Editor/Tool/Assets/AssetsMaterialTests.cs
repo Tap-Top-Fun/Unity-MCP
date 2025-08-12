@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -6,6 +7,7 @@ using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Editor.API;
+using com.IvanMurzak.Unity.MCP.Editor.Tests.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
 using UnityEditor;
@@ -16,13 +18,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
     public partial class AssetsMaterialTests : BaseTest
     {
-        void ValidateResult(string result)
-        {
-            Assert.IsFalse(string.IsNullOrEmpty(result), "Result should not be null or empty.");
-            Assert.IsFalse(result.Contains("[Error]"), "Result should not contain error message.");
-            Assert.IsTrue(result.Contains("[Success]"), "Result should contain success message.");
-        }
-
         [UnityTest]
         public IEnumerator Material_Create()
         {
@@ -42,15 +37,46 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             yield return null;
         }
 
-        // [UnityTest]
-        // public IEnumerator Material_Modify()
-        // {
-        //     var result = new Tool_Assets().Modify(
-        //         assetPath: "Assets/Materials/TestMaterial.mat",
-        //         shaderName: "Standard");
-        //     ValidateResult(result);
+        [Test]
+        public void Material_Modify()
+        {
+            var propertyName = "_Metallic";
+            var propertyValue = 1;
 
-        //     yield return null;
-        // }
+            var materialEx = new CreateMaterialExecutor(
+                materialName: "TestMaterial.mat",
+                shaderName: "Standard",
+                "Assets", "Unity-MCP-Test", "Materials"
+            );
+
+            materialEx
+                .AddChild(new CallToolExecutor(
+                    toolName: "Assets_Modify",
+                    json: JsonTestUtils.Fill(@"{
+                        ""assetPath"": ""{assetPath}"",
+                        ""content"":
+                        {
+                            ""typeName"": ""UnityEngine.Material"",
+                            ""value"": {
+                                ""{propertyName}"": {propertyValue},
+                            }
+                        }
+                    }",
+                    new Dictionary<string, object?>
+                    {
+                        { "{assetPath}", materialEx.AssetPath },
+                        { "{propertyName}", propertyName },
+                        { "{propertyValue}", propertyValue }
+                    }))
+                )
+                .AddChild(new ValidateToolResultExecutor())
+                .AddChild(() =>
+                {
+                    var actualValue = materialEx.Asset?.GetFloat(propertyName);
+                    Assert.AreEqual(propertyValue, actualValue,
+                        $"Material property '{propertyName}' should be set to {propertyValue}.");
+                })
+                .Execute();
+        }
     }
 }

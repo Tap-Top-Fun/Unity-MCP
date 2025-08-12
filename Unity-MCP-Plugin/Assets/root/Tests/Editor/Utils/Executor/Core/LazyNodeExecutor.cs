@@ -1,0 +1,148 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+
+namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
+{
+    /// <summary>
+    /// Lazy pipeline node that passes the result through the tree.
+    /// Accepts Action<object?> or Func<object?, object?>.
+    /// </summary>
+    public partial class LazyNodeExecutor
+    {
+        private Func<object?, object?>? operation;
+
+        // Sibling nodes (horizontal) — executed after the current node (sequentially).
+        private readonly List<LazyNodeExecutor> _next = new();
+
+        // Child nodes (vertical).
+        private readonly List<LazyNodeExecutor> _children = new();
+
+        // Dependency nodes (horizontal, before).
+        private readonly List<LazyNodeExecutor> _dependencies = new();
+
+        // ---- Execution ----
+
+        protected virtual void DoBefore(object? input = null) { }
+
+        /// <summary>
+        /// Execute the tree. The result of each step is passed to the next according to the traversal order.
+        /// </summary>
+        public object? Execute(object? input = null, TraversalOrder order = TraversalOrder.DepthFirst)
+        {
+            var result = order switch
+            {
+                TraversalOrder.DepthFirst => ExecuteDepthFirst(input),
+                TraversalOrder.BreadthFirst => ExecuteBreadthFirst(input),
+                _ => throw new ArgumentOutOfRangeException(nameof(order))
+            };
+            return result;
+        }
+
+        protected virtual void DoAfter(object? input = null) { }
+
+        // DFS: current -> all children (including each child's siblings) -> all siblings of the current node
+        private object? ExecuteDepthFirst(object? input)
+        {
+            if (operation == null)
+                throw new InvalidOperationException("No action set for this LazyNode.");
+
+            object? result = operation(input);
+
+            foreach (var dependency in _dependencies)
+            {
+                result = dependency.Execute(result, TraversalOrder.DepthFirst);
+            }
+
+            try
+            {
+                DoBefore(input);
+
+                // First, each "root" of the child subtree along with its own siblings
+                foreach (var childHead in _children)
+                {
+                    foreach (var nodeInChain in EnumerateChain(childHead))
+                    {
+                        result = nodeInChain.ExecuteDepthFirst(result);
+                    }
+                }
+            }
+            finally
+            {
+                DoAfter(input);
+            }
+
+            // Then the current node's siblings
+            foreach (var sibling in _next)
+            {
+                result = sibling.ExecuteDepthFirst(result);
+            }
+
+            return result;
+        }
+
+        // BFS: level by level. At each level, process all "siblings",
+        // then collect the next level from children (including their siblings).
+        private object? ExecuteBreadthFirst(object? input)
+        {
+            object? result = input;
+
+            foreach (var dependency in _dependencies)
+            {
+                result = dependency.Execute(result, TraversalOrder.BreadthFirst);
+            }
+
+            try
+            {
+                DoBefore(input);
+
+                // Current level: the current node and its chain of siblings
+                var level = new List<LazyNodeExecutor>(EnumerateChain(this));
+
+                while (level.Count > 0)
+                {
+                    // Execute all nodes of the level sequentially, passing the result along
+                    foreach (var node in level)
+                    {
+                        if (node.operation == null)
+                            throw new InvalidOperationException("No action set for this LazyNode.");
+
+                        result = node.operation(result);
+                    }
+
+                    // Build the next level: for each node of the level — all its children and their siblings
+                    var nextLevel = new List<LazyNodeExecutor>();
+                    foreach (var node in level)
+                    {
+                        foreach (var childHead in node._children)
+                        {
+                            nextLevel.AddRange(EnumerateChain(childHead));
+                        }
+                    }
+
+                    level = nextLevel;
+                }
+            }
+            finally
+            {
+                DoAfter(input);
+            }
+
+            return result;
+        }
+
+        // Iterate over the "chain" of siblings starting from the head
+        private static IEnumerable<LazyNodeExecutor> EnumerateChain(LazyNodeExecutor head)
+        {
+            yield return head;
+            foreach (var n in head._next)
+                yield return n;
+        }
+    }
+
+    public enum TraversalOrder
+    {
+        DepthFirst,  // DFS
+        BreadthFirst // BFS
+    }
+}

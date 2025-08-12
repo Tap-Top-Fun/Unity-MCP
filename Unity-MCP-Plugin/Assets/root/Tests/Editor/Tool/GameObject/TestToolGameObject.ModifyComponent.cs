@@ -466,6 +466,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 AssetDatabase.CreateFolder("Assets", "TestMaterials");
 
             AssetDatabase.CreateAsset(material, assetPath);
+            AssetDatabase.Refresh();
             try
             {
                 var go = new GameObject("TestGameObject");
