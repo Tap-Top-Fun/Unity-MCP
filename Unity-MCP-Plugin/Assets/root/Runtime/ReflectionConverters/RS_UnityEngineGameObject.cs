@@ -275,8 +275,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder? stringBuilder = null,
             ILogger? logger = null)
         {
-            return data.valueJsonElement.ToGameObjectRef(reflector).FindGameObject()
-                ?? data.valueJsonElement.ToAssetObjectRef(reflector).FindAssetObject() as GameObject;
+            return data.valueJsonElement.ToGameObjectRef(reflector).FindGameObject();
         }
 
         protected override object DeserializeValueAsJsonElement(
@@ -287,8 +286,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder stringBuilder = null,
             ILogger logger = null)
         {
-            return data.valueJsonElement.ToGameObjectRef(reflector).FindGameObject()
-                ?? data.valueJsonElement.ToAssetObjectRef(reflector).FindAssetObject() as GameObject;
+            return data.valueJsonElement.ToGameObjectRef(reflector).FindGameObject();
         }
 
         public override object? CreateInstance(Reflector reflector, Type type)

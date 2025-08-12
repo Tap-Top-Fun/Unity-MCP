@@ -1,13 +1,20 @@
 #nullable enable
+using System.Text;
 using System.Text.Json;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model.Unity;
+using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
     public static class ExtensionsJsonElement
     {
-        public static GameObjectRef? ToGameObjectRef(this JsonElement? jsonElement, Reflector reflector, bool suppressException = true)
+        public static GameObjectRef? ToGameObjectRef(
+            this JsonElement? jsonElement,
+            Reflector reflector,
+            bool suppressException = true,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             if (jsonElement == null)
                 return null;
@@ -23,7 +30,12 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 return null;
             }
         }
-        public static ComponentRef? ToComponentRef(this JsonElement? jsonElement, Reflector reflector, bool suppressException = true)
+        public static ComponentRef? ToComponentRef(
+            this JsonElement? jsonElement,
+            Reflector reflector,
+            bool suppressException = true,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             if (jsonElement == null)
                 return null;
@@ -39,7 +51,12 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 return null;
             }
         }
-        public static AssetObjectRef? ToAssetObjectRef(this JsonElement? jsonElement, Reflector reflector, bool suppressException = true)
+        public static AssetObjectRef? ToAssetObjectRef(
+            this JsonElement? jsonElement,
+            Reflector reflector,
+            bool suppressException = true,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             if (jsonElement == null)
                 return null;
@@ -55,7 +72,12 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 return null;
             }
         }
-        public static ObjectRef? ToObjectRef(this JsonElement? jsonElement, Reflector reflector, bool suppressException = true)
+        public static ObjectRef? ToObjectRef(
+            this JsonElement? jsonElement,
+            Reflector reflector,
+            bool suppressException = true,
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             if (jsonElement == null)
                 return null;
