@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -29,12 +30,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 
                     switch (propertyName)
                     {
-                        case nameof(ObjectRef.instanceID):
-                            objectRef.instanceID = reader.GetInt32();
+                        case ObjectRef.ObjectRefProperty.InstanceID:
+                            objectRef.InstanceID = reader.GetInt32();
                             break;
                         default:
                             throw new JsonException($"Unexpected property name: {propertyName}. "
-                                + $"Expected '{nameof(ObjectRef.instanceID)}'.");
+                                + $"Expected '{ObjectRef.ObjectRefProperty.InstanceID}'.");
                     }
                 }
             }
@@ -49,8 +50,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                 writer.WriteStartObject();
 
                 // Write the "instanceID" property
-                writer.WritePropertyName(nameof(ObjectRef.instanceID));
-                writer.WriteNumberValue(0);
+                writer.WriteNumber(ObjectRef.ObjectRefProperty.InstanceID, 0);
 
                 writer.WriteEndObject();
                 return;
@@ -59,8 +59,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             writer.WriteStartObject();
 
             // Write the "instanceID" property
-            writer.WritePropertyName(nameof(ObjectRef.instanceID));
-            writer.WriteNumberValue(value.instanceID);
+            writer.WriteNumber(ObjectRef.ObjectRefProperty.InstanceID, value.InstanceID);
 
             writer.WriteEndObject();
         }

@@ -11,8 +11,8 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 return null;
 
 #if UNITY_EDITOR
-            if (objectRef.instanceID != 0)
-                return UnityEditor.EditorUtility.InstanceIDToObject(objectRef.instanceID);
+            if (objectRef.InstanceID != 0)
+                return UnityEditor.EditorUtility.InstanceIDToObject(objectRef.InstanceID);
 #endif
 
             return null;

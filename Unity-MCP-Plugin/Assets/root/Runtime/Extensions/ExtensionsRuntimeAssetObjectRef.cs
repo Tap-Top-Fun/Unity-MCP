@@ -11,15 +11,15 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 return null;
 
 #if UNITY_EDITOR
-            if (assetObjectRef.instanceID != 0)
-                return UnityEditor.EditorUtility.InstanceIDToObject(assetObjectRef.instanceID);
+            if (assetObjectRef.InstanceID != 0)
+                return UnityEditor.EditorUtility.InstanceIDToObject(assetObjectRef.InstanceID);
 
-            if (!string.IsNullOrEmpty(assetObjectRef.assetPath))
-                return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetObjectRef.assetPath);
+            if (!string.IsNullOrEmpty(assetObjectRef.AssetPath))
+                return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetObjectRef.AssetPath);
 
-            if (!string.IsNullOrEmpty(assetObjectRef.assetGuid))
+            if (!string.IsNullOrEmpty(assetObjectRef.AssetGuid))
             {
-                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(assetObjectRef.assetGuid);
+                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(assetObjectRef.AssetGuid);
                 if (!string.IsNullOrEmpty(path))
                     return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
             }

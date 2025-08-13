@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity

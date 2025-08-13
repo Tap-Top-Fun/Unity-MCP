@@ -1,19 +1,16 @@
+#nullable enable
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
     [System.Serializable]
-    [Description(@"GameObject reference. Used to find GameObject in opened Prefab or in a Scene.
-Use one of the following properties:
-1. 'instanceID' (int) - recommended. It finds the exact GameObject.
-2. 'path' (string) - finds GameObject by path. It may find a wrong GameObject.
-3. 'name' (string) - finds GameObject by name. It may find a wrong GameObject.")]
+    [Description(@"GameObject reference. Used to find GameObject in opened Prefab or in a Scene.")]
     public class GameObjectComponentsRef : GameObjectRef
     {
         [JsonInclude, JsonPropertyName("components")]
         [Description("GameObject 'components'.")]
-        public SerializedMemberList? components { get; set; }
+        public SerializedMemberList? Components { get; set; }
 
         public GameObjectComponentsRef() { }
 
@@ -21,11 +18,12 @@ Use one of the following properties:
         {
             var stringBuilder = new System.Text.StringBuilder();
             stringBuilder.AppendLine($"{base.ToString()}");
-            if (components != null && components.Count > 0)
+
+            if (Components != null && Components.Count > 0)
             {
-                stringBuilder.AppendLine($"Components total amount: {components.Count}");
-                for (int i = 0; i < components.Count; i++)
-                    stringBuilder.AppendLine($"Component[{i}] {components[i]}");
+                stringBuilder.AppendLine($"Components total amount: {Components.Count}");
+                for (int i = 0; i < Components.Count; i++)
+                    stringBuilder.AppendLine($"Component[{i}] {Components[i]}");
             }
             else
             {

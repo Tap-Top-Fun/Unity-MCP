@@ -238,14 +238,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     error = null;
                     return component;
                 }
-                error = $"Component with '{nameof(instanceID)}'='{instanceID.Value}' not found.";
+                error = $"Component with {ObjectRef.ObjectRefProperty.InstanceID}='{instanceID.Value}' not found.";
                 return null;
             }
             if (index.HasValue)
             {
                 if (index < 0 || index >= allComponents.Length)
                 {
-                    error = $"Component with '{nameof(index)}'='{index.Value}' not found. Index is out of range.";
+                    error = $"Component with {ComponentRef.ComponentRefProperty.Index}='{index.Value}' not found. Index is out of range.";
                     return null;
                 }
                 error = null;
@@ -262,7 +262,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 error = $"Component of type '{typeName.GetTypeName(pretty: false)}' not found.";
                 return null;
             }
-            error = $"No valid criteria provided to find the component. Use '{nameof(instanceID)}', '{nameof(index)}', or '{nameof(typeName)}'.";
+            error = $"No valid criteria provided to find the component. Use '{ObjectRef.ObjectRefProperty.InstanceID}', '{ComponentRef.ComponentRefProperty.Index}', or '{ComponentRef.ComponentRefProperty.TypeName}'.";
             return null;
         }
 

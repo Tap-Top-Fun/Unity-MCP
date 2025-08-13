@@ -29,18 +29,18 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 
                     switch (propertyName)
                     {
-                        case nameof(ComponentRef.instanceID):
-                            result.instanceID = reader.GetInt32();
+                        case ObjectRef.ObjectRefProperty.InstanceID:
+                            result.InstanceID = reader.GetInt32();
                             break;
-                        case nameof(ComponentRef.index):
-                            result.index = reader.GetInt32();
+                        case ComponentRef.ComponentRefProperty.Index:
+                            result.Index = reader.GetInt32();
                             break;
-                        case nameof(ComponentRef.typeName):
-                            result.typeName = reader.GetString();
+                        case ComponentRef.ComponentRefProperty.TypeName:
+                            result.TypeName = reader.GetString();
                             break;
                         default:
                             throw new JsonException($"Unexpected property name: {propertyName}. "
-                                + $"Expected '{nameof(ComponentRef.instanceID)}', '{nameof(ComponentRef.index)}', or '{nameof(ComponentRef.typeName)}'.");
+                                + $"Expected {ComponentRef.ComponentRefProperty.All.JoinEnclose()}.");
                     }
                 }
             }
@@ -55,8 +55,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                 writer.WriteStartObject();
 
                 // Write the "instanceID" property
-                writer.WritePropertyName(nameof(ComponentRef.instanceID));
-                writer.WriteNumberValue(0);
+                writer.WriteNumber(ObjectRef.ObjectRefProperty.InstanceID, 0);
 
                 writer.WriteEndObject();
                 return;
@@ -64,13 +63,13 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 
             writer.WriteStartObject();
 
-            writer.WriteNumber(nameof(ComponentRef.instanceID), value.instanceID);
+            writer.WriteNumber(ObjectRef.ObjectRefProperty.InstanceID, value.InstanceID);
 
-            if (value.index != -1)
-                writer.WriteNumber(nameof(ComponentRef.index), value.index);
+            if (value.Index != -1)
+                writer.WriteNumber(ComponentRef.ComponentRefProperty.Index, value.Index);
 
-            if (!string.IsNullOrEmpty(value.typeName))
-                writer.WriteString(nameof(ComponentRef.typeName), value.typeName);
+            if (!string.IsNullOrEmpty(value.TypeName))
+                writer.WriteString(ComponentRef.ComponentRefProperty.TypeName, value.TypeName);
 
             writer.WriteEndObject();
         }

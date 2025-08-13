@@ -1,33 +1,43 @@
+#nullable enable
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
     [Description(@"Component reference. Used to find a Component at GameObject.")]
-    public class ComponentRef
+    public class ComponentRef : ObjectRef
     {
-        [JsonInclude, JsonPropertyName("instanceID")]
-        [Description("Component 'instanceID' (int). Priority: 1. (Recommended)")]
-        public int instanceID { get; set; } = 0;
+        public static partial class ComponentRefProperty
+        {
+            public const string Index = "index";
+            public const string TypeName = "typeName";
 
-        [JsonInclude, JsonPropertyName("index")]
+            public static IEnumerable<string> All => ObjectRefProperty.All.Concat(new[]
+            {
+                Index,
+                TypeName
+            });
+        }
+        [JsonInclude, JsonPropertyName(ComponentRefProperty.Index)]
         [Description("Component 'index' attached to a gameObject. The first index is '0' and that is usually Transform or RectTransform. Priority: 2. Default value is -1.")]
-        public int index { get; set; } = -1;
+        public int Index { get; set; } = -1;
 
-        [JsonInclude, JsonPropertyName("typeName")]
+        [JsonInclude, JsonPropertyName(ComponentRefProperty.TypeName)]
         [Description("Component type full name. Sample 'UnityEngine.Transform'. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null.")]
-        public string? typeName { get; set; } = null;
+        public string? TypeName { get; set; } = null;
 
         [JsonIgnore]
         public bool IsValid
         {
             get
             {
-                if (instanceID != 0)
+                if (InstanceID != 0)
                     return true;
-                if (index >= 0)
+                if (Index >= 0)
                     return true;
-                if (!string.IsNullOrEmpty(typeName))
+                if (!string.IsNullOrEmpty(TypeName))
                     return true;
                 return false;
             }
@@ -36,17 +46,17 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
         public ComponentRef() { }
         public ComponentRef(int instanceID)
         {
-            this.instanceID = instanceID;
+            this.InstanceID = instanceID;
         }
 
         public override string ToString()
         {
-            if (instanceID != 0)
-                return $"Component {nameof(instanceID)}='{instanceID}'";
-            if (index >= 0)
-                return $"Component {nameof(index)}='{index}'";
-            if (!string.IsNullOrEmpty(typeName))
-                return $"Component {nameof(typeName)}='{typeName}'";
+            if (InstanceID != 0)
+                return $"Component {ObjectRefProperty.InstanceID}='{InstanceID}'";
+            if (Index >= 0)
+                return $"Component {ComponentRefProperty.Index}='{Index}'";
+            if (!string.IsNullOrEmpty(TypeName))
+                return $"Component {ComponentRefProperty.TypeName}='{TypeName}'";
             return "Component unknown";
         }
     }

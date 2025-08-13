@@ -25,9 +25,9 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 return null;
             }
             return FindBy(
-                instanceID: gameObjectRef.instanceID,
-                path: gameObjectRef.path,
-                name: gameObjectRef.name,
+                instanceID: gameObjectRef.InstanceID,
+                path: gameObjectRef.Path,
+                name: gameObjectRef.Name,
                 error: out error);
         }
 

@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = new Tool_GameObject().Find(
                 gameObjectRef: new GameObjectRef
                 {
-                    instanceID = child.GetInstanceID()
+                    InstanceID = child.GetInstanceID()
                 });
             ResultValidation(result);
 
@@ -37,7 +37,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = new Tool_GameObject().Find(
                 gameObjectRef: new GameObjectRef
                 {
-                    path = $"{GO_ParentName}/{GO_Child1Name}"
+                    Path = $"{GO_ParentName}/{GO_Child1Name}"
                 });
             ResultValidation(result);
 
@@ -52,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = new Tool_GameObject().Find(
                 gameObjectRef: new GameObjectRef
                 {
-                    name = GO_Child1Name
+                    Name = GO_Child1Name
                 });
             ResultValidation(result);
 
@@ -71,7 +71,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = new Tool_GameObject().Find(
                 gameObjectRef: new GameObjectRef
                 {
-                    instanceID = go.GetInstanceID()
+                    InstanceID = go.GetInstanceID()
                 },
                 includeChildrenDepth: 1,
                 briefData: false);

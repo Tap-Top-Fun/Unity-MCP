@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 var objectRef = member.GetValue<ObjectRef>(McpPlugin.Instance!.McpRunner.Reflector);
                 if (objectRef != null)
                 {
-                    instanceID = objectRef.instanceID;
+                    instanceID = objectRef.InstanceID;
                     return true;
                 }
             }
@@ -26,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 
             try
             {
-                var fieldValue = member.GetField(nameof(ObjectRef.instanceID));
+                var fieldValue = member.GetField(ObjectRef.ObjectRefProperty.InstanceID);
                 if (fieldValue != null)
                 {
                     instanceID = fieldValue.GetValue<int>(McpPlugin.Instance!.McpRunner.Reflector);
@@ -48,7 +48,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 var objectRef = member.GetValue<GameObjectRef>(McpPlugin.Instance!.McpRunner.Reflector);
                 if (objectRef != null)
                 {
-                    instanceID = objectRef.instanceID;
+                    instanceID = objectRef.InstanceID;
                     return true;
                 }
             }
@@ -59,7 +59,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 
             try
             {
-                var fieldValue = member.GetField(nameof(GameObjectRef.instanceID));
+                var fieldValue = member.GetField(ObjectRef.ObjectRefProperty.InstanceID);
                 if (fieldValue != null)
                 {
                     instanceID = fieldValue.GetValue<int>(McpPlugin.Instance!.McpRunner.Reflector);
@@ -72,39 +72,6 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             }
 
             instanceID = 0;
-            return false;
-        }
-        public static bool TryGetGameObjectPath(this SerializedMember member, out string? path)
-        {
-            try
-            {
-                var objectRef = member.GetValue<GameObjectRef>(McpPlugin.Instance!.McpRunner.Reflector);
-                if (objectRef != null)
-                {
-                    path = objectRef.path;
-                    return true;
-                }
-            }
-            catch
-            {
-                // Ignore exceptions, fallback to instanceID field
-            }
-
-            try
-            {
-                var fieldValue = member.GetField(nameof(GameObjectRef.path));
-                if (fieldValue != null)
-                {
-                    path = fieldValue.GetValue<string>(McpPlugin.Instance!.McpRunner.Reflector);
-                    return true;
-                }
-            }
-            catch
-            {
-                // Ignore exceptions, fallback to instanceID field
-            }
-
-            path = null;
             return false;
         }
     }

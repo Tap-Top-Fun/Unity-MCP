@@ -56,7 +56,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = new Tool_GameObject().Find(
                 gameObjectRef: new ReflectorNet.Model.Unity.GameObjectRef
                 {
-                    instanceID = child.GetInstanceID()
+                    InstanceID = child.GetInstanceID()
                 },
                 briefData: false);
             ResultValidation(result);

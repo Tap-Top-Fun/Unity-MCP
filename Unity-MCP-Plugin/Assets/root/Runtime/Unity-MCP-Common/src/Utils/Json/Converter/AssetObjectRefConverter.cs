@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -29,18 +30,18 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 
                     switch (propertyName)
                     {
-                        case nameof(AssetObjectRef.instanceID):
-                            assetObjectRef.instanceID = reader.GetInt32();
+                        case ObjectRef.ObjectRefProperty.InstanceID:
+                            assetObjectRef.InstanceID = reader.GetInt32();
                             break;
-                        case nameof(AssetObjectRef.assetPath):
-                            assetObjectRef.assetPath = reader.GetString();
+                        case AssetObjectRef.AssetObjectRefProperty.AssetPath:
+                            assetObjectRef.AssetPath = reader.GetString();
                             break;
-                        case nameof(AssetObjectRef.assetGuid):
-                            assetObjectRef.assetGuid = reader.GetString();
+                        case AssetObjectRef.AssetObjectRefProperty.AssetGuid:
+                            assetObjectRef.AssetGuid = reader.GetString();
                             break;
                         default:
                             throw new JsonException($"Unexpected property name: {propertyName}. "
-                                + $"Expected '{nameof(AssetObjectRef.instanceID)}', '{nameof(AssetObjectRef.assetPath)}', or '{nameof(AssetObjectRef.assetGuid)}'.");
+                                + $"Expected {AssetObjectRef.AssetObjectRefProperty.All.JoinEnclose()}.");
                     }
                 }
             }
@@ -55,8 +56,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                 writer.WriteStartObject();
 
                 // Write the "instanceID" property
-                writer.WritePropertyName(nameof(ObjectRef.instanceID));
-                writer.WriteNumberValue(0);
+                writer.WriteNumber(ObjectRef.ObjectRefProperty.InstanceID, 0);
 
                 writer.WriteEndObject();
                 return;
@@ -65,22 +65,15 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             writer.WriteStartObject();
 
             // Write the "instanceID" property
-            writer.WritePropertyName(nameof(AssetObjectRef.instanceID));
-            writer.WriteNumberValue(value.instanceID);
+            writer.WriteNumber(ObjectRef.ObjectRefProperty.InstanceID, value.InstanceID);
 
             // Write the "assetPath" property
-            if (!string.IsNullOrEmpty(value.assetPath))
-            {
-                writer.WritePropertyName(nameof(AssetObjectRef.assetPath));
-                writer.WriteStringValue(value.assetPath);
-            }
+            if (!string.IsNullOrEmpty(value.AssetPath))
+                writer.WriteString(AssetObjectRef.AssetObjectRefProperty.AssetPath, value.AssetPath);
 
             // Write the "assetGuid" property
-            if (!string.IsNullOrEmpty(value.assetGuid))
-            {
-                writer.WritePropertyName(nameof(AssetObjectRef.assetGuid));
-                writer.WriteStringValue(value.assetGuid);
-            }
+            if (!string.IsNullOrEmpty(value.AssetGuid))
+                writer.WriteString(AssetObjectRef.AssetObjectRefProperty.AssetGuid, value.AssetGuid);
 
             writer.WriteEndObject();
         }

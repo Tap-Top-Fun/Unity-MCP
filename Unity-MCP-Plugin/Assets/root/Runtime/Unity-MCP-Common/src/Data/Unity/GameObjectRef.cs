@@ -1,5 +1,7 @@
 #nullable enable
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
@@ -7,55 +9,67 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
     [Description(@"Find GameObject in opened Prefab or in the active Scene.")]
     public class GameObjectRef : AssetObjectRef
     {
-        [JsonInclude, JsonPropertyName("instanceID")]
-        [Description("Instance ID of the UnityEngine.Object. If this is '0' and 'path', 'name', 'assetPath' and 'assetGuid' is not provided, empty or null, then it will be used as 'null'.")]
-        public override int instanceID { get; set; } = 0;
+        public static partial class GameObjectRefProperty
+        {
+            public const string Path = "path";
+            public const string Name = "name";
 
-        [JsonInclude, JsonPropertyName("path")]
+            public static IEnumerable<string> All => AssetObjectRefProperty.All.Concat(new[]
+            {
+                Path,
+                Name
+            });
+        }
+        [JsonInclude, JsonPropertyName(ObjectRefProperty.InstanceID)]
+        [Description(
+            "Instance ID of the UnityEngine.Object. If it is '0' and '"
+            + GameObjectRefProperty.Path + "', '"
+            + GameObjectRefProperty.Name + "', '"
+            + AssetObjectRefProperty.AssetPath + "' and '"
+            + AssetObjectRefProperty.AssetGuid
+            + "' is not provided, empty or null, then it will be used as 'null'. Priority: 1 (Recommended)")]
+        public override int InstanceID { get; set; } = 0;
+
+        [JsonInclude, JsonPropertyName(GameObjectRefProperty.Path)]
         [Description("Path of a GameObject in the hierarchy Sample 'character/hand/finger/particle'. Priority: 2.")]
-        public string? path { get; set; } = null;
+        public string? Path { get; set; } = null;
 
-        [JsonInclude, JsonPropertyName("name")]
+        [JsonInclude, JsonPropertyName(GameObjectRefProperty.Name)]
         [Description("Name of a GameObject in hierarchy. Priority: 3.")]
-        public string? name { get; set; } = null;
+        public string? Name { get; set; } = null;
 
         [JsonIgnore]
-        public bool IsValid
+        public override bool IsValid
         {
             get
             {
-                if (instanceID != 0)
+                if (!string.IsNullOrEmpty(Path))
                     return true;
-                if (!string.IsNullOrEmpty(path))
+                if (!string.IsNullOrEmpty(Name))
                     return true;
-                if (!string.IsNullOrEmpty(name))
-                    return true;
-                if (!string.IsNullOrEmpty(assetPath))
-                    return true;
-                if (!string.IsNullOrEmpty(assetGuid))
-                    return true;
-                return false;
+
+                return base.IsValid;
             }
         }
 
         public GameObjectRef() { }
         public GameObjectRef(int instanceID)
         {
-            this.instanceID = instanceID;
+            this.InstanceID = instanceID;
         }
 
         public override string ToString()
         {
-            if (instanceID != 0)
-                return $"GameObject instanceID='{instanceID}'";
-            if (!string.IsNullOrEmpty(path))
-                return $"GameObject path='{path}'";
-            if (!string.IsNullOrEmpty(name))
-                return $"GameObject name='{name}'";
-            if (!string.IsNullOrEmpty(assetPath))
-                return $"GameObject assetPath='{assetPath}'";
-            if (!string.IsNullOrEmpty(assetGuid))
-                return $"GameObject assetGuid='{assetGuid}'";
+            if (InstanceID != 0)
+                return $"GameObject {ObjectRefProperty.InstanceID}='{InstanceID}'";
+            if (!string.IsNullOrEmpty(Path))
+                return $"GameObject {GameObjectRefProperty.Path}='{Path}'";
+            if (!string.IsNullOrEmpty(Name))
+                return $"GameObject {GameObjectRefProperty.Name}='{Name}'";
+            if (!string.IsNullOrEmpty(AssetPath))
+                return $"GameObject {AssetObjectRefProperty.AssetPath}='{AssetPath}'";
+            if (!string.IsNullOrEmpty(AssetGuid))
+                return $"GameObject {AssetObjectRefProperty.AssetGuid}='{AssetGuid}'";
             return "GameObject unknown";
         }
     }

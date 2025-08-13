@@ -1,52 +1,85 @@
 #nullable enable
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
-    [System.Serializable]
+    [Serializable]
     [Description("Reference to UnityEngine.Object asset instance. It could be Material, ScriptableObject, Prefab, and any other Asset. Anything located in the Assets folder.")]
     public class AssetObjectRef : ObjectRef
     {
-        [JsonInclude, JsonPropertyName("instanceID")]
+        public static partial class AssetObjectRefProperty
+        {
+            public const string AssetPath = "assetPath";
+            public const string AssetGuid = "assetGuid";
+
+            public static IEnumerable<string> All => ObjectRefProperty.All.Concat(new[]
+            {
+                AssetPath,
+                AssetGuid
+            });
+        }
+        [JsonInclude, JsonPropertyName(ObjectRefProperty.InstanceID)]
         [Description("Instance ID of the UnityEngine.Object. If this is '0' and 'assetPath' and 'assetGuid' is not provided, empty or null, then it will be used as 'null'.")]
-        public override int instanceID { get; set; } = 0;
+        public override int InstanceID { get; set; } = 0;
 
-        [JsonInclude, JsonPropertyName("assetPath")]
+        [JsonInclude, JsonPropertyName(AssetObjectRefProperty.AssetPath)]
         [Description("Path to the asset within the project. Starts with 'Assets/'")]
-        public string? assetPath { get; set; }
+        public string? AssetPath { get; set; }
 
-        [JsonInclude, JsonPropertyName("assetGuid")]
+        [JsonInclude, JsonPropertyName(AssetObjectRefProperty.AssetGuid)]
         [Description("Unique identifier for the asset.")]
-        public string? assetGuid { get; set; }
+        public string? AssetGuid { get; set; }
 
         public AssetObjectRef() : this(id: 0) { }
-        public AssetObjectRef(int id) => instanceID = id;
-        public AssetObjectRef(string assetPath) => this.assetPath = assetPath;
+        public AssetObjectRef(int id) => InstanceID = id;
+        public AssetObjectRef(string assetPath) => this.AssetPath = assetPath;
+
+        [JsonIgnore]
+        public virtual bool IsValid
+        {
+            get
+            {
+                if (InstanceID != 0)
+                    return true;
+
+                if (!StringUtils.IsNullOrEmpty(AssetPath)
+                    && (AssetPath!.StartsWith("Assets/") || AssetPath.StartsWith("Packages/")))
+                    return true;
+
+                if (!StringUtils.IsNullOrEmpty(AssetGuid))
+                    return true;
+
+                return false;
+            }
+        }
 
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
-            if (instanceID != 0)
-                stringBuilder.Append($"instanceID={instanceID}");
+            if (InstanceID != 0)
+                stringBuilder.Append($"{ObjectRefProperty.InstanceID}={InstanceID}");
 
-            if (!StringUtils.IsNullOrEmpty(assetPath))
+            if (!StringUtils.IsNullOrEmpty(AssetPath))
             {
                 if (stringBuilder.Length > 0)
                     stringBuilder.Append(", ");
-                stringBuilder.Append($"assetPath={assetPath}");
+                stringBuilder.Append($"{AssetObjectRefProperty.AssetPath}={AssetPath}");
             }
 
-            if (!StringUtils.IsNullOrEmpty(assetGuid))
+            if (!StringUtils.IsNullOrEmpty(AssetGuid))
             {
                 if (stringBuilder.Length > 0)
                     stringBuilder.Append(", ");
-                stringBuilder.Append($"assetGuid={assetGuid}");
+                stringBuilder.Append($"{AssetObjectRefProperty.AssetGuid}={AssetGuid}");
             }
             if (stringBuilder.Length == 0)
-                return $"instanceID={instanceID}";
+                return $"{ObjectRefProperty.InstanceID}={InstanceID}";
 
             return stringBuilder.ToString();
         }

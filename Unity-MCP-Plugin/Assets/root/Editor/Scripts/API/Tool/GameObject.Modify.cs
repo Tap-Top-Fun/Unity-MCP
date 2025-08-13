@@ -26,7 +26,7 @@ You can modify multiple GameObjects at once. Just provide the same number of Gam
             [Description("Each item in the array represents a GameObject modification of the 'gameObjectRefs' at the same index.\n" +
                 "Usually a GameObject is a container for components. Each component may have fields and properties for modification.\n" +
                 "If you need to modify components of a gameObject, please use '" + nameof(SerializedMember.fields) + "' to wrap a component into it. " +
-                "Each component needs to have '" + nameof(SerializedMember.typeName) + "' and '" + nameof(SerializedMember.name) + "' or 'value." + nameof(GameObjectRef.instanceID) + "' fields to identify the exact modification target.\n" +
+                "Each component needs to have '" + nameof(SerializedMember.typeName) + "' and '" + nameof(SerializedMember.name) + "' or 'value." + ObjectRef.ObjectRefProperty.InstanceID + "' fields to identify the exact modification target.\n" +
                 "Ignore values that should not be modified.\n" +
                 "Any unknown or wrong located fields and properties will be ignored.\n" +
                 "Check the result of this command to see what was changed. The ignored fields and properties will be listed.")]
