@@ -48,8 +48,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         {
             var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
-            UnityEngine.Debug.Log(reflector.GetSchema<GameObjectRef>());
-
             var propertyName = "_Metallic";
             var propertyValue = 1;
 
