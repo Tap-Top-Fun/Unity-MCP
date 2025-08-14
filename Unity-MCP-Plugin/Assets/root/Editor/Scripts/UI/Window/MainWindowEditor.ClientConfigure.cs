@@ -113,6 +113,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             {
                 var json = File.ReadAllText(configPath);
 
+                if (string.IsNullOrWhiteSpace(json))
+                    return false;
+
                 var rootObj = JsonNode.Parse(json)?.AsObject();
                 if (rootObj == null)
                     return false;
