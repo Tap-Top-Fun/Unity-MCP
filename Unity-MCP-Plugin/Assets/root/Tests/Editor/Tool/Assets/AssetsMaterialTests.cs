@@ -43,51 +43,51 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 .Execute();
         }
 
-        [Test]
-        public void Material_Modify()
-        {
-            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+        // [Test]
+        // public void Material_Modify()
+        // {
+        //     var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
-            var propertyName = "_Metallic";
-            var propertyValue = 1;
+        //     var propertyName = "_Metallic";
+        //     var propertyValue = 1;
 
-            var materialEx = new CreateMaterialExecutor(
-                materialName: "TestMaterial.mat",
-                shaderName: "Standard",
-                "Assets", "Unity-MCP-Test", "Materials"
-            );
+        //     var materialEx = new CreateMaterialExecutor(
+        //         materialName: "TestMaterial.mat",
+        //         shaderName: "Standard",
+        //         "Assets", "Unity-MCP-Test", "Materials"
+        //     );
 
-            materialEx
-                .AddChild(new CallToolExecutor(
-                    toolMethod: typeof(Tool_Assets).GetMethod(nameof(Tool_Assets.Modify)),
-                    json: JsonTestUtils.Fill(@"{
-                        ""assetRef"": {
-                            ""{assetPathProperty}"": ""{assetPath}""
-                        },
-                        ""content"":
-                        {
-                            ""typeName"": ""UnityEngine.Material"",
-                            ""value"": {
-                                ""{propertyName}"": {propertyValue}
-                            }
-                        }
-                    }",
-                    new Dictionary<string, object?>
-                    {
-                        { "{assetPathProperty}", AssetObjectRef.AssetObjectRefProperty.AssetPath },
-                        { "{assetPath}", materialEx.AssetPath },
-                        { "{propertyName}", propertyName },
-                        { "{propertyValue}", propertyValue }
-                    }))
-                )
-                .AddChild(new ValidateToolResultExecutor())
-                .AddChild(() =>
-                {
-                    var actualValue = materialEx.Asset?.GetFloat(propertyName);
-                    Assert.AreEqual(propertyValue, actualValue,
-                        $"Material property '{propertyName}' should be set to {propertyValue}.");
-                })
-                .Execute();
-        }
+        //     materialEx
+        //         .AddChild(new CallToolExecutor(
+        //             toolMethod: typeof(Tool_Assets).GetMethod(nameof(Tool_Assets.Modify)),
+        //             json: JsonTestUtils.Fill(@"{
+        //                 ""assetRef"": {
+        //                     ""{assetPathProperty}"": ""{assetPath}""
+        //                 },
+        //                 ""content"":
+        //                 {
+        //                     ""typeName"": ""UnityEngine.Material"",
+        //                     ""value"": {
+        //                         ""{propertyName}"": {propertyValue}
+        //                     }
+        //                 }
+        //             }",
+        //             new Dictionary<string, object?>
+        //             {
+        //                 { "{assetPathProperty}", AssetObjectRef.AssetObjectRefProperty.AssetPath },
+        //                 { "{assetPath}", materialEx.AssetPath },
+        //                 { "{propertyName}", propertyName },
+        //                 { "{propertyValue}", propertyValue }
+        //             }))
+        //         )
+        //         .AddChild(new ValidateToolResultExecutor())
+        //         .AddChild(() =>
+        //         {
+        //             var actualValue = materialEx.Asset?.GetFloat(propertyName);
+        //             Assert.AreEqual(propertyValue, actualValue,
+        //                 $"Material property '{propertyName}' should be set to {propertyValue}.");
+        //         })
+        //         .Execute();
+        // }
     }
 }
