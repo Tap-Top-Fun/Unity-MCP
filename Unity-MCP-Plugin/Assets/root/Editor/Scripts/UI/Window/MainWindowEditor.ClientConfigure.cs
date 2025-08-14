@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.IO;
 using System.Linq;
@@ -123,7 +124,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 foreach (var kv in mcpServers)
                 {
                     var command = kv.Value?["command"]?.GetValue<string>();
-                    if (string.IsNullOrEmpty(command) || !IsCommandMatch(command))
+                    if (string.IsNullOrEmpty(command) || !IsCommandMatch(command!))
                         continue;
 
                     var args = kv.Value?["args"]?.AsArray();
@@ -156,7 +157,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             }
         }
 
-        bool DoArgumentsMatch(JsonArray args)
+        bool DoArgumentsMatch(JsonArray? args)
         {
             if (args == null)
                 return false;
@@ -181,9 +182,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     foundTimeout = true;
 
                 // Check named format
-                else if (arg.StartsWith("--port=") && arg.Substring(7) == targetPort)
+                else if (arg!.StartsWith("--port=") && arg.Substring(7) == targetPort)
                     foundPort = true;
-                else if (arg.StartsWith("--timeout=") && arg.Substring(10) == targetTimeout)
+                else if (arg!.StartsWith("--timeout=") && arg.Substring(10) == targetTimeout)
                     foundTimeout = true;
             }
 
@@ -210,11 +211,22 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 }
 
                 var json = File.ReadAllText(configPath);
+                JsonObject? rootObj = null;
 
-                // Parse the existing config as JsonObject
-                var rootObj = JsonNode.Parse(json)?.AsObject();
-                if (rootObj == null)
-                    throw new Exception("Config file is not a valid JSON object.");
+                try
+                {
+                    // Parse the existing config as JsonObject
+                    rootObj = JsonNode.Parse(json)?.AsObject();
+                    if (rootObj == null)
+                        throw new Exception("Config file is not a valid JSON object.");
+                }
+                catch
+                {
+                    File.WriteAllText(
+                        path: configPath,
+                        contents: Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs).ToString());
+                    return true;
+                }
 
                 // Parse the injected config as JsonObject
                 var injectObj = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs);

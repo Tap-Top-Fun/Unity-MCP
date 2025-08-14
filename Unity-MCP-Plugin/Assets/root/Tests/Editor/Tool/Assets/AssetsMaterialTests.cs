@@ -1,5 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using com.IvanMurzak.Unity.MCP.Editor.Tests.Utils;
 using NUnit.Framework;
@@ -44,6 +46,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [Test]
         public void Material_Modify()
         {
+            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+
+            UnityEngine.Debug.Log(reflector.GetSchema<GameObjectRef>());
+
             var propertyName = "_Metallic";
             var propertyValue = 1;
 
@@ -57,7 +63,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 .AddChild(new CallToolExecutor(
                     toolMethod: typeof(Tool_Assets).GetMethod(nameof(Tool_Assets.Modify)),
                     json: JsonTestUtils.Fill(@"{
-                        ""assetPath"": ""{assetPath}"",
+                        ""assetRef"": {
+                            ""{assetPathProperty}"": ""{assetPath}""
+                        },
                         ""content"":
                         {
                             ""typeName"": ""UnityEngine.Material"",
@@ -68,6 +76,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                     }",
                     new Dictionary<string, object?>
                     {
+                        { "{assetPathProperty}", AssetObjectRef.AssetObjectRefProperty.AssetPath },
                         { "{assetPath}", materialEx.AssetPath },
                         { "{propertyName}", propertyName },
                         { "{propertyValue}", propertyValue }

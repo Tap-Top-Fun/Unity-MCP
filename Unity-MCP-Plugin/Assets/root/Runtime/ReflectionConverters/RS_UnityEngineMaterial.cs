@@ -1,4 +1,4 @@
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 using System.Reflection;
 using System.Text;
@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using com.IvanMurzak.Unity.MCP.Utils;
+using System.Text.Json;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -23,6 +24,64 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         // public override bool AllowCascadeSerialization => false;
         public override bool AllowSetValue => false;
+
+        protected override IEnumerable<string> RestrictedInValuePropertyNames(Reflector reflector, JsonElement valueJsonElement)
+        {
+            var result = base.RestrictedInValuePropertyNames(reflector, valueJsonElement).Concat(new[]
+            {
+                FieldShader,
+                FieldName
+            });
+            var assetObjectRef = valueJsonElement.ToAssetObjectRef(
+                reflector: null, // parse it without custom json serializer, that is why reflector is not needed
+                suppressException: true
+            );
+            if (assetObjectRef == null)
+                return result;
+
+            var assetObject = assetObjectRef.FindAssetObject();
+            if (assetObject is not Material material)
+                return result;
+
+            var shader = material.shader;
+            int propertyCount = shader.GetPropertyCount();
+
+            var restrictedProperties = Enumerable.Range(0, propertyCount)
+                .Select(i => shader.GetPropertyName(i))
+                .Where(propName => propName != FieldShader && propName != FieldName);
+
+            var test = restrictedProperties.ToList();
+
+            return result.Concat(restrictedProperties);
+        }
+
+        protected override IEnumerable<string> GetKnownSerializableFields(Reflector reflector, object? obj)
+        {
+            var result = base.GetKnownSerializableFields(reflector, obj);
+            return result.Concat(new[]
+            {
+                FieldShader,
+                FieldName
+            });
+        }
+        protected override IEnumerable<string> GetKnownSerializableProperties(Reflector reflector, object? obj)
+        {
+            var result = base.GetKnownSerializableProperties(reflector, obj);
+
+            if (obj is not Material material)
+                return result;
+
+            return result.Concat(GetMaterialProperties(material));
+        }
+
+        IEnumerable<string> GetMaterialProperties(Material material)
+        {
+            var shader = material.shader;
+            int propertyCount = shader.GetPropertyCount();
+
+            return Enumerable.Range(0, propertyCount)
+                .Select(i => shader.GetPropertyName(i));
+        }
 
         public override IEnumerable<string> GetAdditionalSerializableFields(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
         {
@@ -38,7 +97,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             Reflector reflector,
             object? obj,
             Type type,
-            string name = null,
+            string? name = null,
             bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             int depth = 0,
@@ -51,6 +110,16 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             var padding = StringUtils.GetPadding(depth);
 
             var material = obj as Material;
+            if (material == null)
+            {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}[Error] Object is not a Material. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] Object is not a Material. Convertor: {GetType().GetTypeShortName()}");
+
+                return SerializedMember.FromValue(reflector, type, value: null, name: name);
+            }
             var shader = material.shader;
             int propertyCount = shader.GetPropertyCount();
 
@@ -109,8 +178,30 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }.SetValue(reflector, new ObjectRef(material.GetInstanceID()));
         }
 
-        public override bool TryPopulate(Reflector reflector, ref object obj, SerializedMember data, Type fallbackType = null, int depth = 0, StringBuilder stringBuilder = null, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, ILogger logger = null)
+        public override bool TryPopulate(
+            Reflector reflector,
+            ref object? obj,
+            SerializedMember data,
+            Type? fallbackType = null,
+            int depth = 0,
+            StringBuilder? stringBuilder = null,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
+            // Trying to fix JSON value body, if critical property is missed or detected return false
+            if (!FixJsonValueBody(
+                reflector: reflector,
+                obj: ref obj,
+                data: data,
+                fallbackType: fallbackType,
+                depth: depth,
+                stringBuilder: stringBuilder,
+                flags: flags,
+                logger: logger))
+            {
+                return false;
+            }
+
             if (obj is Material material)
             {
                 var unityObject = data.valueJsonElement
@@ -152,7 +243,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected override bool TryPopulateField(
             Reflector reflector,
-            ref object obj,
+            ref object? obj,
             Type objType,
             SerializedMember fieldValue,
             int depth = 0,
@@ -166,6 +257,16 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 logger.LogTrace($"{StringUtils.GetPadding(depth)}Populate field for type='{objType.GetTypeName(pretty: true)}'. Convertor='{GetType().GetTypeShortName()}'.");
 
             var material = obj as Material;
+            if (material == null)
+            {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}[Error] Object is not a Material. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] Object is not a Material. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
+            }
 
             if (fieldValue.name == FieldName)
             {

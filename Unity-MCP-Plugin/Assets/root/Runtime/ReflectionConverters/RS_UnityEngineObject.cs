@@ -25,11 +25,17 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         public override bool AllowCascadePropertiesConversion => false;
         public override bool AllowSetValue => false;
 
-        protected virtual IEnumerable<string> RestrictedInValuePropertyNames => new[]
+        protected virtual IEnumerable<string> RestrictedInValuePropertyNames(Reflector reflector, JsonElement valueJsonElement) => new[]
         {
             nameof(SerializedMember.fields),
             nameof(SerializedMember.props)
         };
+
+        protected virtual IEnumerable<string> GetKnownSerializableFields(Reflector reflector, object? obj)
+            => Enumerable.Empty<string>();
+
+        protected virtual IEnumerable<string> GetKnownSerializableProperties(Reflector reflector, object? obj)
+            => Enumerable.Empty<string>();
 
         protected override SerializedMember InternalSerialize(
             Reflector reflector,
@@ -123,7 +129,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             // Look for restricted properties
             var isRestricted = data.valueJsonElement.Value.EnumerateObject()
-                .Any(jsonElement => RestrictedInValuePropertyNames
+                .Any(jsonElement => RestrictedInValuePropertyNames(reflector, data.valueJsonElement.Value)
                     .Any(name => name == jsonElement.Name));
 
             if (!isRestricted)
@@ -131,7 +137,40 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
             var node = JsonNode.Parse(data.valueJsonElement.Value.GetRawText()).AsObject();
 
-            foreach (var restrictedPropertyName in RestrictedInValuePropertyNames)
+            foreach (var knownField in GetKnownSerializableFields(reflector, obj))
+            {
+                if (node.TryGetPropertyValue(knownField, out var value) && value != null)
+                {
+                    if (logger?.IsEnabled(LogLevel.Warning) == true)
+                        logger.LogWarning($"{StringUtils.GetPadding(depth)}'{knownField}' should be moved from '{SerializedMember.ValueName}'. Fixing the hierarchy automatically.");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] '{knownField}' should be moved from '{SerializedMember.ValueName}'. Fixing the hierarchy automatically.");
+
+                    // handle known field
+                    data.fields ??= new SerializedMemberList();
+                    data.fields.Add(SerializedMember.FromValue(reflector, name: knownField, value: value));
+                    node.Remove(knownField);
+                }
+            }
+            foreach (var knownProperty in GetKnownSerializableProperties(reflector, obj))
+            {
+                if (node.TryGetPropertyValue(knownProperty, out var value) && value != null)
+                {
+                    if (logger?.IsEnabled(LogLevel.Warning) == true)
+                        logger.LogWarning($"{StringUtils.GetPadding(depth)}'{knownProperty}' should be moved from '{SerializedMember.ValueName}'. Fixing the hierarchy automatically.");
+
+                    if (stringBuilder != null)
+                        stringBuilder.AppendLine($"{StringUtils.GetPadding(depth)}[Warning] '{knownProperty}' should be moved from '{SerializedMember.ValueName}'. Fixing the hierarchy automatically.");
+
+                    // handle known property
+                    data.props ??= new SerializedMemberList();
+                    data.props.Add(SerializedMember.FromValue(reflector, name: knownProperty, value: value));
+                    node.Remove(knownProperty);
+                }
+            }
+
+            foreach (var restrictedPropertyName in RestrictedInValuePropertyNames(reflector, data.valueJsonElement.Value))
             {
                 if (node.TryGetPropertyValue(restrictedPropertyName, out var restrictedValue) && restrictedValue != null)
                 {
@@ -163,6 +202,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     }
                     else
                     {
+                        // // Need to take list of serializable Fields for the specific object
+                        // // if the `restrictedPropertyName` is a field, move into `fields`
+                        // // if the `restrictedPropertyName` is a property, move into `props`
+                        // // if none of the conditions matches
+                        // data.fields ??= new SerializedMemberList();
+                        // data.fields.Add(SerializedMember.FromValue(reflector, name: restrictedPropertyName, value: restrictedValue));
+                        // node.Remove(restrictedPropertyName);
+
                         if (logger?.IsEnabled(LogLevel.Error) == true)
                             logger.LogError($"{StringUtils.GetPadding(depth)}Restricted property '{restrictedPropertyName}' found in '{SerializedMember.ValueName}'.");
 
