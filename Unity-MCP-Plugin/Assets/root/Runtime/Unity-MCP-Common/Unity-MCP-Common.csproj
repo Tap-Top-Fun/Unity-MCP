@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="com.IvanMurzak.ReflectorNet" Version="1.0.1" />
+    <PackageReference Include="com.IvanMurzak.ReflectorNet" Version="1.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
     <PackageReference Include="ModelContextProtocol" Version="0.3.0-preview.1" />
