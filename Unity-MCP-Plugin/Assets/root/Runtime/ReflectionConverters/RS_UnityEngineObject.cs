@@ -89,6 +89,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger logger = null)
         {
+            // Trying to fix JSON value body, if critical property is missed or detected return false
             if (!FixJsonValueBody(
                 reflector: reflector,
                 obj: ref obj,
@@ -120,6 +121,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             if (data.valueJsonElement.Value.ValueKind != JsonValueKind.Object)
                 return true;
 
+            // Look for restricted properties
             var isRestricted = data.valueJsonElement.Value.EnumerateObject()
                 .Any(jsonElement => RestrictedInValuePropertyNames
                     .Any(name => name == jsonElement.Name));
