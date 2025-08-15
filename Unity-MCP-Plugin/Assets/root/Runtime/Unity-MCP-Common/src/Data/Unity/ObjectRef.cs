@@ -16,7 +16,7 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
             public static IEnumerable<string> All => new[] { InstanceID };
         }
         [JsonInclude, JsonPropertyName(ObjectRefProperty.InstanceID)]
-        [Description("Instance ID of the UnityEngine.Object. If this is '0', then it will be used as 'null'.")]
+        [Description("instanceID of the UnityEngine.Object. If this is '0', then it will be used as 'null'.")]
         public virtual int InstanceID { get; set; } = 0;
 
         public ObjectRef() : this(id: 0) { }
