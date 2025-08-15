@@ -39,8 +39,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     configure.EnableDetailedErrors = true;
                     configure.MaximumReceiveMessageSize = 1024 * 1024 * 256; // 256 MB
                     configure.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
-                    configure.KeepAliveInterval = TimeSpan.FromSeconds(1);
-                    configure.HandshakeTimeout = TimeSpan.FromSeconds(5);
+                    configure.KeepAliveInterval = TimeSpan.FromSeconds(15);
+                    configure.HandshakeTimeout = TimeSpan.FromSeconds(15);
                 });
 
                 // Setup MCP server ---------------------------------------------------------------
