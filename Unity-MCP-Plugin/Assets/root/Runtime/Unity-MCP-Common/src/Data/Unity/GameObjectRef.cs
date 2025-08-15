@@ -22,7 +22,7 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
         }
         [JsonInclude, JsonPropertyName(ObjectRefProperty.InstanceID)]
         [Description(
-            "Instance ID of the UnityEngine.Object. If it is '0' and '"
+            "instanceID of the UnityEngine.Object. If it is '0' and '"
             + GameObjectRefProperty.Path + "', '"
             + GameObjectRefProperty.Name + "', '"
             + AssetObjectRefProperty.AssetPath + "' and '"

@@ -25,7 +25,7 @@ namespace com.IvanMurzak.ReflectorNet.Model.Unity
             });
         }
         [JsonInclude, JsonPropertyName(ObjectRefProperty.InstanceID)]
-        [Description("Instance ID of the UnityEngine.Object. If this is '0' and 'assetPath' and 'assetGuid' is not provided, empty or null, then it will be used as 'null'.")]
+        [Description("instanceID of the UnityEngine.Object. If this is '0' and 'assetPath' and 'assetGuid' is not provided, empty or null, then it will be used as 'null'.")]
         public override int InstanceID { get; set; } = 0;
 
         [JsonInclude, JsonPropertyName(AssetObjectRefProperty.AssetPath)]
