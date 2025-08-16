@@ -22,7 +22,8 @@ jobs:
         id: prev_tag
         run: |
           version=${{ steps.get_version.outputs.version }}
-          prev_tag=$(git tag --list --sort=-creatordate | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | grep -v "^$version$" | head -n 1)
+          prev_tag=$(git tag --list '[0-9]*.[0-9]*.[0-9]*' | grep -v "^$version$" | sort -V | tail -n 1)
+          echo "Previous version: $prev_tag"
           echo "prev_tag=$prev_tag" >> $GITHUB_OUTPUT
 
       - name: Check if tag exists
@@ -51,14 +52,14 @@ jobs:
           echo "" >> release.md
 
           if [ -n "$prev_tag" ]; then
-            echo "## Comparison\n" >> release.md
+            echo "## Comparison" >> release.md
             echo "See every change: [Compare \\\`$prev_tag...$version\\\`](https://github.com/IvanMurzak/Unity-MCP/compare/$prev_tag...$version)" >> release.md
 
             echo "" >> release.md
             echo "---" >> release.md
             echo "" >> release.md
           fi
-          echo "## Commit Summary (Newest → Oldest)\n" >> release.md
+          echo "## Commit Summary (Newest → Oldest)" >> release.md
           git log --pretty=format:'- [`%h`](https://github.com/IvanMurzak/Unity-MCP/commit/%H) — %s by @%an  ' $prev_tag..HEAD >> release.md
           echo "release_body<<EOF" >> $GITHUB_ENV
           cat release.md >> $GITHUB_ENV
