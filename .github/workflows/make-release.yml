@@ -46,6 +46,18 @@ jobs:
           fi
 
   # --- UNITY TESTS ---
+  # -------------------
+
+  # --- EDIT MODE ---
+
+  test-unity-2022-3-61f1-editmode:
+    needs: check-version-tag
+    uses: ./.github/workflows/unity_tests.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2022.3.61f1'
+      testMode: 'editmode'
+    secrets: inherit
 
   test-unity-2023-3-20f1-editmode:
     needs: check-version-tag
@@ -65,6 +77,68 @@ jobs:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '6000.0.46f1'
       testMode: 'editmode'
+    secrets: inherit
+
+  # --- PLAY MODE ---
+
+  test-unity-2022-3-61f1-playmode:
+    needs: check-version-tag
+    uses: ./.github/workflows/unity_tests.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2022.3.61f1'
+      testMode: 'playmode'
+    secrets: inherit
+
+  test-unity-2023-3-20f1-playmode:
+    needs: check-version-tag
+    uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2023.2.20f1'
+      testMode: 'playmode'
+    secrets: inherit
+
+  test-unity-6000-0-46f1-playmode:
+    needs: check-version-tag
+    uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '6000.0.46f1'
+      testMode: 'playmode'
+    secrets: inherit
+
+  # --- STANDALONE ---
+
+  test-unity-2022-3-61f1-standalone:
+    needs: check-version-tag
+    uses: ./.github/workflows/unity_tests.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2022.3.61f1'
+      testMode: 'standalone'
+    secrets: inherit
+
+  test-unity-2023-3-20f1-standalone:
+    needs: check-version-tag
+    uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2023.2.20f1'
+      testMode: 'standalone'
+    secrets: inherit
+
+  test-unity-6000-0-46f1-standalone:
+    needs: check-version-tag
+    uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '6000.0.46f1'
+      testMode: 'standalone'
     secrets: inherit
 
   # -------------------
@@ -127,13 +201,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Completion
-        run:
-
   build-and-zip:
     runs-on: macos-latest
     needs: release
-    if: needs.release.outputs.success == 'true'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
