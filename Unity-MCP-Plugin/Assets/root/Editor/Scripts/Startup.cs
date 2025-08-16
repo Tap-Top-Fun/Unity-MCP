@@ -8,7 +8,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
     [InitializeOnLoad]
     public static partial class Startup
     {
-        public const string Version = "0.14.25";
+        public const string Version = "0.14.26";
 
         static Startup()
         {
