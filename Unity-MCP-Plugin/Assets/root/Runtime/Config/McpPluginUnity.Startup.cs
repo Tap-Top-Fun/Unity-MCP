@@ -1,7 +1,6 @@
 using System;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Convertor;
-using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Json;
 using com.IvanMurzak.Unity.MCP.Common.Json.Converters;
@@ -24,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP
             McpPlugin.StaticDisposeAsync();
             MainThreadInstaller.Init();
 
-            Debug.Log($"{Consts.Log.Tag} BuildAndStart");
+            Debug.Log($"{Consts.Log.Tag} BuildAndStart. openConnection={openConnection}");
 
             var mcpPlugin = new McpPluginBuilder()
                 .WithAppFeatures()

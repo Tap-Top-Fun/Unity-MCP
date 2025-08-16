@@ -132,6 +132,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 if (IsCi())
                 {
                     // Ignore in CI environment
+                    Debug.Log($"Ignore MCP server downloading in CI environment");
                     return Task.FromResult(false);
                 }
 
