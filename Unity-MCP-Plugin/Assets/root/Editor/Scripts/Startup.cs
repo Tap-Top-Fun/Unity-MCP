@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         /// <summary>
         /// Checks if the current environment is a CI environment.
         /// </summary>
-        static bool IsCi()
+        public static bool IsCi()
         {
             var ci = Environment.GetEnvironmentVariable("CI");
             var gha = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
