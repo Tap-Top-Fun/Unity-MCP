@@ -43,13 +43,20 @@ jobs:
           version=${{ steps.get_version.outputs.version }}
           prev_tag=${{ steps.prev_tag.outputs.prev_tag }}
           today=$(date +'%B %e, %Y')
-          echo "# Unity-MCP Version $version  " > release.md
+          echo "# Unity-MCP Version $version" > release.md
           echo "**Released:** *$today*" >> release.md
-          echo "\n---\n" >> release.md
+
+          echo "" >> release.md
+          echo "---" >> release.md
+          echo "" >> release.md
+
           if [ -n "$prev_tag" ]; then
             echo "## Comparison\n" >> release.md
-            echo "See every change: [Compare \\\`$prev_tag...$version\\\`](https://github.com/IvanMurzak/Unity-MCP/compare/$prev_tag...$version)\n" >> release.md
-            echo "---\n" >> release.md
+            echo "See every change: [Compare \\\`$prev_tag...$version\\\`](https://github.com/IvanMurzak/Unity-MCP/compare/$prev_tag...$version)" >> release.md
+
+            echo "" >> release.md
+            echo "---" >> release.md
+            echo "" >> release.md
           fi
           echo "## Commit Summary (Newest → Oldest)\n" >> release.md
           git log --pretty=format:'- [`%h`](https://github.com/IvanMurzak/Unity-MCP/commit/%H) — %s by @%an  ' $prev_tag..HEAD >> release.md
@@ -66,3 +73,10 @@ jobs:
           body: ${{ env.release_body }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger deploy-server-executables workflow
+        if: steps.tag_exists.outputs.exists == 'false'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: trigger-deploy-server-executables
