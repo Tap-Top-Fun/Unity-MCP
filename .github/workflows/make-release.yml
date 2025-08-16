@@ -57,7 +57,7 @@ jobs:
           repo_url="https://github.com/${GITHUB_REPOSITORY}"
           if [ -n "$prev_tag" ]; then
             echo "## Comparison" >> release.md
-            echo "See every change: [Compare \`$prev_tag...$version\`]($repo_url/compare/$prev_tag...$version)" >> release.md
+            echo "See every change: [Compare $prev_tag...$version]($repo_url/compare/$prev_tag...$version)" >> release.md
 
             echo "" >> release.md
             echo "---" >> release.md
