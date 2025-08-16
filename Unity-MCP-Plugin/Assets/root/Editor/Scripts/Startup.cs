@@ -1,5 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
+using System.Collections.Generic;
+using com.IvanMurzak.Unity.MCP.Common;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,15 +26,19 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         /// </summary>
         public static bool IsCi()
         {
-            Debug.Log($"Checking if running in CI environment...");
-            Debug.Log($"CI Environment Variables: " +
-                $"CI={Environment.GetEnvironmentVariable("CI")}, " +
-                $"GITHUB_ACTIONS={Environment.GetEnvironmentVariable("GITHUB_ACTIONS")}, " +
-                $"TF_BUILD={Environment.GetEnvironmentVariable("TF_BUILD")}");
+            var commandLineArgs = ArgsUtils.ParseCommandLineArguments();
 
-            var ci = Environment.GetEnvironmentVariable("CI");
-            var gha = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
-            var az = Environment.GetEnvironmentVariable("TF_BUILD"); // Azure Pipelines
+            Debug.Log($"Checking if running in CI environment...");
+
+            var ci = Environment.GetEnvironmentVariable("CI") ?? commandLineArgs.GetValueOrDefault("CI");
+            var gha = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") ?? commandLineArgs.GetValueOrDefault("GITHUB_ACTIONS");
+            var az = Environment.GetEnvironmentVariable("TF_BUILD") ?? commandLineArgs.GetValueOrDefault("TF_BUILD"); // Azure Pipelines
+
+            Debug.Log($"CI Environment Variables: " +
+                $"CI={ci}, " +
+                $"GITHUB_ACTIONS={gha}, " +
+                $"TF_BUILD={az}");
+
             return string.Equals(ci?.Trim()?.Trim('"'), "true", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(gha?.Trim()?.Trim('"'), "true", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(az?.Trim()?.Trim('"'), "true", StringComparison.OrdinalIgnoreCase);
