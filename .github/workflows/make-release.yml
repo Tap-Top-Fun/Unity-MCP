@@ -43,6 +43,8 @@ jobs:
       - name: Generate release description
         id: rel_desc
         if: steps.tag_exists.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           version=${{ steps.get_version.outputs.version }}
           prev_tag=${{ steps.prev_tag.outputs.prev_tag }}
