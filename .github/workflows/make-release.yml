@@ -53,6 +53,7 @@ jobs:
   test-unity-2022-3-61f1-editmode:
     needs: check-version-tag
     uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2022.3.61f1'
@@ -84,6 +85,7 @@ jobs:
   test-unity-2022-3-61f1-playmode:
     needs: check-version-tag
     uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2022.3.61f1'
@@ -115,6 +117,7 @@ jobs:
   test-unity-2022-3-61f1-standalone:
     needs: check-version-tag
     uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2022.3.61f1'
