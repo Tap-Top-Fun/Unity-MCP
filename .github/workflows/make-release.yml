@@ -65,9 +65,9 @@ jobs:
           echo "## Commit Summary (Newest → Oldest)" >> release.md
           git log --pretty=format:'- [`%h`](https://github.com/IvanMurzak/Unity-MCP/commit/%H) — %s by @%an  ' $prev_tag..HEAD >> release.md
           {
-            echo "release_body<<EOF"
+            echo "release_body<<ENDOFRELEASEBODY"
             cat release.md
-            echo "EOF"
+            echo "ENDOFRELEASEBODY"
           } >> $GITHUB_ENV
 
       - name: Create Tag and Release
@@ -79,10 +79,3 @@ jobs:
           body: ${{ env.release_body }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Trigger deploy-server-executables workflow
-        if: steps.tag_exists.outputs.exists == 'false'
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: trigger-deploy-server-executables
