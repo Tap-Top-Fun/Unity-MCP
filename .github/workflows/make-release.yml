@@ -45,6 +45,8 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
+  # --- UNITY TESTS ---
+
   test-unity-2023-3-20f1-editmode:
     needs: check-version-tag
     uses: ./.github/workflows/unity_tests.yml
@@ -64,6 +66,8 @@ jobs:
       unityVersion: '6000.0.46f1'
       testMode: 'editmode'
     secrets: inherit
+
+  # -------------------
 
   release:
     runs-on: ubuntu-latest
