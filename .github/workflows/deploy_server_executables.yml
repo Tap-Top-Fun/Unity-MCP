@@ -30,6 +30,3 @@ jobs:
         tag_name: ${{ github.event.release.tag_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Clean up publish folder
-      run: rm -rf ./Unity-MCP-Server/publish
