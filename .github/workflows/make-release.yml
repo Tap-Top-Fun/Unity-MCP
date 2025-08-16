@@ -64,9 +64,11 @@ jobs:
           fi
           echo "## Commit Summary (Newest → Oldest)" >> release.md
           git log --pretty=format:'- [`%h`](https://github.com/IvanMurzak/Unity-MCP/commit/%H) — %s by @%an  ' $prev_tag..HEAD >> release.md
-          echo "release_body<<EOF" >> $GITHUB_ENV
-          cat release.md >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          {
+            echo "release_body<<EOF"
+            cat release.md
+            echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Create Tag and Release
         if: steps.tag_exists.outputs.exists == 'false'
