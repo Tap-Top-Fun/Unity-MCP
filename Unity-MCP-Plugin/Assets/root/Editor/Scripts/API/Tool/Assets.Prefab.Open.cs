@@ -1,5 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
+using System.Reflection;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -14,49 +16,40 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             "Assets_Prefab_Open",
             Title = "Open prefab"
         )]
-        [Description("Open a prefab. There are two options to open prefab:\n" +
-                    "1. Open prefab from asset using 'prefabAssetPath'.\n" +
-                    "2. Open prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
-                    "   The GameObject should be connected to a prefab.\n\n" +
-                    "Note: Please 'Close' the prefab later to exit prefab editing mode.")]
+        [Description(@"Open prefab edit mode for a specific GameObject. In the Edit mode you can modify the prefab.
+The modification will be applied to the all instances of the prefab across the project.
+Note: Please 'Close' the prefab later to exit prefab editing mode.")]
         public string Open
         (
-            [Description("'instanceID' of GameObject in a scene.")]
-            int instanceID = 0,
-            [Description("Prefab asset path. Should be in the format 'Assets/Path/To/Prefab.prefab'.")]
-            string? prefabAssetPath = null
+            [Description("GameObject that represents prefab instance of an original prefab GameObject.")]
+            GameObjectRef gameObjectRef
         )
         => MainThread.Instance.Run(() =>
         {
+            if (gameObjectRef?.IsValid == false)
+                return $"[Error] '{nameof(gameObjectRef)}' is not valid. Please provide at least a single valid {string.Join(", ", $"'{AssetObjectRef.AssetObjectRefProperty.All}'")} property.";
+
             var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
-            // if (prefabStage != null)
-            //     return Error.PrefabStageIsAlreadyOpened();
+            var gameObject = gameObjectRef.FindGameObject();
 
-            if (string.IsNullOrEmpty(prefabAssetPath) && instanceID != 0)
-            {
-                // Find prefab from GameObject in loaded scene
-                var go = GameObjectUtils.FindByInstanceID(instanceID);
-                if (go == null)
-                    return Tool_GameObject.Error.NotFoundGameObjectWithInstanceID(instanceID);
+            if (gameObject == null)
+                return "[Error] GameObject not found. Provide a reference to existed GameObject.";
 
-                prefabAssetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(go);
-            }
+            var prefabAssetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(gameObject);
 
-            if (string.IsNullOrEmpty(prefabAssetPath))
-                return Error.PrefabPathIsEmpty();
-
-            var goInstance = instanceID != 0
-                ? GameObjectUtils.FindByInstanceID(instanceID)
-                : null;
-
-            prefabStage = goInstance != null
-                ? UnityEditor.SceneManagement.PrefabStageUtility.OpenPrefab(prefabAssetPath, goInstance)
-                : UnityEditor.SceneManagement.PrefabStageUtility.OpenPrefab(prefabAssetPath);
+            prefabStage = gameObject.IsAsset()
+                ? UnityEditor.SceneManagement.PrefabStageUtility.OpenPrefab(prefabAssetPath)
+                : UnityEditor.SceneManagement.PrefabStageUtility.OpenPrefab(prefabAssetPath, gameObject);
 
             if (prefabStage == null)
                 return Error.PrefabStageIsNotOpened();
 
-            return @$"[Success] Prefab '{prefabStage.assetPath}' opened. Use 'Assets_Prefab_Close' to close it.
+            var name = typeof(Tool_Assets_Prefab)
+                .GetMethod(nameof(Close))
+                .GetCustomAttribute<McpPluginToolAttribute>()
+                .Name;
+
+            return @$"[Success] Prefab '{prefabStage.assetPath}' opened. Use '{name}' to close it.
 # Prefab information:
 {prefabStage.prefabContentsRoot.ToMetadata().Print()}";
         });

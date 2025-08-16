@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -29,18 +30,18 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 
                     switch (propertyName)
                     {
-                        case nameof(GameObjectRef.instanceID):
-                            result.instanceID = reader.GetInt32();
+                        case ObjectRef.ObjectRefProperty.InstanceID:
+                            result.InstanceID = reader.GetInt32();
                             break;
-                        case nameof(GameObjectRef.path):
-                            result.path = reader.GetString();
+                        case GameObjectRef.GameObjectRefProperty.Path:
+                            result.Path = reader.GetString();
                             break;
-                        case nameof(GameObjectRef.name):
-                            result.name = reader.GetString();
+                        case GameObjectRef.GameObjectRefProperty.Name:
+                            result.Name = reader.GetString();
                             break;
                         default:
                             throw new JsonException($"Unexpected property name: {propertyName}. "
-                                + $"Expected '{nameof(GameObjectRef.instanceID)}', '{nameof(GameObjectRef.path)}', or '{nameof(GameObjectRef.name)}'.");
+                                + $"Expected {GameObjectRef.GameObjectRefProperty.All.JoinEnclose()}.");
                     }
                 }
             }
@@ -55,8 +56,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                 writer.WriteStartObject();
 
                 // Write the "instanceID" property
-                writer.WritePropertyName(nameof(GameObjectRef.instanceID));
-                writer.WriteNumberValue(0);
+                writer.WriteNumber(ObjectRef.ObjectRefProperty.InstanceID, 0);
 
                 writer.WriteEndObject();
                 return;
@@ -64,13 +64,13 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 
             writer.WriteStartObject();
 
-            writer.WriteNumber(nameof(GameObjectRef.instanceID), value.instanceID);
+            writer.WriteNumber(ObjectRef.ObjectRefProperty.InstanceID, value.InstanceID);
 
-            if (!string.IsNullOrEmpty(value.path))
-                writer.WriteString(nameof(GameObjectRef.path), value.path);
+            if (!string.IsNullOrEmpty(value.Path))
+                writer.WriteString(GameObjectRef.GameObjectRefProperty.Path, value.Path);
 
-            if (!string.IsNullOrEmpty(value.name))
-                writer.WriteString(nameof(GameObjectRef.name), value.name);
+            if (!string.IsNullOrEmpty(value.Name))
+                writer.WriteString(GameObjectRef.GameObjectRefProperty.Name, value.Name);
 
             writer.WriteEndObject();
         }

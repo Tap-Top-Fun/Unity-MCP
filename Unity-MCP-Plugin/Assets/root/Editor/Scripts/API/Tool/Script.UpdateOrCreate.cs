@@ -41,7 +41,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
-                AssetDatabase.Refresh();
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
                 return $"[Success] Script created or updated at: {filePath}";
             });
         }

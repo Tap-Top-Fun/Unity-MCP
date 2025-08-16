@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
@@ -50,12 +51,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// </summary>
         /// <param name="parameters">The arguments to pass to the method.</param>
         /// <returns>The result of the method execution, or null if the method is void.</returns>
-        public async Task<ResponseCallTool> Run(params object?[] parameters)
+        public async Task<ResponseCallTool> Run(CancellationToken cancellationToken = default, params object?[] parameters)
         {
             try
             {
                 // Invoke the method (static or instance)
-                var result = await Invoke(parameters);
+                var result = await Invoke(cancellationToken, parameters);
                 return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
             }
             catch (Exception ex)
@@ -71,7 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// </summary>
         /// <param name="namedParameters">A dictionary mapping parameter names to their values.</param>
         /// <returns>The result of the method execution, or null if the method is void.</returns>
-        public async Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters)
+        public async Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -80,7 +81,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     elementSelector: kvp => (object?)kvp.Value);
 
                 // Invoke the method (static or instance)
-                var result = await InvokeDict(finalParameters);
+                var result = await InvokeDict(finalParameters, cancellationToken);
                 return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
             }
             catch (Exception ex)

@@ -46,7 +46,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 {
                     new GameObjectRef()
                     {
-                        instanceID = child.GetInstanceID()
+                        InstanceID = child.GetInstanceID()
                     }
                 });
             ResultValidation(result);
@@ -104,7 +104,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 {
                     new GameObjectRef()
                     {
-                        instanceID = go.GetInstanceID()
+                        InstanceID = go.GetInstanceID()
                     }
                 });
 
@@ -426,7 +426,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 ?.GetField("planets") // planets field
                 ?.GetValue<SerializedMember[]>(McpPlugin.Instance!.McpRunner.Reflector)?.FirstOrDefault() // first planet
                 ?.GetField("planet") // planet GameObject field
-                ?.GetValue<ObjectRef>(McpPlugin.Instance!.McpRunner.Reflector)?.instanceID ?? 0; // instanceID
+                ?.GetValue<ObjectRef>(McpPlugin.Instance!.McpRunner.Reflector)?.InstanceID ?? 0; // instanceID
 
             Assert.AreEqual(firstPlaneInstanceId, firstPlaneInstanceIdFromSerialized, "InstanceID from JSON parsing and SerializedMember should match.");
             Assert.AreEqual(planets[0].GetInstanceID(), firstPlaneInstanceIdFromSerialized, "Planet InstanceID should match the serialized member data.");
@@ -466,6 +466,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 AssetDatabase.CreateFolder("Assets", "TestMaterials");
 
             AssetDatabase.CreateAsset(material, assetPath);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             try
             {
                 var go = new GameObject("TestGameObject");
@@ -510,7 +511,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             {
                 AssetDatabase.DeleteAsset(assetPath);
                 AssetDatabase.DeleteAsset(folder);
-                AssetDatabase.Refresh();
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             }
             yield return null;
         }
@@ -526,7 +527,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = CreateGameObjectByJson(json);
             ValidateResult(result);
 
-            var go = new GameObjectRef() { name = goName }.FindGameObject();
+            var go = new GameObjectRef() { Name = goName }.FindGameObject();
 
             Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
             Assert.IsTrue(go.transform.position == Vector3.zero, $"GameObject '{goName}' position should be (0, 0, 0). Actual: {go.transform.position}");
@@ -554,7 +555,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = CreateGameObjectByJson(json);
             ValidateResult(result);
 
-            var go = new GameObjectRef() { name = goName }.FindGameObject();
+            var go = new GameObjectRef() { Name = goName }.FindGameObject();
 
             Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
             Assert.IsTrue(go.transform.position == new Vector3(pX, pY, pZ), $"GameObject '{goName}' position should be ({pX}, {pY}, {pZ}). Actual: {go.transform.position}");
@@ -582,7 +583,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = CreateGameObjectByJson(json);
             ValidateResult(result);
 
-            var go = new GameObjectRef() { name = goName }.FindGameObject();
+            var go = new GameObjectRef() { Name = goName }.FindGameObject();
 
             Assert.IsTrue(go != null, $"GameObject '{goName}' should be created.");
             Assert.IsTrue(go.transform.position == new Vector3(pX, pY, pZ), $"GameObject '{goName}' position should be ({pX}, {pY}, {pZ}). Actual: {go.transform.position}");

@@ -4,6 +4,7 @@ using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -51,26 +52,30 @@ Even private methods are available. Use 'Reflection_MethodCall' to call the meth
             int parametersMatchLevel = 0
         )
         {
-            var methodEnumerable = FindMethods(
-                filter: filter,
-                knownNamespace: knownNamespace,
-                typeNameMatchLevel: typeNameMatchLevel,
-                methodNameMatchLevel: methodNameMatchLevel,
-                parametersMatchLevel: parametersMatchLevel);
+            return MainThread.Instance.Run(() =>
+            {
+                var methodEnumerable = FindMethods(
+                    filter: filter,
+                    knownNamespace: knownNamespace,
+                    typeNameMatchLevel: typeNameMatchLevel,
+                    methodNameMatchLevel: methodNameMatchLevel,
+                    parametersMatchLevel: parametersMatchLevel);
 
-            var methods = methodEnumerable.ToList();
-            if (methods.Count == 0)
-                return $"[Success] Method not found. With request:\n{filter}";
+                var methods = methodEnumerable.ToList();
+                if (methods.Count == 0)
+                    return $"[Success] Method not found. With request:\n{filter}";
 
-            var reflector = McpPlugin.Instance!.McpRunner.Reflector;
+                var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
-            var methodRefs = methods
-                .Select(method => new MethodData(reflector, method, justRef: false));
+                var methodRefs = methods
+                    .Select(method => new MethodData(reflector, method, justRef: false))
+                    .ToList();
 
-            return $@"[Success] Found {methods.Count} method(s):
+                return $@"[Success] Found {methods.Count} method(s):
 ```json
 {methodRefs.ToJson(reflector)}
 ```";
+            });
         }
     }
 }

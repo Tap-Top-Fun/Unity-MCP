@@ -18,7 +18,7 @@ Don't need to call it for Scripts manipulations.
 It also triggers scripts recompilation if any changes in '.cs' files.")]
         public string Refresh() => MainThread.Instance.Run(() =>
         {
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             return @$"[Success] AssetDatabase refreshed. {AssetDatabase.GetAllAssetPaths().Length} assets found. Use 'Assets_Search' for more details.";
         });
     }

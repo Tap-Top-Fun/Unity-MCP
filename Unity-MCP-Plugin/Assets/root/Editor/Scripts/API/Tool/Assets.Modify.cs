@@ -1,9 +1,11 @@
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System.ComponentModel;
 using System.Text;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -18,34 +20,28 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [Description(@"Modify asset in the project. Not allowed to modify asset in 'Packages/' folder. Please modify it in 'Assets/' folder.")]
         public string Modify
         (
+            AssetObjectRef assetRef,
             [Description("The asset content. It overrides the existing asset content.")]
-            SerializedMember content,
-            [Description("Path to the asset. See 'Assets_Search' for more details. Starts with 'Assets/'. Priority: 1. (Recommended)")]
-            string? assetPath = null,
-            [Description("GUID of the asset. Priority: 2.")]
-            string? assetGuid = null
+            SerializedMember content
         )
         => MainThread.Instance.Run(() =>
         {
-            if (string.IsNullOrEmpty(assetPath) && string.IsNullOrEmpty(assetGuid))
-                return Error.NeitherProvided_AssetPath_AssetGuid();
+            if (assetRef?.IsValid == false)
+                return $"[Error] Invalid asset reference.";
 
-            if (string.IsNullOrEmpty(assetPath))
-                assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
+            if (assetRef?.AssetPath?.StartsWith("Packages/") == true)
+                return Error.NotAllowedToModifyAssetInPackages(assetRef.AssetPath);
 
-            if (string.IsNullOrEmpty(assetGuid))
-                assetGuid = AssetDatabase.AssetPathToGUID(assetPath);
-
-            if (assetPath.StartsWith("Packages/"))
-                return Error.NotAllowedToModifyAssetInPackages(assetPath);
-
-            var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetPath);
+            var asset = assetRef.FindAssetObject(); // AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetPath);
             if (asset == null)
-                return Error.NotFoundAsset(assetPath, assetGuid);
+                return $"[Error] Asset not found using the reference:\n{assetRef}";
+
+            // Fixing instanceID - inject expected instance ID into the valueJsonElement
+            content.valueJsonElement.SetProperty(ObjectRef.ObjectRefProperty.InstanceID, asset.GetInstanceID());
 
             var obj = (object)asset;
-
             var result = new StringBuilder();
+
             var success = McpPlugin.Instance!.McpRunner.Reflector.TryPopulate(
                 ref obj,
                 data: content,
@@ -54,7 +50,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             // AssetDatabase.CreateAsset(asset, assetPath);
             AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
             return result.ToString();
 

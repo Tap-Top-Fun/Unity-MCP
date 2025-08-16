@@ -44,7 +44,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     stringBuilder.AppendLine($"[Error] Failed to move asset from {sourcePaths[i]} to {destinationPaths[i]}: {error}.");
                 }
             }
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             return stringBuilder.ToString();
         });
     }

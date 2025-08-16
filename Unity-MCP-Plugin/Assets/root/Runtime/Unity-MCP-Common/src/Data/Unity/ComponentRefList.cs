@@ -3,11 +3,7 @@ using System.ComponentModel;
 
 namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
-    [Description(@"Component reference. Used to find Component at GameObject.
-Use one of the following properties:
-1. 'instanceID' (int) - recommended. It finds the exact Component. Default value is 0.
-2. 'index' (int) - finds Component by index. It may find a wrong Component. Default value is -1.
-3. 'name' (string) - finds Component by name. It may find a wrong Component. Default value is null.")]
+    [Description(@"Component reference array. Used to find Component at GameObject.")]
     public class ComponentRefList : List<ComponentRef>
     {
         public ComponentRefList() { }

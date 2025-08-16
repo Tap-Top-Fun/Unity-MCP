@@ -1,6 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
-using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -20,8 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         (
             [Description("Prefab asset path. Should be in the format 'Assets/Path/To/Prefab.prefab'.")]
             string prefabAssetPath,
-            [Description("'instanceID' of GameObject in a scene.")]
-            int instanceID,
+            GameObjectRef gameObjectRef,
             [Description("If true, the prefab will replace the GameObject in the scene.")]
             bool replaceGameObjectWithPrefab = true
         )
@@ -33,9 +32,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (!prefabAssetPath.EndsWith(".prefab"))
                 return Error.PrefabPathIsInvalid(prefabAssetPath);
 
-            var go = GameObjectUtils.FindByInstanceID(instanceID);
+            var go = gameObjectRef.FindGameObject(out var error);
             if (go == null)
-                return Tool_GameObject.Error.NotFoundGameObjectWithInstanceID(instanceID);
+                return $"[Error] {error}";
 
             var prefabGo = replaceGameObjectWithPrefab
                 ? PrefabUtility.SaveAsPrefabAsset(go, prefabAssetPath)
@@ -53,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 logger: McpPlugin.Instance.Logger
             );
 
-            return $"[Success] Prefab '{prefabAssetPath}' created from GameObject '{go.name}' (InstanceID: {instanceID}).\n" +
+            return $"[Success] Prefab '{prefabAssetPath}' created from GameObject '{go.name}' (InstanceID: {go.GetInstanceID()}).\n" +
                    $"Prefab GameObject:\n{result}";
         });
     }

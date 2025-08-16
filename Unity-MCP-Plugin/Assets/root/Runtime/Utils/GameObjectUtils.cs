@@ -1,4 +1,4 @@
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,26 +12,26 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 {
     public static partial class GameObjectUtils
     {
-        public static GameObject FindBy(GameObjectRef gameObjectRef, out string error)
+        public static GameObject? FindBy(GameObjectRef? gameObjectRef, out string? error)
         {
             if (gameObjectRef == null)
             {
-                error = "[Error] GameObjectRef is null.";
+                error = "GameObjectRef is null.";
                 return null;
             }
             if (!gameObjectRef.IsValid)
             {
-                error = "[Error] GameObjectRef is not valid. At least one of the properties should be set.";
+                error = "GameObjectRef is not valid. At least one of the properties should be set.";
                 return null;
             }
             return FindBy(
-                instanceID: gameObjectRef.instanceID,
-                path: gameObjectRef.path,
-                name: gameObjectRef.name,
+                instanceID: gameObjectRef.InstanceID,
+                path: gameObjectRef.Path,
+                name: gameObjectRef.Name,
                 error: out error);
         }
 
-        public static GameObject FindBy(int? instanceID, string? path, string? name, out string error)
+        public static GameObject? FindBy(int? instanceID, string? path, string? name, out string? error)
         {
             path = StringUtils.TrimPath(path);
             var go = default(GameObject);
@@ -42,7 +42,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 go = FindByInstanceID(instanceID.Value);
                 if (go == null)
                 {
-                    error = $"[Error] Not found GameObject with instanceID '{instanceID.Value}'";
+                    error = $"Not found GameObject with instanceID '{instanceID.Value}'";
                     return null;
                 }
             }
@@ -52,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 go = FindByPath(path);
                 if (go == null)
                 {
-                    error = $"[Error] Not found GameObject at path '{path}'";
+                    error = $"Not found GameObject at path '{path}'";
                     return null;
                 }
             }
@@ -62,21 +62,21 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 go = GameObject.Find(name);
                 if (go == null)
                 {
-                    error = $"[Error] Not found GameObject with name '{name}'";
+                    error = $"Not found GameObject with name '{name}'";
                     return null;
                 }
             }
             // No valid arguments provided
             else
             {
-                error = "[Error] No valid arguments provided to find GameObject.";
+                error = "No valid arguments provided to find GameObject.";
                 return null;
             }
             error = null;
             return go;
         }
 
-        public static GameObject FindByPath(string path, GameObject? root = null)
+        public static GameObject? FindByPath(string? path, GameObject? root = null)
         {
             path = StringUtils.TrimPath(path);
 
@@ -121,7 +121,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 return currentGameObject;
             }
         }
-        public static GameObject FindChildByName(this GameObject parent, string name)
+        public static GameObject? FindChildByName(this GameObject parent, string name)
         {
             if (parent == null || string.IsNullOrEmpty(name))
                 return null;
@@ -134,14 +134,14 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 
             return null;
         }
-        public static GameObject AddChild(this GameObject parent, string name)
+        public static GameObject? AddChild(this GameObject parent, string name)
         {
             if (parent == null || string.IsNullOrEmpty(name))
                 return null;
 
             return parent.AddChild(new GameObject(name));
         }
-        public static GameObject AddChild(this GameObject parent, GameObject child)
+        public static GameObject? AddChild(this GameObject parent, GameObject child)
         {
             if (parent == null || child == null)
                 return null;
@@ -149,7 +149,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             child.transform.SetParent(parent.transform, false);
             return child;
         }
-        public static IEnumerable<KeyValuePair<string, GameObject>> GetAllRecursively(this GameObject root, string path = null)
+        public static IEnumerable<KeyValuePair<string, GameObject>> GetAllRecursively(this GameObject root, string? path = null)
         {
             var currentPath = string.IsNullOrEmpty(path)
                 ? root.name
@@ -165,7 +165,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 }
             }
         }
-        public static string GetPath(this GameObject go)
+        public static string? GetPath(this GameObject? go)
         {
             if (go == null)
                 return null;
@@ -182,7 +182,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 
             return path.ToString();
         }
-        public static string Print(this GameObject go) => go == null
+        public static string? Print(this GameObject? go) => go == null
             ? null
             : $"instanceID: {go.GetInstanceID()}, path: {go.GetPath()}, bounds: {go.CalculateBounds().ToJson(McpPlugin.Instance!.McpRunner.Reflector)}";
 

@@ -30,7 +30,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             StringBuilder stringBuilder = null,
             ILogger logger = null)
         {
-            return data.valueJsonElement.ToObjectRef(reflector).FindObject() as UnityEngine.Component;
+            return data.valueJsonElement
+                .ToObjectRef(
+                    reflector: reflector,
+                    depth: depth,
+                    stringBuilder: stringBuilder,
+                    logger: logger)
+                .FindObject() as UnityEngine.Component;
         }
     }
 }

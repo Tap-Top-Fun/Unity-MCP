@@ -26,9 +26,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         )
         => MainThread.Instance.Run(() =>
         {
-            var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
+            var go = gameObjectRef.FindGameObject(out var error);
             if (error != null)
-                return error;
+                return $"[Error] {error}";
 
             var destroyCounter = 0;
             var stringBuilder = new StringBuilder();

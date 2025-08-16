@@ -106,7 +106,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 case Type t when t == typeof(Texture):
                     if (material.HasTexture(propertyValue.name))
                     {
-                        var objTexture = propertyValue.GetValue<ObjectRef>(reflector).FindObject();
+                        var objTexture = propertyValue.GetValue<AssetObjectRef>(reflector).FindAssetObject();
                         var texture = objTexture as Texture;
                         material.SetTexture(propertyValue.name, texture);
                         if (stringBuilder != null)

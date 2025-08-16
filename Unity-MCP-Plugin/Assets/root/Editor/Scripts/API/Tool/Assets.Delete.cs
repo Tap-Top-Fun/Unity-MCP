@@ -36,7 +36,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 return stringBuilder.ToString();
             }
 
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             return "[Success] Deleted assets at paths:\n" + string.Join("\n", paths);
         });
     }

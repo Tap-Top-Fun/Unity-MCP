@@ -23,9 +23,9 @@ Use 'instanceID' whenever possible, because it finds the exact GameObject, when 
         )
         => MainThread.Instance.Run(() =>
         {
-            var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
+            var go = gameObjectRef.FindGameObject(out var error);
             if (error != null)
-                return error;
+                return $"[Error] {error}";
 
             Object.DestroyImmediate(go);
             return $"[Success] Destroy GameObject.";

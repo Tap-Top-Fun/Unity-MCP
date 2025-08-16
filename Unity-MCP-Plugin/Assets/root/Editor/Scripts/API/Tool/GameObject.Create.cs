@@ -43,9 +43,9 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
             var parentGo = default(GameObject);
             if (parentGameObjectRef?.IsValid ?? false)
             {
-                parentGo = GameObjectUtils.FindBy(parentGameObjectRef, out var error);
+                parentGo = parentGameObjectRef.FindGameObject(out var error);
                 if (error != null)
-                    return error;
+                    return $"[Error] {error}";
             }
 
             position ??= Vector3.zero;
