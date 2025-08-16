@@ -18,6 +18,9 @@ jobs:
           version=$(grep '"version"' Unity-MCP-Plugin/Assets/root/package.json | head -1 | sed -E 's/.*"([0-9.]+)".*/\1/')
           echo "version=$version" >> $GITHUB_OUTPUT
 
+      - name: Fetch all tags
+        run: git fetch --tags
+
       - name: Find previous version tag
         id: prev_tag
         run: |
