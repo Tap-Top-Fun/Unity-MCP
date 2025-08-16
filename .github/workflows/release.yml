@@ -1,4 +1,4 @@
-name: make-release
+name: release
 
 on:
   push:
@@ -182,14 +182,23 @@ jobs:
       version: ${{ needs.check-version-tag.outputs.version }}
       success: ${{ steps.rel_desc.outputs.success }}
     steps:
+      - name: Fetch all history and tags
+        run: git fetch --unshallow --tags || git fetch --all --tags
+
       - name: Generate release description
         id: rel_desc
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -e
           version=${{ needs.check-version-tag.outputs.version }}
           prev_tag=${{ needs.check-version-tag.outputs.prev_tag }}
+          repo_url="https://github.com/${GITHUB_REPOSITORY}"
           today=$(date +'%B %e, %Y')
+
+          echo "repo_url: $repo_url"
+          echo "today: $today"
+
           echo "# Unity-MCP Version $version" > release.md
           echo "**Released:** *$today*" >> release.md
 
@@ -197,7 +206,6 @@ jobs:
           echo "---" >> release.md
           echo "" >> release.md
 
-          repo_url="https://github.com/${GITHUB_REPOSITORY}"
           if [ -n "$prev_tag" ]; then
             echo "## Comparison" >> release.md
             echo "See every change: [Compare $prev_tag...$version]($repo_url/compare/$prev_tag...$version)" >> release.md
@@ -222,7 +230,7 @@ jobs:
         with:
           tag_name: ${{ needs.check-version-tag.outputs.version }}
           name: ${{ needs.check-version-tag.outputs.version }}
-          # body: ${{ env.release_body }}
+          body: ${{ env.release_body }}
           draft: false
           prerelease: false
         env:

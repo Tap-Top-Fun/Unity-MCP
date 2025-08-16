@@ -1,4 +1,4 @@
-name: 6000.0.46f1-standalone
+name: test-pull-request
 
 on:
   pull_request:
