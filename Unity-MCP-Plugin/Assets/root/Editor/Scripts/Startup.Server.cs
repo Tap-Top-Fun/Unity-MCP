@@ -182,8 +182,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Failed to download and unpack server binary: {ex.Message}");
                     Debug.LogException(ex);
+                    Debug.LogError($"Failed to download and unpack server binary: {ex.Message}");
                     return false;
                 }
             }

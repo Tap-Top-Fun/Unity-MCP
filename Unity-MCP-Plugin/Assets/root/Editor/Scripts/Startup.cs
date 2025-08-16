@@ -27,9 +27,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             var ci = Environment.GetEnvironmentVariable("CI");
             var gha = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
             var az = Environment.GetEnvironmentVariable("TF_BUILD"); // Azure Pipelines
-            return string.Equals(ci, "true", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(gha, "true", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(az, "true", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(ci?.Trim()?.Trim('"'), "true", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(gha?.Trim()?.Trim('"'), "true", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(az?.Trim()?.Trim('"'), "true", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
