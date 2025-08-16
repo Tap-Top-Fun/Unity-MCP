@@ -45,10 +45,11 @@ You can modify multiple GameObjects at once. Just provide the same number of Gam
 
             for (int i = 0; i < gameObjectRefs.Count; i++)
             {
-                var go = GameObjectUtils.FindBy(gameObjectRefs[i], out var error);
+
+                var go = gameObjectRefs[i].FindGameObject(out var error);
                 if (error != null)
                 {
-                    stringBuilder.AppendLine(error);
+                    stringBuilder.AppendLine($"[Error] {error}");
                     continue;
                 }
                 var objToModify = (object)go;

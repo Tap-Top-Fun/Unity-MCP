@@ -71,7 +71,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     _logger.LogInformation(message);
                 }
 
-                var result = await runner.Run(data.Arguments);
+                var result = await runner.Run(data.Arguments, cancellationToken);
                 if (result == null)
                     return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Tool '{data.Name}' returned null result.")
                         .Log(_logger);

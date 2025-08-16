@@ -34,9 +34,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 for (int i = 0; i < gameObjectRefs.Count; i++)
                 {
                     var gameObjectRef = gameObjectRefs[i];
-                    var go = GameObjectUtils.FindBy(gameObjectRefs[i], out var error);
+                    var go = gameObjectRefs[i].FindGameObject(out var error);
                     if (error != null)
-                        return error;
+                        return $"[Error] {error}";
 
                     gos.Add(go);
                 }

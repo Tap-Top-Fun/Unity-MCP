@@ -32,14 +32,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
                 for (var i = 0; i < gameObjectRefs.Count; i++)
                 {
-                    var targetGo = GameObjectUtils.FindBy(gameObjectRefs[i], out var error);
+                    var targetGo = gameObjectRefs[i].FindGameObject(out var error);
                     if (error != null)
                     {
                         stringBuilder.AppendLine(error);
                         continue;
                     }
 
-                    var parentGo = GameObjectUtils.FindBy(parentGameObjectRef, out error);
+                    var parentGo = parentGameObjectRef.FindGameObject(out error);
                     if (error != null)
                     {
                         stringBuilder.AppendLine(error);

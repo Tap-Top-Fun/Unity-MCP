@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet.Model;
 
@@ -18,6 +19,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// </summary>
         /// <param name="namedParameters">A dictionary mapping parameter names to their values.</param>
         /// <returns>The result of the method execution, or null if the method is void.</returns>
-        Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters);
+        Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters, CancellationToken cancellationToken = default);
     }
 }

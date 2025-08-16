@@ -16,8 +16,14 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 return null;
             }
 
-            return GameObjectUtils.FindBy(objectRef, out error)
-                    ?? ExtensionsRuntimeAssetObjectRef.FindAssetObject(objectRef) as GameObject;
+            var go = GameObjectUtils.FindBy(objectRef, out error);
+            if (go == null)
+                go = ExtensionsRuntimeAssetObjectRef.FindAssetObject(objectRef) as GameObject;
+
+            if (go != null)
+                error = null;
+
+            return go;
         }
         public static GameObjectRef? ToGameObjectRef(this GameObject? obj)
         {

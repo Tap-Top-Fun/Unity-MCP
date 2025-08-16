@@ -31,9 +31,9 @@ Also, it returns Components preview just for the target GameObject.")]
         {
             return MainThread.Instance.Run(() =>
             {
-                var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
+                var go = gameObjectRef.FindGameObject(out var error);
                 if (error != null)
-                    return error;
+                    return $"[Error] {error}";
 
                 var reflector = McpPlugin.Instance!.McpRunner.Reflector;
 
