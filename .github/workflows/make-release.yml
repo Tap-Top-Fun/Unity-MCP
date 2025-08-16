@@ -64,7 +64,7 @@ jobs:
             echo "" >> release.md
           fi
           echo "## Commit Summary (Newest → Oldest)" >> release.md
-          git log --pretty=format:'- [`%h`]('"$repo_url"'/commit/%H) — %s by @%an  ' $prev_tag..HEAD | sed 's/@\([^ ]*\) \(.*\)/@\1\2/g' >> release.md
+          git log --pretty=format:'- [`%h`]('"$repo_url"'/commit/%H) — %s by @%aN' $prev_tag..HEAD >> release.md
           printf "release_body<<ENDOFRELEASEBODY\n%s\nENDOFRELEASEBODY\n" "$(cat release.md)" >> $GITHUB_ENV
 
       - name: Create Tag and Release
