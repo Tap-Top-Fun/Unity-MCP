@@ -48,6 +48,7 @@ jobs:
   test-unity-2023-3-20f1-editmode:
     needs: check-version-tag
     uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2023.2.20f1'
@@ -57,6 +58,7 @@ jobs:
   test-unity-6000-0-46f1-editmode:
     needs: check-version-tag
     uses: ./.github/workflows/unity_tests.yml
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '6000.0.46f1'
