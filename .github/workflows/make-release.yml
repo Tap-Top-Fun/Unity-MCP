@@ -19,8 +19,8 @@ jobs:
           echo "version: $version"
           echo "version=$version" >> $GITHUB_OUTPUT
 
-      - name: Fetch all tags
-        run: git fetch --tags
+      - name: Fetch all history and tags
+        run: git fetch --unshallow --tags || git fetch --all --tags
 
       - name: Find previous version tag
         id: prev_tag
