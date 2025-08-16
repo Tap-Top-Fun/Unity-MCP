@@ -7,7 +7,6 @@ on:
 jobs:
   build-and-zip:
     runs-on: macos-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -31,6 +30,3 @@ jobs:
         tag_name: ${{ github.event.release.tag_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Clean up publish folder
-      run: rm -rf ./Unity-MCP-Server/publish
