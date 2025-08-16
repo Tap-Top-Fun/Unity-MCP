@@ -54,16 +54,17 @@ jobs:
           echo "---" >> release.md
           echo "" >> release.md
 
+          repo_url="https://github.com/${GITHUB_REPOSITORY}"
           if [ -n "$prev_tag" ]; then
             echo "## Comparison" >> release.md
-            echo "See every change: [Compare \\\`$prev_tag...$version\\\`](https://github.com/IvanMurzak/Unity-MCP/compare/$prev_tag...$version)" >> release.md
+            echo "See every change: [Compare \\`$prev_tag...$version\\`]($repo_url/compare/$prev_tag...$version)" >> release.md
 
             echo "" >> release.md
             echo "---" >> release.md
             echo "" >> release.md
           fi
           echo "## Commit Summary (Newest → Oldest)" >> release.md
-          git log --pretty=format:'- [`%h`](https://github.com/IvanMurzak/Unity-MCP/commit/%H) — %s by @%an  ' $prev_tag..HEAD | sed 's/@\([^ ]*\) \(.*\)/@\1\2/g' >> release.md
+          git log --pretty=format:"- [`%h`]($repo_url/commit/%H) — %s by @%an  " $prev_tag..HEAD | sed 's/@\([^ ]*\) \(.*\)/@\1\2/g' >> release.md
           printf "release_body<<ENDOFRELEASEBODY\n%s\nENDOFRELEASEBODY\n" "$(cat release.md)" >> $GITHUB_ENV
 
       - name: Create Tag and Release
