@@ -1,12 +1,16 @@
 name: deploy-server-executables
 
 on:
+  push:
+    branches:
+      - main
+
   release:
     types: [published]
 
 jobs:
   build-and-zip:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout repository
