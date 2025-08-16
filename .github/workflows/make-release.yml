@@ -74,7 +74,7 @@ jobs:
             short_sha=$(git log -1 --pretty=format:'%h' $sha)
             echo "- [\`$short_sha\`]($repo_url/commit/$sha) — $message by @$username" >> release.md
           done
-          printf "release_body<<ENDOFRELEASE11BODY\n%s\nENDOFRELEASEBODY\n" "$(cat release.md)" >> $GITHUB_ENV
+          printf "release_body<<ENDOFRELEASEBODY\n%s\nENDOFRELEASEBODY\n" "$(cat release.md)" >> $GITHUB_ENV
 
       - name: Create Tag and Release
         if: steps.tag_exists.outputs.exists == 'false'
@@ -87,3 +87,32 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-and-zip:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Make build script executable
+      run: chmod +x ./Unity-MCP-Server/build-all.sh
+
+    - name: Build executables for all platforms
+      shell: bash {0}
+      run: cd Unity-MCP-Server && ./build-all.sh Release
+
+    - name: Upload release assets
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./Unity-MCP-Server/publish/*.zip
+        tag_name: ${{ needs.check-and-release.outputs.version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Clean up publish folder
+      run: rm -rf ./Unity-MCP-Server/publish

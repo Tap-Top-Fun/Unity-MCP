@@ -4,15 +4,9 @@ on:
   release:
     types: [published]
 
-  workflow_run:
-    workflows: ["make-release"]
-    types:
-      - completed
-
 jobs:
   build-and-zip:
     runs-on: macos-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
