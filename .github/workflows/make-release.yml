@@ -65,6 +65,10 @@ jobs:
             echo "---" >> release.md
             echo "" >> release.md
           fi
+
+          echo "prev_tag: $prev_tag"
+          echo "SHAs: $(git log --pretty=format:'%H' $commit_range)"
+
           echo "## Commit Summary (Newest → Oldest)" >> release.md
           commit_range="$prev_tag..HEAD"
           for sha in $(git log --pretty=format:'%H' $commit_range); do
