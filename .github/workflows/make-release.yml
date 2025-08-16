@@ -72,6 +72,7 @@ jobs:
 
           commit_range="$prev_tag..HEAD"
           echo "prev_tag: $prev_tag"
+          echo "commit_range: $commit_range"
           echo "SHAs: $(git log --pretty=format:'%H' $commit_range)"
 
           for sha in $(git log --pretty=format:'%H' $commit_range); do
