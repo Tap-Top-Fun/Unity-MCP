@@ -35,6 +35,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             var az = commandLineArgs.GetValueOrDefault("TF_BUILD") ?? Environment.GetEnvironmentVariable("TF_BUILD"); // Azure Pipelines
 
             Debug.Log($"CI command line args: {Environment.GetCommandLineArgs().Join()}");
+            foreach (var kvp in commandLineArgs)
+            {
+                Debug.Log($"Command line arg: {kvp.Key} = {kvp.Value}");
+            }
             Debug.Log($"CI Environment Variables: " +
                 $"CI={ci}, " +
                 $"GITHUB_ACTIONS={gha}, " +
