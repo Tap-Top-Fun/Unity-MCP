@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 var flagHasValue = next < args.Length && !args[next].StartsWith("-");
                 var value = flagHasValue ? args[next].TrimStart('-') : "";
 
-                providedArguments.Add(flag, value);
+                providedArguments[flag] = value;
             }
 
             return providedArguments;
