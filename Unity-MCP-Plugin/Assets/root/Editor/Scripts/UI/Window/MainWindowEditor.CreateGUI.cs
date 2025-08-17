@@ -48,7 +48,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             var inputTimeoutMs = root.Query<IntegerField>("inputTimeoutMs").First();
             inputTimeoutMs.value = McpPluginUnity.TimeoutMs;
-            inputTimeoutMs.tooltip = "Timeout for MCP tool execution in milliseconds.\n\nMost tools only need a few seconds, but running test suites can take much longer.\n\nSet this higher than your longest test execution time.\n\nImportant: Also update the --timeout= argument in your MCP client configuration to match this value so your MCP client doesn't timeout before the tool completes.";
+            inputTimeoutMs.tooltip = $"Timeout for MCP tool execution in milliseconds.\n\nMost tools only need a few seconds, but running test suites can take much longer.\n\nSet this higher than your longest test execution time.\n\nImportant: Also update the '{Consts.MCP.Args.Timeout}' argument in your MCP client configuration to match this value so your MCP client doesn't timeout before the tool completes.";
             inputTimeoutMs.RegisterCallback<FocusOutEvent>(evt =>
             {
                 var newValue = Mathf.Max(1000, inputTimeoutMs.value);

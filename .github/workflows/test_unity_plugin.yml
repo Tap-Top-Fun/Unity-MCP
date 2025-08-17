@@ -75,7 +75,7 @@ jobs:
           unityVersion:   ${{ inputs.unityVersion }}
           testMode:       ${{ inputs.testMode }}
           githubToken:    ${{ secrets.GITHUB_TOKEN }}
-          checkName:      ${{ inputs.unityVersion }} ${{ inputs.testMode }} Test Results
+          checkName:      ${{ inputs.unityVersion }} ${{ inputs.testMode }} ${{ matrix.os }} Test Results
           artifactsPath:  artifacts-${{ inputs.unityVersion }}-${{ inputs.testMode }}-${{ matrix.os }}
           customParameters: -CI true -GITHUB_ACTIONS true
 

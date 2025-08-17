@@ -25,6 +25,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public static class MCP
         {
             public const int LinesLimit = 1000;
+            public static class Args
+            {
+                public const string Port = "--port";
+                public const string Timeout = "--timeout";
+            }
 
             public static JsonNode Config(
                 string executablePath,
@@ -42,8 +47,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
                             ["command"] = executablePath,
                             ["args"] = new JsonArray
                             {
-                                $"--port={port}",
-                                $"--timeout={timeoutMs}"
+                                $"{Args.Port}={port}",
+                                $"{Args.Timeout}={timeoutMs}"
                             }
                         }
                     }
