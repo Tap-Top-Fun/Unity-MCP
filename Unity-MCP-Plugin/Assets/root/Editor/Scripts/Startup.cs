@@ -34,6 +34,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             var gha = commandLineArgs.GetValueOrDefault("GITHUB_ACTIONS") ?? Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
             var az = commandLineArgs.GetValueOrDefault("TF_BUILD") ?? Environment.GetEnvironmentVariable("TF_BUILD"); // Azure Pipelines
 
+            Debug.Log($"CI command line args: {Environment.GetCommandLineArgs().Join()}");
             Debug.Log($"CI Environment Variables: " +
                 $"CI={ci}, " +
                 $"GITHUB_ACTIONS={gha}, " +
