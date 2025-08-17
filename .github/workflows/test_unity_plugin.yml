@@ -76,19 +76,12 @@ jobs:
           testMode:       ${{ inputs.testMode }}
           githubToken:    ${{ secrets.GITHUB_TOKEN }}
           checkName:      ${{ inputs.unityVersion }} ${{ inputs.testMode }} Test Results
-          artifactsPath:  artifacts
+          artifactsPath:  artifacts-${{ inputs.unityVersion }}-${{ inputs.testMode }}-${{ matrix.os }}
           customParameters: -CI true -GITHUB_ACTIONS true
 
       # --------------------------------------------------------------------- #
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Test results for ${{ inputs.unityVersion }} ${{ inputs.testMode }}
+          name: Test results for ${{ inputs.unityVersion }} ${{ inputs.testMode }} on ${{ matrix.os }}
           path: ${{ steps.tests.outputs.artifactsPath }}
-
-      # --------------------------------------------------------------------- #
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: Coverage results for ${{ inputs.unityVersion }} ${{ inputs.testMode }}
-          path: ${{ steps.tests.outputs.coveragePath }}
