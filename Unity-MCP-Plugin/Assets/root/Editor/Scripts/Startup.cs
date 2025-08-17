@@ -30,9 +30,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             Debug.Log($"Checking if running in CI environment...");
 
-            var ci = Environment.GetEnvironmentVariable("CI") ?? commandLineArgs.GetValueOrDefault("CI");
-            var gha = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") ?? commandLineArgs.GetValueOrDefault("GITHUB_ACTIONS");
-            var az = Environment.GetEnvironmentVariable("TF_BUILD") ?? commandLineArgs.GetValueOrDefault("TF_BUILD"); // Azure Pipelines
+            var ci = commandLineArgs.GetValueOrDefault("CI") ?? Environment.GetEnvironmentVariable("CI");
+            var gha = commandLineArgs.GetValueOrDefault("GITHUB_ACTIONS") ?? Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
+            var az = commandLineArgs.GetValueOrDefault("TF_BUILD") ?? Environment.GetEnvironmentVariable("TF_BUILD"); // Azure Pipelines
 
             Debug.Log($"CI Environment Variables: " +
                 $"CI={ci}, " +
