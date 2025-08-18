@@ -46,8 +46,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _resourceRunner = resourceRunner ?? throw new ArgumentNullException(nameof(resourceRunner));
             _eventAppToolsChange = eventAppToolsChange ?? throw new ArgumentNullException(nameof(eventAppToolsChange));
 
-            if (Instance != null)
-                throw new InvalidOperationException($"{typeof(McpServerService).Name} is already initialized.");
+            // if (Instance != null)
+            //     throw new InvalidOperationException($"{typeof(McpServerService).Name} is already initialized.");
             Instance = this;
         }
 

@@ -101,27 +101,34 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     {
                         options.RunSessionHandler = async (context, server, cancellationToken) =>
                         {
-                            // This is where you can run logic before a session starts
-                            // For example, you can log the session start or initialize resources
-                            logger.Debug("Running session handler for HTTP transport.");
-
-                            var service = new McpServerService(
-                                server.Services!.GetRequiredService<ILogger<McpServerService>>(),
-                                server,
-                                server.Services!.GetRequiredService<IMcpRunner>(),
-                                server.Services!.GetRequiredService<IToolRunner>(),
-                                server.Services!.GetRequiredService<IResourceRunner>(),
-                                server.Services!.GetRequiredService<EventAppToolsChange>()
-                            );
-
-                            await service.StartAsync(cancellationToken);
                             try
                             {
-                                await server.RunAsync(cancellationToken);
+                                // This is where you can run logic before a session starts
+                                // For example, you can log the session start or initialize resources
+                                logger.Debug("Running session handler for HTTP transport.");
+
+                                var service = new McpServerService(
+                                    server.Services!.GetRequiredService<ILogger<McpServerService>>(),
+                                    server,
+                                    server.Services!.GetRequiredService<IMcpRunner>(),
+                                    server.Services!.GetRequiredService<IToolRunner>(),
+                                    server.Services!.GetRequiredService<IResourceRunner>(),
+                                    server.Services!.GetRequiredService<EventAppToolsChange>()
+                                );
+
+                                try
+                                {
+                                    await service.StartAsync(cancellationToken);
+                                    await server.RunAsync(cancellationToken);
+                                }
+                                finally
+                                {
+                                    await service.StopAsync(cancellationToken);
+                                }
                             }
-                            finally
+                            catch (Exception ex)
                             {
-                                await service.StopAsync(cancellationToken);
+                                logger.Error(ex, "Error occurred while processing HTTP transport session.");
                             }
                         };
                     });
@@ -180,6 +187,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         catch (Exception ex)
                         {
                             logger.Error(ex, $"Error occurred while processing request: {context.Request.Method} {context.Request.Path}");
+                            return;
                         }
                         logger.Debug($"Response: {context.Response.StatusCode}");
                     });
