@@ -5,13 +5,13 @@ using com.IvanMurzak.Unity.MCP.Common;
 using NLog.Extensions.Logging;
 using NLog;
 using System;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using com.IvanMurzak.ReflectorNet;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using System.Text.Json;
 using com.IvanMurzak.Unity.MCP.Server.Utils;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -50,16 +50,31 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 // builder.Logging.ClearProviders();
                 builder.Logging.AddNLog();
 
+
+                // Setup SignalR ---------------------------------------------------------------
+
                 builder.Services.AddSignalR(configure =>
                 {
                     configure.EnableDetailedErrors = true;
                     configure.MaximumReceiveMessageSize = 1024 * 1024 * 256; // 256 MB
                     configure.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
-                    configure.KeepAliveInterval = TimeSpan.FromSeconds(15);
+                    configure.KeepAliveInterval = TimeSpan.FromSeconds(10);
                     configure.HandshakeTimeout = TimeSpan.FromSeconds(15);
                 });
 
-                // Setup MCP server ---------------------------------------------------------------
+                // Setup MCP Plugin ---------------------------------------------------------------
+                builder.Services.AddMcpPlugin(logger: new ConsoleLogger("McpPlugin"), configure =>
+                {
+                    configure
+                        .WithServerFeatures(dataArguments)
+                        .AddLogging(logging =>
+                        {
+                            logging.AddNLog();
+                            logging.SetMinimumLevel(LogLevel.Debug);
+                        });
+                }).Build(new Reflector());
+
+                // Setup MCP Server ---------------------------------------------------------------
 
                 var mcpBuilder = builder.Services
                     .AddMcpServer(options =>
@@ -119,10 +134,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                             }
                         };
                     });
-
-                    // Still need to enable STDIO, because `WithHttpTransport` doesn't inject IMcpServer into di container
-                    // mcpBuilder = mcpBuilder.WithStdioServerTransport();
-                    // builder.Services.AddSingleton<IMcpServer, McpServer>();
                 }
                 else
                 {
@@ -130,23 +141,15 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         $"Supported methods are: {Consts.MCP.Server.TransportMethod.stdio}, {Consts.MCP.Server.TransportMethod.http}");
                 }
 
-                // Setup McpApp ----------------------------------------------------------------
-                builder.Services.AddMcpPlugin(logger: new ConsoleLogger("McpPlugin"), configure =>
-                {
-                    configure
-                        .WithServerFeatures(dataArguments)
-                        .AddLogging(logging =>
-                        {
-                            logging.AddNLog();
-                            logging.SetMinimumLevel(LogLevel.Debug);
-                        });
-                }).Build(new Reflector());
-
                 // builder.WebHost.UseUrls(Consts.Hub.DefaultEndpoint);
 
                 builder.WebHost.UseKestrel(options =>
                 {
-                    options.ListenLocalhost(5000); // MCP client port
+                    // MCP client port 5000
+                    options.ListenLocalhost(5000);
+                    options.ListenAnyIP(5000);
+
+                    // MCP plugin port
                     options.ListenLocalhost(dataArguments.Port);
                     options.ListenAnyIP(dataArguments.Port);
                 });
@@ -156,6 +159,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 // Middleware ----------------------------------------------------------------
                 // ---------------------------------------------------------------------------
 
+                // Setup SignalR
                 app.UseRouting();
                 app.MapHub<RemoteApp>(Consts.Hub.RemoteApp, options =>
                 {
@@ -164,9 +168,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     options.TransportMaxBufferSize = 1024 * 1024 * 10; // 10 MB
                 });
 
+                // Setup MCP client
                 if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.http)
                     app.MapMcp();
 
+                // Print logs
                 if (logger.IsEnabled(NLog.LogLevel.Debug))
                 {
                     var endpointDataSource = app.Services.GetRequiredService<Microsoft.AspNetCore.Routing.EndpointDataSource>();
