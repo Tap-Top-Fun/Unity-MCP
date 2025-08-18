@@ -146,6 +146,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 builder.WebHost.UseKestrel(options =>
                 {
+                    options.ListenLocalhost(5000); // MCP client port
                     options.ListenLocalhost(dataArguments.Port);
                     options.ListenAnyIP(dataArguments.Port);
                 });

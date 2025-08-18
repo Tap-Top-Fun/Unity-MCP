@@ -66,7 +66,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             _logger.LogTrace("{0} StopAsync.", GetType().GetTypeShortName());
             _disposables.Clear();
-            Instance = null;
+            if (Instance == this)
+                Instance = null;
             return McpPlugin.StaticDisposeAsync();
         }
 
