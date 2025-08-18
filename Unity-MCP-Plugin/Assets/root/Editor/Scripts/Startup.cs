@@ -26,23 +26,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         /// </summary>
         public static bool IsCi()
         {
-            Debug.Log($"Checking if running in CI environment...");
-            Debug.Log($"CI command line args: {Environment.GetCommandLineArgs().Join()}");
-
             var commandLineArgs = ArgsUtils.ParseCommandLineArguments();
-            foreach (var kvp in commandLineArgs)
-            {
-                Debug.Log($"Command line arg: {kvp.Key} = {kvp.Value}");
-            }
 
             var ci = commandLineArgs.GetValueOrDefault("CI") ?? Environment.GetEnvironmentVariable("CI");
             var gha = commandLineArgs.GetValueOrDefault("GITHUB_ACTIONS") ?? Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
             var az = commandLineArgs.GetValueOrDefault("TF_BUILD") ?? Environment.GetEnvironmentVariable("TF_BUILD"); // Azure Pipelines
-
-            Debug.Log($"CI Environment Variables: " +
-                $"CI={ci}, " +
-                $"GITHUB_ACTIONS={gha}, " +
-                $"TF_BUILD={az}");
 
             return string.Equals(ci?.Trim()?.Trim('"'), "true", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(gha?.Trim()?.Trim('"'), "true", StringComparison.OrdinalIgnoreCase)
