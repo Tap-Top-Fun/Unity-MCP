@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
@@ -29,8 +30,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public static McpServerService? Instance { get; private set; }
 
-        public McpServerService(ILogger<McpServerService> logger, IMcpServer mcpServer, IMcpRunner mcpRunner,
-            IToolRunner toolRunner, IResourceRunner resourceRunner, EventAppToolsChange eventAppToolsChange)
+        public McpServerService(
+            ILogger<McpServerService> logger,
+            IMcpServer mcpServer,
+            IMcpRunner mcpRunner,
+            IToolRunner toolRunner,
+            IResourceRunner resourceRunner,
+            EventAppToolsChange eventAppToolsChange)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("{0} Ctor.", GetType().GetTypeShortName());
@@ -69,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _logger.LogTrace("{0} OnListToolUpdated", GetType().GetTypeShortName());
             try
             {
-                await _mcpServer.SendNotificationAsync(NotificationMethods.ToolListChangedNotification, cancellationToken);
+                await McpServer.SendNotificationAsync(NotificationMethods.ToolListChangedNotification, cancellationToken);
             }
             catch (Exception ex)
             {

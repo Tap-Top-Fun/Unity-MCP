@@ -8,9 +8,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.Extensions.Hosting;
 using com.IvanMurzak.ReflectorNet;
-using ModelContextProtocol.Server;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using System.Text.Json;
 using com.IvanMurzak.Unity.MCP.Server.Utils;
@@ -24,7 +22,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public static async Task Main(string[] args)
         {
             // Configure NLog
-            var logger = LogManager.Setup().LoadConfigurationFromFile("NLog.config").GetCurrentClassLogger();
+            var nLog = LogManager.Setup().LoadConfigurationFromFile("NLog.config");
+            var logger = nLog.GetCurrentClassLogger();
             try
             {
                 var dataArguments = new DataArguments(args);
@@ -42,7 +41,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 };
 
                 consoleWriteLine("Location: " + Environment.CurrentDirectory);
-                consoleWriteLine($"Launch arguments: {string.Join(", ", args)}");
+                consoleWriteLine($"Launch arguments: {string.Join(" ", args)}");
                 consoleWriteLine($"Parsed arguments: {JsonSerializer.Serialize(dataArguments, JsonOptions.Pretty)}");
 
                 var builder = WebApplication.CreateBuilder(args);
@@ -92,10 +91,38 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 {
                     // builder.Services.AddSingleton<IMcpServer, McpServer>();
                     // Configure HTTP transport
-                    mcpBuilder = mcpBuilder.WithHttpTransport();
+                    mcpBuilder = mcpBuilder.WithHttpTransport(options =>
+                    {
+                        options.RunSessionHandler = async (context, server, cancellationToken) =>
+                        {
+                            // This is where you can run logic before a session starts
+                            // For example, you can log the session start or initialize resources
+                            logger.Debug("Running session handler for HTTP transport.");
+
+                            var service = new McpServerService(
+                                server.Services!.GetRequiredService<ILogger<McpServerService>>(),
+                                server,
+                                server.Services!.GetRequiredService<IMcpRunner>(),
+                                server.Services!.GetRequiredService<IToolRunner>(),
+                                server.Services!.GetRequiredService<IResourceRunner>(),
+                                server.Services!.GetRequiredService<EventAppToolsChange>()
+                            );
+
+                            await service.StartAsync(cancellationToken);
+                            try
+                            {
+                                await server.RunAsync(cancellationToken);
+                            }
+                            finally
+                            {
+                                await service.StopAsync(cancellationToken);
+                            }
+                        };
+                    });
 
                     // Still need to enable STDIO, because `WithHttpTransport` doesn't inject IMcpServer into di container
-                    mcpBuilder = mcpBuilder.WithStdioServerTransport();
+                    // mcpBuilder = mcpBuilder.WithStdioServerTransport();
+                    // builder.Services.AddSingleton<IMcpServer, McpServer>();
                 }
                 else
                 {
@@ -104,10 +131,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
 
                 // Setup McpApp ----------------------------------------------------------------
-                builder.Services.AddMcpPlugin(logger: null, configure =>
+                builder.Services.AddMcpPlugin(logger: new ConsoleLogger("McpPlugin"), configure =>
                 {
                     configure
-                        .WithServerFeatures()
+                        .WithServerFeatures(dataArguments)
                         .AddLogging(logging =>
                         {
                             logging.AddNLog();
@@ -135,6 +162,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     options.ApplicationMaxBufferSize = 1024 * 1024 * 10; // 10 MB
                     options.TransportMaxBufferSize = 1024 * 1024 * 10; // 10 MB
                 });
+
+                if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.http)
+                    app.MapMcp();
 
                 if (logger.IsEnabled(NLog.LogLevel.Debug))
                 {

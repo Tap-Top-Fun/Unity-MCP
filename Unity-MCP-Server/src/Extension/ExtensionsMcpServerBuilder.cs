@@ -5,10 +5,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public static class ExtensionsMcpServerBuilder
     {
-        public static IMcpPluginBuilder WithServerFeatures(this IMcpPluginBuilder builder)
+        public static IMcpPluginBuilder WithServerFeatures(this IMcpPluginBuilder builder, DataArguments dataArguments)
         {
             builder.Services.AddRouting();
-            builder.Services.AddHostedService<McpServerService>();
+            if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.stdio)
+                builder.Services.AddHostedService<McpServerService>();
 
             builder.Services.AddSingleton<EventAppToolsChange>();
             builder.Services.AddSingleton<IToolRunner, RemoteToolRunner>();
