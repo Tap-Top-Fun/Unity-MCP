@@ -16,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP
         public bool isLoaded;
         public List<GameObjectMetadata> rootGameObjects = new();
 
-        public string Print(int limit = Consts.MCP.LinesLimit)
+        public string Print(int limit = Consts.MCP.Plugin.LinesLimit)
         {
             var sb = new StringBuilder();
 

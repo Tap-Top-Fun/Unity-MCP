@@ -2,11 +2,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class Consts
     {
-        public static class Env
-        {
-            public const string Port = "UNITY_MCP_PORT";
-            public const string Timeout = "UNITY_MCP_TIMEOUT";
-        }
         public static class Hub
         {
             public const int DefaultPort = 60606;

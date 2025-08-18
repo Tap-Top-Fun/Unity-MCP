@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using com.IvanMurzak.Unity.MCP.Common;
 
 namespace com.IvanMurzak.Unity.MCP.Server
@@ -7,52 +8,39 @@ namespace com.IvanMurzak.Unity.MCP.Server
     {
         public int Port { get; private set; }
         public int TimeoutMs { get; private set; }
+        public Consts.MCP.Server.TransportMethod Transport { get; private set; }
 
         public DataArguments(string[] args)
         {
             Port = Consts.Hub.DefaultPort;
             TimeoutMs = Consts.Hub.DefaultTimeoutMs;
+            Transport = Consts.MCP.Server.TransportMethod.stdio;
 
-            ParseCommandLineArguments(args);
-            ParseEnvironmentVariables();
+            ParseEnvironmentVariables(); // env variables - second priority
+            ParseCommandLineArguments(args); // command line args - first priority (override previous values)
         }
 
-        private void ParseCommandLineArguments(string[] args)
+        void ParseEnvironmentVariables()
         {
-            for (int i = 0; i < args.Length; i++)
-            {
-                var arg = args[i];
-                
-                if (arg.StartsWith("--port="))
-                {
-                    if (int.TryParse(arg.Substring(7), out var parsedPort))
-                        Port = parsedPort;
-                }
-                else if (arg.StartsWith("--timeout="))
-                {
-                    if (int.TryParse(arg.Substring(10), out var parsedTimeoutMs))
-                        TimeoutMs = parsedTimeoutMs;
-                }
-                else if (i == 0 && int.TryParse(arg, out var posPort))
-                {
-                    Port = posPort;
-                }
-                else if (i == 1 && int.TryParse(arg, out var posTimeoutMs))
-                {
-                    TimeoutMs = posTimeoutMs;
-                }
-            }
-        }
-
-        private void ParseEnvironmentVariables()
-        {
-            var envPort = Environment.GetEnvironmentVariable(Consts.Env.Port);
+            var envPort = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.Port);
             if (envPort != null && int.TryParse(envPort, out var parsedEnvPort))
                 Port = parsedEnvPort;
 
-            var envTimeout = Environment.GetEnvironmentVariable(Consts.Env.Timeout);
+            var envTimeout = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.Timeout);
             if (envTimeout != null && int.TryParse(envTimeout, out var parsedEnvTimeoutMs))
                 TimeoutMs = parsedEnvTimeoutMs;
+        }
+        void ParseCommandLineArguments(string[] args)
+        {
+            var commandLineArgs = ArgsUtils.ParseLineArguments(args);
+
+            var argPort = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.Port);
+            if (argPort != null && int.TryParse(argPort, out var port))
+                Port = port;
+
+            var argTimeout = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.Timeout);
+            if (argTimeout != null && int.TryParse(argTimeout, out var timeoutMs))
+                TimeoutMs = timeoutMs;
         }
     }
 }

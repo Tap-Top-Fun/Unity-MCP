@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP
         public bool activeInHierarchy;
         public List<GameObjectMetadata> children = new();
 
-        public string Print(int limit = Common.Consts.MCP.LinesLimit)
+        public string Print(int limit = Common.Consts.MCP.Plugin.LinesLimit)
         {
             var sb = new StringBuilder();
 

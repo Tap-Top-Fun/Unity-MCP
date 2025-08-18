@@ -97,7 +97,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 string bodyName = "mcpServers",
                 int timeoutMs = Consts.Hub.DefaultTimeoutMs)
             {
-                return Consts.MCP.Config(
+                return Consts.MCP.Server.Config(
                     executablePath: ExecutableFullPath.Replace('\\', '/'),
                     bodyName: bodyName,
                     port: port,

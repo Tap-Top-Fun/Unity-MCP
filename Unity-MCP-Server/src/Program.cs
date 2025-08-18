@@ -8,9 +8,10 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using com.IvanMurzak.ReflectorNet.Utils;
+using Microsoft.Extensions.Hosting;
 using com.IvanMurzak.ReflectorNet;
+using ModelContextProtocol.Server;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -25,10 +26,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
             var logger = LogManager.Setup().LoadConfigurationFromFile("NLog.config").GetCurrentClassLogger();
             try
             {
+                var dataArguments = new DataArguments(args);
                 var builder = WebApplication.CreateBuilder(args);
-
-                // Configure all logs to go to stderr. This is needed for MCP STDIO server to work properly.
-                builder.Logging.AddConsole(consoleLogOptions => consoleLogOptions.LogToStandardErrorThreshold = LogLevel.Trace);
 
                 // Replace default logging with NLog
                 // builder.Logging.ClearProviders();
@@ -44,21 +43,46 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 });
 
                 // Setup MCP server ---------------------------------------------------------------
-                builder.Services
+
+                var mcpBuilder = builder.Services
                     .AddMcpServer(options =>
                     {
                         options.Capabilities ??= new();
                         options.Capabilities.Tools ??= new();
                         options.Capabilities.Tools.ListChanged = true;
                     })
-                    .WithStdioServerTransport()
-                    //.WithPromptsFromAssembly()
                     .WithToolsFromAssembly()
                     .WithCallToolHandler(ToolRouter.Call)
                     .WithListToolsHandler(ToolRouter.ListAll);
+
+                // --- Additional handlers for the future implementation
+                //.WithPromptsFromAssembly()
                 //.WithReadResourceHandler(ResourceRouter.ReadResource)
                 //.WithListResourcesHandler(ResourceRouter.ListResources)
                 //.WithListResourceTemplatesHandler(ResourceRouter.ListResourceTemplates);
+                // -----------------------------------------------------
+
+                if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.stdio)
+                {
+                    // Configure all logs to go to stderr. This is needed for MCP STDIO server to work properly.
+                    builder.Logging.AddConsole(consoleLogOptions => consoleLogOptions.LogToStandardErrorThreshold = LogLevel.Trace);
+
+                    // Configure STDIO transport
+                    mcpBuilder = mcpBuilder.WithStdioServerTransport();
+                }
+                else if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.http)
+                {
+                    // Configure HTTP transport
+                    mcpBuilder = mcpBuilder.WithHttpTransport(options =>
+                    {
+                        // none
+                    });
+                }
+                else
+                {
+                    throw new ArgumentException($"Unsupported transport method: {dataArguments.Transport}. " +
+                        $"Supported methods are: {Consts.MCP.Server.TransportMethod.stdio}, {Consts.MCP.Server.TransportMethod.http}");
+                }
 
                 // Setup McpApp ----------------------------------------------------------------
                 builder.Services.AddMcpPlugin(logger: null, configure =>
@@ -73,14 +97,15 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }).Build(new Reflector());
 
                 // builder.WebHost.UseUrls(Consts.Hub.DefaultEndpoint);
-                var dataArguments = new DataArguments(args);
 
+                // TODO: remove usage of static ConnectionConfig, replace it with instance with DI injection.
                 // Set the runtime configurable timeout
                 ConnectionConfig.TimeoutMs = dataArguments.TimeoutMs;
 
                 builder.WebHost.UseKestrel(options =>
                 {
                     options.ListenLocalhost(dataArguments.Port);
+                    options.ListenAnyIP(dataArguments.Port);
                 });
 
                 var app = builder.Build();
