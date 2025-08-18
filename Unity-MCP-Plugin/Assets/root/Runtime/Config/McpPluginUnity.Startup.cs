@@ -1,7 +1,6 @@
 using System;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Convertor;
-using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Json;
 using com.IvanMurzak.Unity.MCP.Common.Json.Converters;
@@ -19,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP
 
     public partial class McpPluginUnity
     {
-        public static void BuildAndStart()
+        public static void BuildAndStart(bool openConnection = true)
         {
             McpPlugin.StaticDisposeAsync();
             MainThreadInstaller.Init();
@@ -52,6 +51,9 @@ namespace com.IvanMurzak.Unity.MCP
                 .WithPromptsFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
                 .WithResourcesFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
                 .Build(CreateDefaultReflector());
+
+            if (!openConnection)
+                return;
 
             if (McpPluginUnity.KeepConnected)
             {

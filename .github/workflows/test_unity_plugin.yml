@@ -1,4 +1,4 @@
-name: Unity Tests
+name: test-unity-plugin
 
 ##############################################################################
 # 1. Triggers
@@ -74,6 +74,14 @@ jobs:
           projectPath:    ${{ inputs.projectPath }}
           unityVersion:   ${{ inputs.unityVersion }}
           testMode:       ${{ inputs.testMode }}
-          artifactsPath:  ${{ inputs.testMode }}-artifacts
           githubToken:    ${{ secrets.GITHUB_TOKEN }}
-          checkName:      ${{ inputs.unityVersion }} ${{ inputs.testMode }} Test Results
+          checkName:      ${{ inputs.unityVersion }} ${{ inputs.testMode }} ${{ matrix.os }} Test Results
+          artifactsPath:  artifacts-${{ inputs.unityVersion }}-${{ inputs.testMode }}-${{ matrix.os }}
+          customParameters: -CI true -GITHUB_ACTIONS true
+
+      # --------------------------------------------------------------------- #
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Test results for ${{ inputs.unityVersion }} ${{ inputs.testMode }} on ${{ matrix.os }}
+          path: ${{ steps.tests.outputs.artifactsPath }}

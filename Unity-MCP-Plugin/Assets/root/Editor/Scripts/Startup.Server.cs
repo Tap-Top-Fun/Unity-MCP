@@ -132,6 +132,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 if (IsCi())
                 {
                     // Ignore in CI environment
+                    Debug.Log($"Ignore MCP server downloading in CI environment");
                     return Task.FromResult(false);
                 }
 
@@ -181,8 +182,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Failed to download and unpack server binary: {ex.Message}");
                     Debug.LogException(ex);
+                    Debug.LogError($"Failed to download and unpack server binary: {ex.Message}");
                     return false;
                 }
             }

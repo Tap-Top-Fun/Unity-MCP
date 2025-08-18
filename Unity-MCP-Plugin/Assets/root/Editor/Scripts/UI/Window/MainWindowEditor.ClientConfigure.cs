@@ -11,6 +11,8 @@ using UnityEngine.UIElements;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
+    using Consts = com.IvanMurzak.Unity.MCP.Common.Consts;
+
     public partial class MainWindowEditor : EditorWindow
     {
         void ConfigureClientsWindows(VisualElement root)
@@ -185,9 +187,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     foundTimeout = true;
 
                 // Check named format
-                else if (arg!.StartsWith("--port=") && arg.Substring(7) == targetPort)
+                else if (arg!.StartsWith($"{Consts.MCP.Args.Port}=") && arg.Substring(Consts.MCP.Args.Port.Length + 1) == targetPort)
                     foundPort = true;
-                else if (arg!.StartsWith("--timeout=") && arg.Substring(10) == targetTimeout)
+                else if (arg!.StartsWith($"{Consts.MCP.Args.Timeout}=") && arg.Substring(Consts.MCP.Args.Timeout.Length + 1) == targetTimeout)
                     foundTimeout = true;
             }
 

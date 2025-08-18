@@ -78,7 +78,7 @@ jobs:
 
   test-unity-2022-3-61f1-editmode:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2022.3.61f1'
@@ -87,7 +87,7 @@ jobs:
 
   test-unity-2023-3-20f1-editmode:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2023.2.20f1'
@@ -96,7 +96,7 @@ jobs:
 
   test-unity-6000-0-46f1-editmode:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '6000.0.46f1'
@@ -107,7 +107,7 @@ jobs:
 
   test-unity-2022-3-61f1-playmode:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2022.3.61f1'
@@ -116,7 +116,7 @@ jobs:
 
   test-unity-2023-3-20f1-playmode:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2023.2.20f1'
@@ -125,7 +125,7 @@ jobs:
 
   test-unity-6000-0-46f1-playmode:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '6000.0.46f1'
@@ -136,7 +136,7 @@ jobs:
 
   test-unity-2022-3-61f1-standalone:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2022.3.61f1'
@@ -145,7 +145,7 @@ jobs:
 
   test-unity-2023-3-20f1-standalone:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '2023.2.20f1'
@@ -154,7 +154,7 @@ jobs:
 
   test-unity-6000-0-46f1-standalone:
     needs: build-and-zip-mcp-server
-    uses: ./.github/workflows/unity_tests.yml
+    uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
       unityVersion: '6000.0.46f1'
