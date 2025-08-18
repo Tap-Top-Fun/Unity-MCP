@@ -29,18 +29,26 @@ namespace com.IvanMurzak.Unity.MCP.Server
             var envTimeout = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.Timeout);
             if (envTimeout != null && int.TryParse(envTimeout, out var parsedEnvTimeoutMs))
                 TimeoutMs = parsedEnvTimeoutMs;
+
+            var envTransport = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.TransportMethod);
+            if (envTransport != null && Enum.TryParse(envTransport, out Consts.MCP.Server.TransportMethod parsedEnvTransport))
+                Transport = parsedEnvTransport;
         }
         void ParseCommandLineArguments(string[] args)
         {
             var commandLineArgs = ArgsUtils.ParseLineArguments(args);
 
-            var argPort = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.Port);
+            var argPort = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.Port.TrimStart('-'));
             if (argPort != null && int.TryParse(argPort, out var port))
                 Port = port;
 
-            var argTimeout = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.Timeout);
+            var argTimeout = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.Timeout.TrimStart('-'));
             if (argTimeout != null && int.TryParse(argTimeout, out var timeoutMs))
                 TimeoutMs = timeoutMs;
+
+            var argTransport = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.TransportMethod.TrimStart('-'));
+            if (argTransport != null && Enum.TryParse(argTransport, out Consts.MCP.Server.TransportMethod parsedArgTransport))
+                Transport = parsedArgTransport;
         }
     }
 }

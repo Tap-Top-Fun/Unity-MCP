@@ -5,7 +5,37 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C#: com.IvanMurzak.Unity.MCP.Server Debug",
+            "name": "http",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/bin/Debug/net9.0/unity-mcp-server.exe",
+            "args": [
+                "--unity-port",
+                "123",
+                "--unity-timeout",
+                "15000",
+                "--transport",
+                "http"
+            ]
+        },
+        {
+            "name": "stdio",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/bin/Debug/net9.0/unity-mcp-server.exe",
+            "args": [
+                "--unity-port",
+                "123",
+                "--unity-timeout",
+                "15000",
+                "--transport",
+                "stdio"
+            ]
+        },
+        {
+            "name": "C#: Debug",
             "type": "dotnet",
             "request": "launch",
             "projectPath": "${workspaceFolder}/Server/com.IvanMurzak.Unity.MCP.Server.csproj"

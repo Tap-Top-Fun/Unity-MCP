@@ -42,9 +42,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
                                 ["command"] = executablePath,
                                 ["args"] = new JsonArray
                                 {
-                                    $"{Args.Port}={port}",
-                                    $"{Args.Timeout}={timeoutMs}",
-                                    $"{Args.TransportMethod}={TransportMethod.stdio}"
+                                    $"{Args.Port} {port}",
+                                    $"{Args.Timeout} {timeoutMs}",
+                                    $"{Args.TransportMethod} {TransportMethod.stdio}"
                                 }
                             }
                         }

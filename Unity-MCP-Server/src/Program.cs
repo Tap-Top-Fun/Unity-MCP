@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using com.IvanMurzak.ReflectorNet;
 using ModelContextProtocol.Server;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using System.Text.Json;
+using com.IvanMurzak.Unity.MCP.Server.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -21,12 +23,28 @@ namespace com.IvanMurzak.Unity.MCP.Server
     {
         public static async Task Main(string[] args)
         {
-            Console.Error.WriteLine("Location: " + Environment.CurrentDirectory);
             // Configure NLog
             var logger = LogManager.Setup().LoadConfigurationFromFile("NLog.config").GetCurrentClassLogger();
             try
             {
                 var dataArguments = new DataArguments(args);
+
+                // TODO: remove usage of static ConnectionConfig, replace it with instance with DI injection.
+                // Set the runtime configurable timeout
+                ConnectionConfig.TimeoutMs = dataArguments.TimeoutMs;
+
+                var consoleWriteLine = dataArguments.Transport switch
+                {
+                    Consts.MCP.Server.TransportMethod.stdio => (Action<string>)(message => Console.Error.WriteLine(message)),
+                    Consts.MCP.Server.TransportMethod.http => (Action<string>)(message => Console.WriteLine(message)),
+                    _ => throw new ArgumentException($"Unsupported transport method: {dataArguments.Transport}. " +
+                        $"Supported methods are: {Consts.MCP.Server.TransportMethod.stdio}, {Consts.MCP.Server.TransportMethod.http}")
+                };
+
+                consoleWriteLine("Location: " + Environment.CurrentDirectory);
+                consoleWriteLine($"Launch arguments: {string.Join(", ", args)}");
+                consoleWriteLine($"Parsed arguments: {JsonSerializer.Serialize(dataArguments, JsonOptions.Pretty)}");
+
                 var builder = WebApplication.CreateBuilder(args);
 
                 // Replace default logging with NLog
@@ -72,11 +90,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
                 else if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.http)
                 {
+                    // builder.Services.AddSingleton<IMcpServer, McpServer>();
                     // Configure HTTP transport
-                    mcpBuilder = mcpBuilder.WithHttpTransport(options =>
-                    {
-                        // none
-                    });
+                    mcpBuilder = mcpBuilder.WithHttpTransport();
+
+                    // Still need to enable STDIO, because `WithHttpTransport` doesn't inject IMcpServer into di container
+                    mcpBuilder = mcpBuilder.WithStdioServerTransport();
                 }
                 else
                 {
@@ -97,10 +116,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }).Build(new Reflector());
 
                 // builder.WebHost.UseUrls(Consts.Hub.DefaultEndpoint);
-
-                // TODO: remove usage of static ConnectionConfig, replace it with instance with DI injection.
-                // Set the runtime configurable timeout
-                ConnectionConfig.TimeoutMs = dataArguments.TimeoutMs;
 
                 builder.WebHost.UseKestrel(options =>
                 {
