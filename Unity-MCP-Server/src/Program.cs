@@ -50,7 +50,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 // builder.Logging.ClearProviders();
                 builder.Logging.AddNLog();
 
-
                 // Setup SignalR ---------------------------------------------------------------
 
                 builder.Services.AddSignalR(configure =>
@@ -87,13 +86,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     .WithCallToolHandler(ToolRouter.Call)
                     .WithListToolsHandler(ToolRouter.ListAll);
 
-                // --- Additional handlers for the future implementation
-                //.WithPromptsFromAssembly()
-                //.WithReadResourceHandler(ResourceRouter.ReadResource)
-                //.WithListResourcesHandler(ResourceRouter.ListResources)
-                //.WithListResourceTemplatesHandler(ResourceRouter.ListResourceTemplates);
-                // -----------------------------------------------------
-
                 if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.stdio)
                 {
                     // Configure all logs to go to stderr. This is needed for MCP STDIO server to work properly.
@@ -104,7 +96,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
                 else if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.http)
                 {
-                    // builder.Services.AddSingleton<IMcpServer, McpServer>();
                     // Configure HTTP transport
                     mcpBuilder = mcpBuilder.WithHttpTransport(options =>
                     {
@@ -159,7 +150,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 // Middleware ----------------------------------------------------------------
                 // ---------------------------------------------------------------------------
 
-                // Setup SignalR
+                // Setup SignalR ----------------------------------------------------
                 app.UseRouting();
                 app.MapHub<RemoteApp>(Consts.Hub.RemoteApp, options =>
                 {
@@ -168,11 +159,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     options.TransportMaxBufferSize = 1024 * 1024 * 10; // 10 MB
                 });
 
-                // Setup MCP client
+                // Setup MCP client -------------------------------------------------
                 if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.http)
                     app.MapMcp();
 
-                // Print logs
+                // Print logs -------------------------------------------------------
                 if (logger.IsEnabled(NLog.LogLevel.Debug))
                 {
                     var endpointDataSource = app.Services.GetRequiredService<Microsoft.AspNetCore.Routing.EndpointDataSource>();
@@ -182,7 +173,15 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     app.Use(async (context, next) =>
                     {
                         logger.Debug($"Request: {context.Request.Method} {context.Request.Path}");
-                        await next.Invoke();
+                        try
+                        {
+                            await next.Invoke();
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Error(ex, $"Error occurred while processing request: {context.Request.Method} {context.Request.Path}");
+                            throw;
+                        }
                         logger.Debug($"Response: {context.Response.StatusCode}");
                     });
                 }
