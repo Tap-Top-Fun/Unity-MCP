@@ -180,7 +180,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         catch (Exception ex)
                         {
                             logger.Error(ex, $"Error occurred while processing request: {context.Request.Method} {context.Request.Path}");
-                            throw;
                         }
                         logger.Debug($"Response: {context.Response.StatusCode}");
                     });
