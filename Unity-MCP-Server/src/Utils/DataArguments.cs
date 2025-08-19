@@ -16,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             PluginPort = Consts.Hub.DefaultPort;
             PluginTimeoutMs = Consts.Hub.DefaultTimeoutMs;
-            ClientTransport = Consts.MCP.Server.TransportMethod.stdio;
+            ClientTransport = Consts.MCP.Server.TransportMethod.http;
 
             ParseEnvironmentVariables(); // env variables - second priority
             ParseCommandLineArguments(args); // command line args - first priority (override previous values)

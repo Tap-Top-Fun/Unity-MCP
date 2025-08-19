@@ -21,13 +21,13 @@ Unity-MCP server is developed with idea of flexibility in mind, that is why it h
 **Command Line**
 
 ```bash
-./unity-mcp-server --client-transport http
+./unity-mcp-server
 ```
 
 **Docker**
 
 ```bash
-docker run -it --rm -p 80:80 -p 60606:60606 -e UNITY_MCP_CLIENT_TRANSPORT=http ivanmurzakdev/unity-mcp-server
+docker run -it --rm -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
 ```
 
 ### Variables
@@ -39,19 +39,19 @@ Doesn't matter what launch option you choose, all of them support custom configu
 | `UNITY_MCP_PLUGIN_PORT`     | `--plugin-port`       | **Plugin** -> **Server** connection port (default: 60606)                   |
 | `UNITY_MCP_PLUGIN_TIMEOUT`  | `--plugin-timeout`    | **Plugin** -> **Server** connection timeout (ms) (default: 10000)           |
 | `UNITY_MCP_CLIENT_PORT`     | `--client-port`       | **Client** -> **Server** connection port (default: 80)                      |
-| `UNITY_MCP_CLIENT_TRANSPORT`| `--client-transport`  | **Client** -> **Server** transport type: `stdio` or `http` (default: stdio) |
+| `UNITY_MCP_CLIENT_TRANSPORT`| `--client-transport`  | **Client** -> **Server** transport type: `stdio` or `http` (default: `http`) |
 
 ## Quick launch
 
 > If you don't need to deploy the `Unity-MCP Server` somewhere, and you want to use Unity Editor in pair with AI, you probably should be enough to use only `Unity-MCP Plugin` for Unity Editor. It installs relevant `Unity-MCP Server` automatically using Binary for your current operation system and CPU architecture.
 
-### Docker (recommended)
+### Using Docker (recommended)
 
 ```bash
 docker run -it --rm -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
 ```
 
-### Binary
+### Using Binary
 
 Download binary from the [GitHub releases page](https://github.com/IvanMurzak/Unity-MCP/releases). Unpack the zip archive and use command line to simply launch binary of the server for your target operation system and CPU architecture.
 
