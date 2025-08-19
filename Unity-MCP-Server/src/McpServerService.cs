@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
