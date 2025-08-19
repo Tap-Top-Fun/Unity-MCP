@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.Unity.MCP.Server.Utils
+namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
     public static class JsonOptions
     {
