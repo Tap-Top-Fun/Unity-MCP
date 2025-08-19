@@ -28,6 +28,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 var dataArguments = new DataArguments(args);
 
+                if (dataArguments.PluginPort == dataArguments.ClientPort)
+                {
+                    throw new ArgumentException($"Plugin port ({dataArguments.PluginPort}) and client port ({dataArguments.ClientPort}) cannot be the same.");
+                }
+
                 // TODO: remove usage of static ConnectionConfig, replace it with instance with DI injection.
                 // Set the runtime configurable timeout
                 ConnectionConfig.TimeoutMs = dataArguments.PluginTimeoutMs;
@@ -143,12 +148,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 builder.WebHost.UseKestrel(options =>
                 {
-                    // --- MCP plugin port ---
-                    options.ListenLocalhost(dataArguments.PluginPort);
                     options.ListenAnyIP(dataArguments.PluginPort);
-
-                    // --- MCP client port ---
-                    options.ListenLocalhost(dataArguments.ClientPort);
                     options.ListenAnyIP(dataArguments.ClientPort);
                 });
 
