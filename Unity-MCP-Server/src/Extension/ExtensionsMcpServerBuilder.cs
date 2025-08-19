@@ -8,7 +8,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public static IMcpPluginBuilder WithServerFeatures(this IMcpPluginBuilder builder, DataArguments dataArguments)
         {
             builder.Services.AddRouting();
-            if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.stdio)
+            if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.stdio)
                 builder.Services.AddHostedService<McpServerService>();
 
             builder.Services.AddSingleton<EventAppToolsChange>();

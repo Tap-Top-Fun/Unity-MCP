@@ -1,15 +1,15 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using com.IvanMurzak.Unity.MCP.Common;
-using NLog.Extensions.Logging;
-using NLog;
-using System;
+﻿using System;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using NLog;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Server.Utils;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -30,13 +30,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 // TODO: remove usage of static ConnectionConfig, replace it with instance with DI injection.
                 // Set the runtime configurable timeout
-                ConnectionConfig.TimeoutMs = dataArguments.TimeoutMs;
+                ConnectionConfig.TimeoutMs = dataArguments.PluginTimeoutMs;
 
-                var consoleWriteLine = dataArguments.Transport switch
+                var consoleWriteLine = dataArguments.ClientTransport switch
                 {
                     Consts.MCP.Server.TransportMethod.stdio => (Action<string>)(message => Console.Error.WriteLine(message)),
                     Consts.MCP.Server.TransportMethod.http => (Action<string>)(message => Console.WriteLine(message)),
-                    _ => throw new ArgumentException($"Unsupported transport method: {dataArguments.Transport}. " +
+                    _ => throw new ArgumentException($"Unsupported transport method: {dataArguments.ClientTransport}. " +
                         $"Supported methods are: {Consts.MCP.Server.TransportMethod.stdio}, {Consts.MCP.Server.TransportMethod.http}")
                 };
 
@@ -86,7 +86,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     .WithCallToolHandler(ToolRouter.Call)
                     .WithListToolsHandler(ToolRouter.ListAll);
 
-                if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.stdio)
+                if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.stdio)
                 {
                     // Configure all logs to go to stderr. This is needed for MCP STDIO server to work properly.
                     builder.Logging.AddConsole(consoleLogOptions => consoleLogOptions.LogToStandardErrorThreshold = LogLevel.Trace);
@@ -94,7 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     // Configure STDIO transport
                     mcpBuilder = mcpBuilder.WithStdioServerTransport();
                 }
-                else if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.http)
+                else if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
                 {
                     // Configure HTTP transport
                     mcpBuilder = mcpBuilder.WithHttpTransport(options =>
@@ -135,7 +135,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
                 else
                 {
-                    throw new ArgumentException($"Unsupported transport method: {dataArguments.Transport}. " +
+                    throw new ArgumentException($"Unsupported transport method: {dataArguments.ClientTransport}. " +
                         $"Supported methods are: {Consts.MCP.Server.TransportMethod.stdio}, {Consts.MCP.Server.TransportMethod.http}");
                 }
 
@@ -143,13 +143,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 builder.WebHost.UseKestrel(options =>
                 {
-                    // MCP client port 5000
-                    options.ListenLocalhost(5000);
-                    options.ListenAnyIP(5000);
+                    // --- MCP plugin port ---
+                    options.ListenLocalhost(dataArguments.PluginPort);
+                    options.ListenAnyIP(dataArguments.PluginPort);
 
-                    // MCP plugin port
-                    options.ListenLocalhost(dataArguments.Port);
-                    options.ListenAnyIP(dataArguments.Port);
+                    // --- MCP client port ---
+                    options.ListenLocalhost(dataArguments.ClientPort);
+                    options.ListenAnyIP(dataArguments.ClientPort);
                 });
 
                 var app = builder.Build();
@@ -167,7 +167,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 });
 
                 // Setup MCP client -------------------------------------------------
-                if (dataArguments.Transport == Consts.MCP.Server.TransportMethod.http)
+                if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
                     app.MapMcp();
 
                 // Print logs -------------------------------------------------------
