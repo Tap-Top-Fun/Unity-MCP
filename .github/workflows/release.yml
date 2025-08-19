@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
 
       - name: Get version from package.json
         id: get_version
@@ -167,6 +169,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [
       check-version-tag,
+      build-and-zip-mcp-server,
       test-unity-2022-3-61f1-editmode,
       test-unity-2022-3-61f1-playmode,
       test-unity-2022-3-61f1-standalone,
@@ -182,8 +185,11 @@ jobs:
       version: ${{ needs.check-version-tag.outputs.version }}
       success: ${{ steps.rel_desc.outputs.success }}
     steps:
-      - name: Fetch all history and tags
-        run: git fetch --unshallow --tags || git fetch --all --tags
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Generate release description
         id: rel_desc
