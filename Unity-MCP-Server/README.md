@@ -28,6 +28,18 @@ The default the transport method is `http`, that is why the port `80` should be 
 docker run -it --rm -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
 ```
 
+MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "Unity-MCP": {
+      "url": "http://localhost:80"
+    }
+  }
+}
+```
+
 #### Use STDIO
 
 The `80` port is not needed for STDIO, because it uses the STDIO to communicate with **Client**. It is a good setup for using in a client with automatic installation and launching. Because this docker command loads the image from docker hub and launches immediately.
@@ -36,10 +48,44 @@ The `80` port is not needed for STDIO, because it uses the STDIO to communicate 
 docker run -it --rm -e UNITY_MCP_CLIENT_TRANSPORT=stdio -p 60606:60606 ivanmurzakdev/unity-mcp-server
 ```
 
+MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "Unity-MCP": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-it",
+        "--rm",
+        "-e",
+        "UNITY_MCP_CLIENT_TRANSPORT=stdio",
+        "-p",
+        "60606:60606",
+        "ivanmurzakdev/unity-mcp-server"
+      ]
+    }
+  }
+}
+```
+
 #### Custom plugin port
 
 ```bash
 docker run -it --rm -e UNITY_MCP_PLUGIN_PORT=123 -p 80:80 -p 123:123 ivanmurzakdev/unity-mcp-server
+```
+
+MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "Unity-MCP": {
+      "url": "http://localhost:80"
+    }
+  }
+}
 ```
 
 Port forwarding is need for the launch with docker `-p 80:80` for client and `-p 60606:60606` for plugin.
@@ -50,10 +96,25 @@ Port forwarding is need for the launch with docker `-p 80:80` for client and `-p
 
 Download binary from the [GitHub releases page](https://github.com/IvanMurzak/Unity-MCP/releases). Unpack the zip archive and use command line to simply launch binary of the server for your target operation system and CPU architecture.
 
-#### Default launch
+#### Default launch (STDIO)
 
 ```bash
-./unity-mcp-server
+./unity-mcp-server --client-transport stdio
+```
+
+MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "Unity-MCP": {
+      "command": "C:/Projects/Unity/Unity-MCP/Unity-MCP-Plugin/Library/mcp-server/win-x64/unity-mcp-server.exe",
+      "args": [
+        "--client-transport stdio"
+      ]
+    }
+  }
+}
 ```
 
 #### Launch STDIO (Local)
@@ -64,12 +125,46 @@ Launch server with STDIO transport type for local usage on the same machine with
 ./unity-mcp-server --plugin-port 60606 --plugin-timeout 10000 --client-transport stdio
 ```
 
+MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "Unity-MCP": {
+      "command": "C:/Projects/Unity/Unity-MCP/Unity-MCP-Plugin/Library/mcp-server/win-x64/unity-mcp-server.exe",
+      "args": [
+        "--plugin-port 60606",
+        "--plugin-timeout 10000",
+        "--client-transport stdio"
+      ]
+    }
+  }
+}
+```
+
 #### Launch HTTP(S) (Local OR Remote)
 
 Launch server with HTTP transport type for local OR remote usage using HTTP(S) url.
 
 ```bash
 ./unity-mcp-server --plugin-port 60606 --plugin-timeout 10000 --client-transport http
+```
+
+MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "Unity-MCP": {
+      "command": "C:/Projects/Unity/Unity-MCP/Unity-MCP-Plugin/Library/mcp-server/win-x64/unity-mcp-server.exe",
+      "args": [
+        "--plugin-port 60606",
+        "--plugin-timeout 10000",
+        "--client-transport http"
+      ]
+    }
+  }
+}
 ```
 
 ---

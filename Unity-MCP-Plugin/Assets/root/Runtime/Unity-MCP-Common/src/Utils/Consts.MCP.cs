@@ -46,9 +46,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
                                 ["command"] = executablePath,
                                 ["args"] = new JsonArray
                                 {
-                                    $"{Args.PluginPort} {port}",
-                                    $"{Args.PluginTimeout} {timeoutMs}",
-                                    $"{Args.ClientTransportMethod} {TransportMethod.stdio}"
+                                    $"{Args.PluginPort}={port}",
+                                    $"{Args.PluginTimeout}={timeoutMs}",
+                                    $"{Args.ClientTransportMethod}={TransportMethod.stdio}"
                                 }
                             }
                         }

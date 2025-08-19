@@ -149,7 +149,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 builder.WebHost.UseKestrel(options =>
                 {
                     options.ListenAnyIP(dataArguments.PluginPort);
-                    options.ListenAnyIP(dataArguments.ClientPort);
+                    if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
+                        options.ListenAnyIP(dataArguments.ClientPort);
                 });
 
                 var app = builder.Build();
