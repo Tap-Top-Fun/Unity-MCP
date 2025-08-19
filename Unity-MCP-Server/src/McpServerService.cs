@@ -29,8 +29,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public static McpServerService? Instance { get; private set; }
 
-        public McpServerService(ILogger<McpServerService> logger, IMcpServer mcpServer, IMcpRunner mcpRunner,
-            IToolRunner toolRunner, IResourceRunner resourceRunner, EventAppToolsChange eventAppToolsChange)
+        public McpServerService(
+            ILogger<McpServerService> logger,
+            IMcpServer mcpServer,
+            IMcpRunner mcpRunner,
+            IToolRunner toolRunner,
+            IResourceRunner resourceRunner,
+            EventAppToolsChange eventAppToolsChange)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("{0} Ctor.", GetType().GetTypeShortName());
@@ -40,8 +45,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _resourceRunner = resourceRunner ?? throw new ArgumentNullException(nameof(resourceRunner));
             _eventAppToolsChange = eventAppToolsChange ?? throw new ArgumentNullException(nameof(eventAppToolsChange));
 
-            if (Instance != null)
-                throw new InvalidOperationException($"{typeof(McpServerService).Name} is already initialized.");
+            // if (Instance != null)
+            //     throw new InvalidOperationException($"{typeof(McpServerService).Name} is already initialized.");
             Instance = this;
         }
 
@@ -60,7 +65,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             _logger.LogTrace("{0} StopAsync.", GetType().GetTypeShortName());
             _disposables.Clear();
-            Instance = null;
+            if (Instance == this)
+                Instance = null;
             return McpPlugin.StaticDisposeAsync();
         }
 
@@ -69,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _logger.LogTrace("{0} OnListToolUpdated", GetType().GetTypeShortName());
             try
             {
-                await _mcpServer.SendNotificationAsync(NotificationMethods.ToolListChangedNotification, cancellationToken);
+                await McpServer.SendNotificationAsync(NotificationMethods.ToolListChangedNotification, cancellationToken);
             }
             catch (Exception ex)
             {

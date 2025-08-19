@@ -1,13 +1,7 @@
-using System.Text.Json.Nodes;
-
 namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class Consts
     {
-        // public const string All = "*";
-        // public const string AllRecursive = "**";
-        // public const string PackageName = "com.ivanmurzak.unity.mcp";
-
         public static class Guid
         {
             public const string Zero = "00000000-0000-0000-0000-000000000000";
@@ -20,39 +14,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 public const string Success = "[Success]";
                 public const string Error = "[Error]";
                 public const string Cancel = "[Cancel]";
-            }
-        }
-        public static class MCP
-        {
-            public const int LinesLimit = 1000;
-            public static class Args
-            {
-                public const string Port = "--port";
-                public const string Timeout = "--timeout";
-            }
-
-            public static JsonNode Config(
-                string executablePath,
-                string serverName = "Unity-MCP",
-                string bodyName = "mcpServers",
-                int port = Hub.DefaultPort,
-                int timeoutMs = Hub.DefaultTimeoutMs)
-            {
-                return new JsonObject
-                {
-                    [bodyName] = new JsonObject
-                    {
-                        [serverName] = new JsonObject
-                        {
-                            ["command"] = executablePath,
-                            ["args"] = new JsonArray
-                            {
-                                $"{Args.Port}={port}",
-                                $"{Args.Timeout}={timeoutMs}"
-                            }
-                        }
-                    }
-                };
             }
         }
     }

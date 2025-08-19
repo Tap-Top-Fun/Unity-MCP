@@ -171,12 +171,13 @@ openupm add com.ivanmurzak.unity.mcp
 
 ![Unity_AI](https://github.com/user-attachments/assets/e8049620-6614-45f1-92d7-cc5d00a6b074)
 
-3. Install MCP client
-> - [Install Cursor](https://www.cursor.com/) (recommended)
+3. Install one of MCP clients
+> - [Install VS Code](https://www.cursor.com/) (recommended)
+> - [Install Cursor](https://www.cursor.com/)
 > - [Install Claude](https://claude.ai/download)
 
-4. Sign-in into MCP client
-5. Click `Configure` at your MCP client.
+1. Sign-in into MCP client
+2. Click `Configure` at your MCP client.
 
 ![image](https://github.com/user-attachments/assets/19f80179-c5b3-4e9c-bdf6-07edfb773018)
 
@@ -187,6 +188,10 @@ openupm add com.ivanmurzak.unity.mcp
   ```text
   Explain my scene hierarchy
   ```
+
+# Advanced MCP server setup
+
+Unity-MCP server supports many different launch options and docker docker deployment. Both transport protocol are supported `http` and `stdio`. [Read more...](https://github.com/IvanMurzak/Unit-MCP/blob/main/Unity-MCP-Server/README.md)
 
 # Add custom `tool`
 
@@ -238,7 +243,6 @@ public class Tool_GameObject
 # Running PlayMode tests
 
 To be able to run Play Mode tests via the TestRunner MCP tool, you should consider configuring Unity to **not** perform a domain reload when entering Play Mode (`Edit -> Project Settings -> Editor -> Enter Play Mode Settings` - set to `Reload Scene only` or `Do not reload Domain or Scene`). Otherwise, starting the Play Mode tests will interrupt the TestRunner MCP tool, leading to a cycle of tests restarting.
-
 
 # Contribution
 

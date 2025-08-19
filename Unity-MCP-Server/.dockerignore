@@ -1,0 +1,7 @@
+.vscode
+bin
+obj
+publish
+build-all.ps1
+build-all.sh
+Server.sln

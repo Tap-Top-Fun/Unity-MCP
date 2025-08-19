@@ -17,11 +17,22 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 if (!isFlag)
                     continue;
 
+                if (args[current].Contains("="))
+                {
+                    // Handle flags with '=' syntax
+                    var parts = args[current].Split('=');
+                    if (parts.Length == 2)
+                    {
+                        providedArguments[parts[0].TrimStart('-')] = parts[1];
+                        continue;
+                    }
+                }
+
                 var flag = args[current].TrimStart('-');
 
                 // Parse optional value
                 var flagHasValue = next < args.Length && !args[next].StartsWith("-");
-                var value = flagHasValue ? args[next].TrimStart('-') : "";
+                var value = flagHasValue ? args[next].TrimStart('-') : string.Empty;
 
                 providedArguments[flag] = value;
             }

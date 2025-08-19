@@ -66,7 +66,7 @@ Searching is case insensitive.")]
 
             for (var i = 0; i < assetGuids.Length; i++)
             {
-                if (i >= Consts.MCP.LinesLimit)
+                if (i >= Consts.MCP.Plugin.LinesLimit)
                 {
                     stringBuilder.AppendLine($"... and {assetGuids.Length - i} more assets. Use {nameof(searchInFolders)} parameter to specify request.");
                     break;
