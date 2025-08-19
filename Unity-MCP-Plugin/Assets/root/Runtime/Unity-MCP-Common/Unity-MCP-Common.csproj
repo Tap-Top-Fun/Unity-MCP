@@ -7,7 +7,25 @@
     <Nullable>enable</Nullable>
     <LangVersion>9.0</LangVersion>
     <OutputPath>../../../../Temp/bin/$(Configuration)</OutputPath>
+
+    <!-- NuGet Package Information -->
+    <PackageId>com.IvanMurzak.Unity.MCP.Common</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Ivan Murzak</Authors>
+    <Copyright>Copyright © Ivan Murzak 2025</Copyright>
+    <Description>Shared code between Unity-MCP-Plugin and Unity-MCP-Server projects.</Description>
+    <PackageTags>Unity;Unity-MCP;MCP;AI</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/IvanMurzak/Unity-MCP</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/IvanMurzak/Unity-MCP</PackageProjectUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="./README.md" Pack="true" PackagePath="/" />
+    <None Include="./LICENSE" Pack="true" PackagePath="/" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="com.IvanMurzak.ReflectorNet" Version="1.0.4" />
