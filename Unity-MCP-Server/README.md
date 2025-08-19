@@ -18,17 +18,61 @@ Model Context Protocol implementation for Unity Editor and for games made with U
 
 Unity-MCP server is developed with idea of flexibility in mind, that is why it has many launch options.
 
-**Command Line**
+### Option: Using Docker (recommended)
+
+#### Default launch
+
+The default the transport method is `http`, that is why the port `80` should be forwarded.
+
+```bash
+docker run -it --rm -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
+```
+
+#### Use STDIO
+
+The `80` port is not needed for STDIO, because it uses the STDIO to communicate with **Client**. It is a good setup for using in a client with automatic installation and launching. Because this docker command loads the image from docker hub and launches immediately.
+
+```bash
+docker run -it --rm -e UNITY_MCP_CLIENT_TRANSPORT=stdio -p 60606:60606 ivanmurzakdev/unity-mcp-server
+```
+
+#### Custom plugin port
+
+```bash
+docker run -it --rm -e UNITY_MCP_PLUGIN_PORT=123 -p 80:80 -p 123:123 ivanmurzakdev/unity-mcp-server
+```
+
+Port forwarding is need for the launch with docker `-p 80:80` for client and `-p 60606:60606` for plugin.
+
+---
+
+### Option: Using binary file
+
+Download binary from the [GitHub releases page](https://github.com/IvanMurzak/Unity-MCP/releases). Unpack the zip archive and use command line to simply launch binary of the server for your target operation system and CPU architecture.
+
+#### Default launch
 
 ```bash
 ./unity-mcp-server
 ```
 
-**Docker**
+#### Launch STDIO (Local)
+
+Launch server with STDIO transport type for local usage on the same machine with Unity Editor.
 
 ```bash
-docker run -it --rm -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
+./unity-mcp-server --plugin-port 60606 --plugin-timeout 10000 --client-transport stdio
 ```
+
+#### Launch HTTP(S) (Local OR Remote)
+
+Launch server with HTTP transport type for local OR remote usage using HTTP(S) url.
+
+```bash
+./unity-mcp-server --plugin-port 60606 --plugin-timeout 10000 --client-transport http
+```
+
+---
 
 ### Variables
 
@@ -40,47 +84,3 @@ Doesn't matter what launch option you choose, all of them support custom configu
 | `UNITY_MCP_PLUGIN_TIMEOUT`  | `--plugin-timeout`    | **Plugin** -> **Server** connection timeout (ms) (default: 10000)           |
 | `UNITY_MCP_CLIENT_PORT`     | `--client-port`       | **Client** -> **Server** connection port (default: 80)                      |
 | `UNITY_MCP_CLIENT_TRANSPORT`| `--client-transport`  | **Client** -> **Server** transport type: `stdio` or `http` (default: `http`) |
-
-## Quick launch
-
-> If you don't need to deploy the `Unity-MCP Server` somewhere, and you want to use Unity Editor in pair with AI, you probably should be enough to use only `Unity-MCP Plugin` for Unity Editor. It installs relevant `Unity-MCP Server` automatically using Binary for your current operation system and CPU architecture.
-
-### Using Docker (recommended)
-
-```bash
-docker run -it --rm -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
-```
-
-### Using Binary
-
-Download binary from the [GitHub releases page](https://github.com/IvanMurzak/Unity-MCP/releases). Unpack the zip archive and use command line to simply launch binary of the server for your target operation system and CPU architecture.
-
-## Launch STDIO (Local)
-
-Launch server with STDIO transport type for local usage on the same machine with Unity Editor.
-
-```bash
-./unity-mcp-server --plugin-port 60606 --plugin-timeout 10000 --client-transport stdio
-```
-
-## Launch HTTP(S) (Local OR Remote)
-
-Launch server with HTTP transport type for local OR remote usage using HTTP(S) url.
-
-```bash
-./unity-mcp-server --plugin-port 60606 --plugin-timeout 10000 --client-transport http
-```
-
-## Launch using Docker
-
-```bash
-docker run -it --rm -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
-```
-
-Use environment variables to customize settings
-
-```bash
-docker run -it --rm -e UNITY_MCP_PLUGIN_PORT=60606 -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
-```
-
-
