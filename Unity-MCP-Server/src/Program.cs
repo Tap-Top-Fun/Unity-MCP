@@ -148,9 +148,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 builder.WebHost.UseKestrel(options =>
                 {
+                    logger.Info($"Start listening on port: {dataArguments.PluginPort}");
                     options.ListenAnyIP(dataArguments.PluginPort);
+
                     if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
+                    {
+                        logger.Info($"Start listening on port: {dataArguments.ClientPort}");
                         options.ListenAnyIP(dataArguments.ClientPort);
+                    }
                 });
 
                 var app = builder.Build();
