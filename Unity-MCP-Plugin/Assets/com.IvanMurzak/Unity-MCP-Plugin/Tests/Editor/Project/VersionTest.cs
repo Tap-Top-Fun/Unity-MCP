@@ -56,10 +56,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 }
             }
 
-            // Fallback: try to read from Assets/com.IvanMurzak.Unity.MCP/package.json (for source project testing)
+            // Fallback: try to read from Assets/com.IvanMurzak/Unity-MCP-Plugin/package.json (for source project testing)
             if (string.IsNullOrEmpty(packageJsonContent))
             {
-                var fallbackPath = Path.Combine(Application.dataPath, "com.IvanMurzak.Unity.MCP", "package.json");
+                var fallbackPath = Path.Combine(Application.dataPath, "com.IvanMurzak/Unity-MCP-Plugin", "package.json");
                 if (File.Exists(fallbackPath))
                 {
                     packageJsonContent = File.ReadAllText(fallbackPath);
@@ -70,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
             // Ensure we found a package.json file
             Assert.IsFalse(string.IsNullOrEmpty(packageJsonContent),
-                $"package.json not found. Tried PackageManager location and fallback path: Assets/com.IvanMurzak.Unity.MCP/package.json");
+                $"package.json not found. Tried PackageManager location and fallback path: Assets/com.IvanMurzak/Unity-MCP-Plugin/package.json");
 
             // Parse JSON to extract version
             var packageJson = JsonUtility.FromJson<PackageJsonData>(packageJsonContent);

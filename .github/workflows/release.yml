@@ -21,7 +21,7 @@ jobs:
       - name: Get version from package.json
         id: get_version
         run: |
-          version=$(grep '"version"' Unity-MCP-Plugin/Assets/com.IvanMurzak.Unity.MCP/package.json | head -1 | sed -E 's/.*"([0-9.]+)".*/\1/')
+          version=$(grep '"version"' Unity-MCP-Plugin/Assets/com.IvanMurzak/Unity-MCP-Plugin/package.json | head -1 | sed -E 's/.*"([0-9.]+)".*/\1/')
           echo "version: $version"
           echo "version=$version" >> $GITHUB_OUTPUT
 
