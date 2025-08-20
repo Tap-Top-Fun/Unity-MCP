@@ -7,7 +7,7 @@ using UnityEngine;
 namespace com.IvanMurzak.Unity.MCP.EditorInstaller
 {
     [InitializeOnLoad]
-    public static class ScopedRegistrySetup
+    public static partial class ScopedRegistrySetup
     {
         const string RegistryName = "package.openupm.com";
         const string RegistryUrl = "https://package.openupm.com";
@@ -19,7 +19,6 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
 
         static string ManifestPath => Path.Combine(Application.dataPath, "../Packages/manifest.json");
         static string DependencyPackagePathRelative => "Assets/com.IvanMurzak/Unity-MCP-Installer/dependencies.unitypackage";
-        static string DependencyPackagePath => Path.Combine(Application.dataPath, DependencyPackagePathRelative);
 
         static ScopedRegistrySetup()
         {
@@ -44,21 +43,6 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
             {
                 Debug.Log($"dependencies.unitypackage not found at {packagePath}");
             }
-        }
-
-
-        [System.Serializable]
-        private class ManifestFile
-        {
-            public ScopedRegistry[]? scopedRegistries = new ScopedRegistry[0];
-        }
-
-        [System.Serializable]
-        private class ScopedRegistry
-        {
-            public string? name;
-            public string? url;
-            public string[]? scopes;
         }
 
         private static void AddScopedRegistryIfNeeded(string name, string url, string[] packageIds)
@@ -90,14 +74,15 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
             if (manifest.scopedRegistries == null)
                 manifest.scopedRegistries = new ScopedRegistry[0];
 
-            bool alreadyExists = manifest.scopedRegistries.Any(r => r.name == name && r.url == url);
-            if (!alreadyExists)
+            var registry = manifest.scopedRegistries.FirstOrDefault(r => r.url == url);
+            if (registry == null)
             {
+                // Add new registry
                 var newRegistry = new ScopedRegistry
                 {
                     name = name,
                     url = url,
-                    scopes = packageIds
+                    scopes = packageIds.ToArray()
                 };
                 var list = manifest.scopedRegistries.ToList();
                 list.Add(newRegistry);
@@ -108,7 +93,35 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
             }
             else
             {
-                Debug.Log("Scoped registry already exists.");
+                // Add missing packageIds to existing registry
+                if (registry.scopes == null)
+                {
+                    registry.scopes = packageIds.ToArray();
+                }
+                else
+                {
+                    var scopesSet = registry.scopes.ToList();
+                    var changed = false;
+                    foreach (var id in packageIds)
+                    {
+                        if (!scopesSet.Contains(id))
+                        {
+                            scopesSet.Add(id);
+                            changed = true;
+                        }
+                    }
+                    if (changed)
+                    {
+                        registry.scopes = scopesSet.ToArray();
+                        var newJson = JsonUtility.ToJson(manifest, true);
+                        File.WriteAllText(manifestPath, newJson);
+                        Debug.Log("Updated existing scoped registry with new package ids.");
+                    }
+                    else
+                    {
+                        Debug.Log("Scoped registry already exists with all package ids.");
+                    }
+                }
             }
         }
     }
