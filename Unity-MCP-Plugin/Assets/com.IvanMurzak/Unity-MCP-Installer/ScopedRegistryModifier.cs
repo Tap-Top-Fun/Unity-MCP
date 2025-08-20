@@ -1,4 +1,6 @@
+#nullable enable
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using UnityEditor;
@@ -11,16 +13,43 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
     {
         const string RegistryName = "package.openupm.com";
         const string RegistryUrl = "https://package.openupm.com";
-        const string PackageId = "org.nuget";
+        static readonly string[] PackageIds = new string[] {
+            "org.nuget",
+            "com.IvanMurzak",
+            "extensions.unity"
+        };
+
+        static string ManifestPath => Path.Combine(Application.dataPath, "../Packages/manifest.json");
+        static string DependencyPackagePath => Path.Combine(Application.dataPath, "Assets/com.IvanMurzak/Unity-MCP-Installer/dependencies.unitypackage");
 
         static ScopedRegistrySetup()
         {
-            AddScopedRegistryIfNeeded(RegistryName, RegistryUrl, PackageId);
+            AddScopedRegistryIfNeeded(RegistryName, RegistryUrl, PackageIds);
+            TryImportDependenciesUnityPackage();
         }
 
-        private static void AddScopedRegistryIfNeeded(string name, string url, string packageId)
+        /// <summary>
+        /// Attempts to import dependencies.unitypackage from the project root if it exists.
+        /// </summary>
+        public static void TryImportDependenciesUnityPackage()
         {
-            var manifestPath = Path.Combine(Application.dataPath, "../Packages/manifest.json");
+            // Project root is one level above Assets
+            var packagePath = DependencyPackagePath;
+            if (File.Exists(packagePath))
+            {
+                AssetDatabase.ImportPackage(packagePath, false); // false = do not show import window
+                Debug.Log($"Imported {packagePath}");
+                AssetDatabase.DeleteAsset(packagePath);
+            }
+            else
+            {
+                Debug.Log($"dependencies.unitypackage not found at {packagePath}");
+            }
+        }
+
+        private static void AddScopedRegistryIfNeeded(string name, string url, string[] packageIds)
+        {
+            var manifestPath = ManifestPath;
             if (!File.Exists(manifestPath))
             {
                 Debug.LogError("manifest.json not found!");
@@ -59,7 +88,7 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
                 {
                     ["name"] = name,
                     ["url"] = url,
-                    ["scopes"] = new JsonArray(packageId)
+                    ["scopes"] = new JsonArray(packageIds.Select(id => (JsonNode)id).ToArray())
                 };
 
                 registries.Add(newRegistry);
