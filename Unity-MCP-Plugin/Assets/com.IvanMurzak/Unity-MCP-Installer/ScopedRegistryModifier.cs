@@ -1,8 +1,6 @@
 #nullable enable
 using System.IO;
 using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,7 +18,8 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
         };
 
         static string ManifestPath => Path.Combine(Application.dataPath, "../Packages/manifest.json");
-        static string DependencyPackagePath => Path.Combine(Application.dataPath, "Assets/com.IvanMurzak/Unity-MCP-Installer/dependencies.unitypackage");
+        static string DependencyPackagePathRelative => "Assets/com.IvanMurzak/Unity-MCP-Installer/dependencies.unitypackage";
+        static string DependencyPackagePath => Path.Combine(Application.dataPath, DependencyPackagePathRelative);
 
         static ScopedRegistrySetup()
         {
@@ -34,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
         public static void TryImportDependenciesUnityPackage()
         {
             // Project root is one level above Assets
-            var packagePath = DependencyPackagePath;
+            var packagePath = DependencyPackagePathRelative;
             if (File.Exists(packagePath))
             {
                 AssetDatabase.ImportPackage(packagePath, false); // false = do not show import window
@@ -47,6 +46,21 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
             }
         }
 
+
+        [System.Serializable]
+        private class ManifestFile
+        {
+            public ScopedRegistry[]? scopedRegistries = new ScopedRegistry[0];
+        }
+
+        [System.Serializable]
+        private class ScopedRegistry
+        {
+            public string? name;
+            public string? url;
+            public string[]? scopes;
+        }
+
         private static void AddScopedRegistryIfNeeded(string name, string url, string[] packageIds)
         {
             var manifestPath = ManifestPath;
@@ -57,43 +71,39 @@ namespace com.IvanMurzak.Unity.MCP.EditorInstaller
             }
 
             var jsonText = File.ReadAllText(manifestPath);
-            var root = JsonNode.Parse(jsonText)?.AsObject();
-            if (root == null)
+            ManifestFile? manifest = null;
+            try
+            {
+                manifest = JsonUtility.FromJson<ManifestFile>(jsonText);
+            }
+            catch
+            {
+                Debug.LogError("Failed to parse manifest.json with JsonUtility");
+                return;
+            }
+            if (manifest == null)
             {
                 Debug.LogError("Failed to parse manifest.json");
                 return;
             }
 
-            var registries = root["scopedRegistries"] as JsonArray;
-            if (registries == null)
-            {
-                registries = new JsonArray();
-                root["scopedRegistries"] = registries;
-            }
+            if (manifest.scopedRegistries == null)
+                manifest.scopedRegistries = new ScopedRegistry[0];
 
-            var alreadyExists = false;
-            foreach (var registryNode in registries)
-            {
-                var registry = registryNode as JsonObject;
-                if (registry?["name"]?.ToString() == name && registry["url"]?.ToString() == url)
-                {
-                    alreadyExists = true;
-                    break;
-                }
-            }
-
+            bool alreadyExists = manifest.scopedRegistries.Any(r => r.name == name && r.url == url);
             if (!alreadyExists)
             {
-                var newRegistry = new JsonObject
+                var newRegistry = new ScopedRegistry
                 {
-                    ["name"] = name,
-                    ["url"] = url,
-                    ["scopes"] = new JsonArray(packageIds.Select(id => (JsonNode)id).ToArray())
+                    name = name,
+                    url = url,
+                    scopes = packageIds
                 };
-
-                registries.Add(newRegistry);
-                var options = new JsonSerializerOptions { WriteIndented = true };
-                File.WriteAllText(manifestPath, root.ToJsonString(options));
+                var list = manifest.scopedRegistries.ToList();
+                list.Add(newRegistry);
+                manifest.scopedRegistries = list.ToArray();
+                var newJson = JsonUtility.ToJson(manifest, true);
+                File.WriteAllText(manifestPath, newJson);
                 Debug.Log("Scoped registry added.");
             }
             else
