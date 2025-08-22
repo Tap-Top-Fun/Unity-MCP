@@ -90,8 +90,10 @@ MonoBehaviour:
     - org.nuget.system.text.json
     - org.nuget.system.threading.channels
     - org.nuget.system.threading.tasks.extensions
-    - org.nuget
     - com.ivanmurzak
+    - org.nuget.com.ivanmurzak
+    - org.nuget.microsoft
+    - org.nuget.system
     - extensions.unity
     m_IsDefault: 0
     m_Capabilities: 0
