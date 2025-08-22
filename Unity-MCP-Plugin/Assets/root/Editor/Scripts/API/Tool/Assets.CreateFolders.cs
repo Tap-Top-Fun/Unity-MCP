@@ -1,4 +1,13 @@
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+/*
+┌──────────────────────────────────────────────────────────────────┐
+│  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
+│  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
+│  Copyright (c) 2025 Ivan Murzak                                  │
+│  Licensed under the Apache License, Version 2.0.                 │
+│  See the LICENSE file in the project root for more information.  │
+└──────────────────────────────────────────────────────────────────┘
+*/
+#nullable enable
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -37,15 +46,9 @@ Use it to organize scripts and assets in the project. Does AssetDatabase.Refresh
                     stringBuilder.AppendLine(Error.SourcePathIsEmpty());
                     continue;
                 }
-                try
-                {
-                    Directory.CreateDirectory(paths[i]);
-                    stringBuilder.AppendLine($"[Success] Created folder at {paths[i]}.");
-                }
-                catch (Exception e)
-                {
-                    stringBuilder.AppendLine($"[Error] Failed to create folder at {paths[i]}: {e.Message}");
-                }
+
+
+#nullable enable
             }
 
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
