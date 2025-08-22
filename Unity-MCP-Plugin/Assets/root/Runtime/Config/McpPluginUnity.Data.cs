@@ -1,31 +1,37 @@
-using System;
+/*
+┌──────────────────────────────────────────────────────────────────┐
+│  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
+│  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
+│  Copyright (c) 2025 Ivan Murzak                                  │
+│  Licensed under the Apache License, Version 2.0.                 │
+│  See the LICENSE file in the project root for more information.  │
+└──────────────────────────────────────────────────────────────────┘
+*/
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
-using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP
 {
     public partial class McpPluginUnity
     {
-        [Serializable]
         public class Data
         {
             public const int DefaultPort = 60606;
             public const string DefaultHost = "http://localhost:60606";
 
-            [SerializeField] public string host = DefaultHost;
-            [SerializeField] public int port = Consts.Hub.DefaultPort;
-            [SerializeField] public bool keepConnected = true;
-            [SerializeField] public LogLevel logLevel = LogLevel.Warning;
-            [SerializeField] public int timeoutMs = Consts.Hub.DefaultTimeoutMs;
+            public string Host { get; set; } = DefaultHost;
+            public int Port { get; set; } = Consts.Hub.DefaultPort;
+            public bool KeepConnected { get; set; } = true;
+            public LogLevel LogLevel { get; set; } = LogLevel.Warning;
+            public int TimeoutMs { get; set; } = Consts.Hub.DefaultTimeoutMs;
 
             public Data SetDefault()
             {
-                host = DefaultHost;
-                port = Consts.Hub.DefaultPort;
-                keepConnected = true;
-                logLevel = LogLevel.Warning;
-                timeoutMs = Consts.Hub.DefaultTimeoutMs;
+                Host = DefaultHost;
+                Port = Consts.Hub.DefaultPort;
+                KeepConnected = true;
+                LogLevel = LogLevel.Warning;
+                TimeoutMs = Consts.Hub.DefaultTimeoutMs;
                 return this;
             }
         }

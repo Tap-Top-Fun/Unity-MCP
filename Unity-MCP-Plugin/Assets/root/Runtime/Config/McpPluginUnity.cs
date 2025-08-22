@@ -1,3 +1,12 @@
+/*
+┌──────────────────────────────────────────────────────────────────┐
+│  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
+│  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
+│  Copyright (c) 2025 Ivan Murzak                                  │
+│  Licensed under the Apache License, Version 2.0.                 │
+│  See the LICENSE file in the project root for more information.  │
+└──────────────────────────────────────────────────────────────────┘
+*/
 using System;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -40,25 +49,25 @@ namespace com.IvanMurzak.Unity.MCP
         }
 
         public static bool IsLogActive(LogLevel level)
-            => (Instance.data ??= new Data()).logLevel.IsActive(level);
+            => (Instance.data ??= new Data()).LogLevel.IsActive(level);
 
         public static LogLevel LogLevel
         {
-            get => Instance.data?.logLevel ?? LogLevel.Trace;
+            get => Instance.data?.LogLevel ?? LogLevel.Trace;
             set
             {
                 Instance.data ??= new Data();
-                Instance.data.logLevel = value;
+                Instance.data.LogLevel = value;
                 NotifyChanged(Instance.data);
             }
         }
         public static string Host
         {
-            get => Instance.data?.host ?? Data.DefaultHost;
+            get => Instance.data?.Host ?? Data.DefaultHost;
             set
             {
                 Instance.data ??= new Data();
-                Instance.data.host = value;
+                Instance.data.Host = value;
                 NotifyChanged(Instance.data);
             }
         }
@@ -74,21 +83,21 @@ namespace com.IvanMurzak.Unity.MCP
         }
         public static bool KeepConnected
         {
-            get => Instance.data?.keepConnected ?? true;
+            get => Instance.data?.KeepConnected ?? true;
             set
             {
                 Instance.data ??= new Data();
-                Instance.data.keepConnected = value;
+                Instance.data.KeepConnected = value;
                 NotifyChanged(Instance.data);
             }
         }
         public static int TimeoutMs
         {
-            get => Instance.data?.timeoutMs ?? Consts.Hub.DefaultTimeoutMs;
+            get => Instance.data?.TimeoutMs ?? Consts.Hub.DefaultTimeoutMs;
             set
             {
                 Instance.data ??= new Data();
-                Instance.data.timeoutMs = value;
+                Instance.data.TimeoutMs = value;
                 NotifyChanged(Instance.data);
             }
         }
@@ -104,15 +113,15 @@ namespace com.IvanMurzak.Unity.MCP
             var changed = false;
             var data = Instance.data ??= new Data();
 
-            if (data.port < 0 || data.port > Consts.Hub.MaxPort)
+            if (data.Port < 0 || data.Port > Consts.Hub.MaxPort)
             {
-                data.port = Consts.Hub.DefaultPort;
+                data.Port = Consts.Hub.DefaultPort;
                 changed = true;
             }
 
-            if (string.IsNullOrEmpty(data.host))
+            if (string.IsNullOrEmpty(data.Host))
             {
-                data.host = Data.DefaultHost;
+                data.Host = Data.DefaultHost;
                 changed = true;
             }
 
@@ -126,7 +135,7 @@ namespace com.IvanMurzak.Unity.MCP
                 return;
 
             onChanged += action;
-            Safe.Run(action, Instance.data, logLevel: Instance.data?.logLevel ?? LogLevel.Trace);
+            Safe.Run(action, Instance.data, logLevel: Instance.data?.LogLevel ?? LogLevel.Trace);
         }
         public static void UnsubscribeOnChanged(Action<Data> action)
         {
@@ -137,6 +146,6 @@ namespace com.IvanMurzak.Unity.MCP
         }
 
         static void NotifyChanged(Data data)
-            => Safe.Run(onChanged, data, logLevel: data?.logLevel ?? LogLevel.Trace);
+            => Safe.Run(onChanged, data, logLevel: data?.LogLevel ?? LogLevel.Trace);
     }
 }

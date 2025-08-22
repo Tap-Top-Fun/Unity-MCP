@@ -191,7 +191,7 @@ openupm add com.ivanmurzak.unity.mcp
 
 # Advanced MCP server setup
 
-Unity-MCP server supports many different launch options and docker docker deployment. Both transport protocol are supported `http` and `stdio`. [Read more...](https://github.com/IvanMurzak/Unit-MCP/blob/main/Unity-MCP-Server/README.md)
+Unity-MCP server supports many different launch options and docker docker deployment. Both transport protocol are supported `http` and `stdio`. [Read more...](https://github.com/IvanMurzak/Unity-MCP/blob/main/Unity-MCP-Server/README.md)
 
 # Add custom `tool`
 

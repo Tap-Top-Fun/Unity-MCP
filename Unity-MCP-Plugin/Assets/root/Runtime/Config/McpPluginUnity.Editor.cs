@@ -1,10 +1,20 @@
+/*
+┌──────────────────────────────────────────────────────────────────┐
+│  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
+│  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
+│  Copyright (c) 2025 Ivan Murzak                                  │
+│  Licensed under the Apache License, Version 2.0.                 │
+│  See the LICENSE file in the project root for more information.  │
+└──────────────────────────────────────────────────────────────────┘
+*/
+#nullable enable
 using System;
 using System.IO;
+using System.Text.Json;
 using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP
 {
-#pragma warning disable CA2235 // Mark all non-serializable fields
     public partial class McpPluginUnity
     {
         public static string ResourcesFileName => "Unity-MCP-ConnectionConfig";
@@ -29,12 +39,17 @@ namespace com.IvanMurzak.Unity.MCP
 #else
                 var json = Resources.Load<TextAsset>(ResourcesFileName).text;
 #endif
-                Data config = null;
-                try { config = JsonUtility.FromJson<Data>(json); }
+                Data? config = null;
+                try
+                {
+                    config = string.IsNullOrWhiteSpace(json)
+                        ? null
+                        : JsonSerializer.Deserialize<Data>(json);
+                }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[McpPluginUnity] <color=red><b>{ResourcesFileName}</b> file is corrupted at <i>{AssetsFilePath}</i></color>");
                     Debug.LogException(e);
+                    Debug.LogError($"[McpPluginUnity] <color=red><b>{ResourcesFileName}</b> file is corrupted at <i>{AssetsFilePath}</i></color>");
                 }
                 if (config == null)
                 {
@@ -46,10 +61,10 @@ namespace com.IvanMurzak.Unity.MCP
             }
             catch (Exception e)
             {
-                Debug.LogError($"[McpPluginUnity] <color=red><b>{ResourcesFileName}</b> file can't be loaded from <i>{AssetsFilePath}</i></color>");
                 Debug.LogException(e);
+                Debug.LogError($"[McpPluginUnity] <color=red><b>{ResourcesFileName}</b> file can't be loaded from <i>{AssetsFilePath}</i></color>");
             }
-            return null;
+            throw new InvalidOperationException($"Failed to get or create {nameof(McpPluginUnity)} instance. Check logs for details.");
         }
 
         public static void Save()
@@ -63,7 +78,7 @@ namespace com.IvanMurzak.Unity.MCP
                     Directory.CreateDirectory(directory);
 
                 var data = Instance.data ??= new Data();
-                var json = JsonUtility.ToJson(data, true);
+                var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(AssetsFilePath, json);
 
                 var assetFile = AssetFile;
@@ -82,5 +97,4 @@ namespace com.IvanMurzak.Unity.MCP
 #endif
         }
     }
-#pragma warning restore CA2235 // Mark all non-serializable fields
 }

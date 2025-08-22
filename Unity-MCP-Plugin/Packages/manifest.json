@@ -87,7 +87,10 @@
         "org.nuget.system.text.encodings.web",
         "org.nuget.system.text.json",
         "org.nuget.system.threading.channels",
-        "org.nuget.system.threading.tasks.extensions"
+        "org.nuget.system.threading.tasks.extensions",
+        "org.nuget",
+        "com.ivanmurzak",
+        "extensions.unity"
       ]
     }
   ]

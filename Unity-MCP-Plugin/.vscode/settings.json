@@ -79,6 +79,7 @@
         "Prefs",
         "Scriptable",
         "signalr",
-        "uielements"
+        "uielements",
+        "unitypackage"
     ]
 }
