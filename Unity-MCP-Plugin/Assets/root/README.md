@@ -4,8 +4,6 @@
 
 AI helper which does wide range of tasks in Unity Editor and even in a running game compiled to any platform. It connects to AI using TCP connection, that is why it is so flexible.
 
-[![Download](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/download-button-small.png)](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.15.0/AI-Game-Dev-Installer.unitypackage)
-
 ## Features for a human
 
 - ✅ Few clicks installation
@@ -78,9 +76,9 @@ Choose MCP client you prefer, don't need to install all of them. This is will be
 - Open command line in Unity project folder
 - Run the command
 
-  ```bash
-  openupm add com.ivanmurzak.unity.mcp
-  ```
+```bash
+openupm add com.ivanmurzak.unity.mcp
+```
 
 # 👉 Configure MCP client
 
