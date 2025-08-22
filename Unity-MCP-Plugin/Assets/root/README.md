@@ -8,7 +8,7 @@ AI helper which does wide range of tasks in Unity Editor and even in a running g
 
 - ✅ Few clicks installation
 - ✅ Chat with AI like with a human
-- ✅ Wide range of default [AI tools](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/AI-tools.md)
+- ✅ Wide range of default [AI tools](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/ai-tools.md)
 - ✅ Use `Description` attribute in C# code to provide detailed information for `class`, `field`, `property` or `method`.
 - ✅ Customizable reflection convertors, inspired by `System.Text.Json` convertors
   - do you have something extremely custom in your project? Make custom reflection convertor to let LLM be able to read and write into that data
@@ -63,7 +63,7 @@ Choose MCP client you prefer, don't need to install all of them. This is will be
 
 ## Option 1: Install `.unitypackage` installer
 
--  **[⬇️ Download the Installer ⬇️](https://github.com/IvanMurzak/Unity-MCP/releases/download/latest/AI-Game-Dev-Installer.unitypackage)**
+-  **[⬇️ Download the Installer ⬇️](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.15.0/AI-Game-Dev-Installer.unitypackage)**
 - **📂 Open the installer into Unity project 📂**
   > - You may use double click on the file - Unity will open it
   > - OR: You may open Unity Editor first, then click on `Assets/Import Package/Custom Package`, then choose the file
@@ -124,7 +124,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 
 # Advanced MCP server setup
 
-Unity-MCP server supports many different launch options and docker docker deployment. Both transport protocol are supported `http` and `stdio`. [Read more...](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/MCP-Server.md)
+Unity-MCP server supports many different launch options and docker docker deployment. Both transport protocol are supported `http` and `stdio`. [Read more...](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/mcp-server.md)
 
 # Add custom `tool`
 
