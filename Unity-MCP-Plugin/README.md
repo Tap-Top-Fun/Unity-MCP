@@ -1,8 +1,38 @@
-# Unity MCP (AI Connector)
+# ✨ AI Game Developer — *Unity MCP*
 
-[![openupm](https://img.shields.io/npm/v/com.ivanmurzak.unity.mcp?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.ivanmurzak.unity.mcp/) ![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP) [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
+[![MCP](https://badge.mcpx.dev?type=server 'MCP Server')](https://modelcontextprotocol.io/introduction) [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
+[![Unity Asset Store](https://img.shields.io/badge/Asset%20Store-View-blue?logo=unity&labelColor=333A41 'Asset Store')](https://u3d.as/3wsw) [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=49BC5C 'Unity Editor supported')](https://unity.com/releases/editor/archive) [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=49BC5C 'Unity Runtime supported')](https://unity.com/releases/editor/archive) [![OpenUPM](https://img.shields.io/npm/v/com.ivanmurzak.unity.mcp?label=OpenUPM&registry_uri=https://package.openupm.com&labelColor=333A41 'OpenUPM package')](https://openupm.com/packages/com.ivanmurzak.unity.mcp/)
+[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/Unity-MCP/stargazers) [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) [![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE) [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-![image](https://github.com/user-attachments/assets/8f595879-a578-421a-a06d-8c194af874f7)
+AI helper which does wide range of tasks in Unity Editor and even in a running game compiled to any platform. It connects to AI using TCP connection, that is why it is so flexible.
+
+## Features for a human
+
+- ✅ Few clicks installation
+- ✅ Chat with AI like with a human
+- ✅ Wide range of default [AI tools](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/ai-tools.md)
+- ✅ Use `Description` attribute in C# code to provide detailed information for `class`, `field`, `property` or `method`.
+- ✅ Customizable reflection convertors, inspired by `System.Text.Json` convertors
+  - do you have something extremely custom in your project? Make custom reflection convertor to let LLM be able to read and write into that data
+- ✅ Remote AI units setup using docker containers,
+  - make a team of AI workers which work on your project simultaneously
+
+## Features for LLM
+
+- ✅ Agent ready tools, find anything you need in 1-2 steps
+- ✅ Instant C# code compilation & execution using `Roslyn`, iterate faster
+- ✅ Assets access (read / write), C# scripts access (read / write)
+- ✅ Well described positive and negative feedback for proper understanding of an issue
+- ✅ Provide references to existed objects for the instant C# code using `Reflection`
+- ✅ Get full access to entire project data in a readable shape using `Reflection`
+- ✅ Populate & Modify any granular piece of data in the project using `Reflection`
+- ✅ Find any `method` in the entire codebase, including compiled DLL files using `Reflection`
+- ✅ Call any `method` in the entire codebase using `Reflection`
+- ✅ Provide any property into `method` call, even if it is a reference to existed object in memory using `Reflection` and advanced reflection convertors
+- ✅ Unity API instantly available for usage, even if Unity changes something you will get fresh API using `Reflection`.
+- ✅ Get access to human readable description of any `class`, `method`, `field`, `property` by reading it's `Description` attribute.
+
+### Stability status
 
 | Unity Version | Editmode | Playmode | Standalone |
 |---------------|----------|----------|------------|
@@ -10,148 +40,39 @@
 | 2023.2.20f1   | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2023-2-20f1-editmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2023-2-20f1-playmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2023-2-20f1-standalone)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)
 | 6000.0.46f1   | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-6000-0-46f1-editmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-6000-0-46f1-playmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-6000-0-46f1-standalone)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)
 
-**[Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)** is a bridge between LLM and Unity. It exposes and explains to LLM Unity's tools. LLM understands the interface and utilizes the tools in the way a user asks.
+## Requirements
 
-Connect **[Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)** to LLM client such as [Claude](https://claude.ai/download) or [Cursor](https://www.cursor.com/) using integrated `AI Connector` window. Custom clients are supported as well.
+> [!IMPORTANT]
+> **Project path cannot contain spaces**
+>
+> - ✅ `C:/MyProjects/Project`
+> - ❌ `C:/My Projects/Project`
 
-The project is designed to let developers to add custom tools soon. After that the next goal is to enable the same features in player's build. For not it works only in Unity Editor.
+### Install MCP client
 
-The system is extensible: you can define custom `tool`s directly in your Unity project codebase, exposing new capabilities to the AI or automation clients. This makes Unity-MCP a flexible foundation for building advanced workflows, rapid prototyping, or integrating AI-driven features into your development process.
+Choose MCP client you prefer, don't need to install all of them. This is will be your main chat window to talk with LLM.
 
-## AI Tools
+- [GitHub Copilot in VS Code](https://code.visualstudio.com/docs/copilot/overview)
+- [Cursor](https://www.cursor.com/)
+- [Claude Desktop](https://claude.ai/download)
+- [Claude Code](https://github.com/anthropics/claude-code)
+- [Windsurf](https://windsurf.com)
+- Any other supported
 
-Unity-MCP supports a wide range of tools. Each tool is a small connector between LLM and Unity Engine. You may create your own `tools` by using API, take a look at [add custom tool](#add-custom-tool).
+> MCP protocol is quite universal, that is why you may any MCP client you prefer, it will work as smooth as anyone else. The only important thing, that the MCP client has to support dynamic tool update.
 
-Here is the list of default AI tools. All of them are available after installation Unity-MCP into your project.
+# 👉 Installation
 
-> **Legend:**
-> ✅ = Implemented & available, 🔲 = Planned / Not yet implemented
+## Option 1: Install `.unitypackage` installer
 
-<table>
-<tr>
-<td valign="top">
+-  **[⬇️ Download the Installer ⬇️](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.15.0/AI-Game-Dev-Installer.unitypackage)**
+- **📂 Open the installer into Unity project 📂**
+  > - You may use double click on the file - Unity will open it
+  > - OR: You may open Unity Editor first, then click on `Assets/Import Package/Custom Package`, then choose the file
 
-### GameObject
+## Option 2: Using OpenUPM
 
-- ✅ Create
-- ✅ Destroy
-- ✅ Find
-- ✅ Modify (tag, layer, name, static)
-- ✅ Set parent
-- ✅ Duplicate
-
-##### GameObject.Components
-
-- ✅ Add Component
-- ✅ Get Components
-- ✅ Modify Component
-- - ✅ `Field` set value
-- - ✅ `Property` set value
-- - ✅ `Reference` link set
-- ✅ Destroy Component
-- 🔲 Remove missing components
-
-### Editor
-
-- ✅ State (Playmode)
-  - ✅ Get
-  - ✅ Set
-- ✅ Get Windows
-- ✅ Layer
-  - ✅ Get All
-  - ✅ Add
-  - ✅ Remove
-- ✅ Tag
-  - ✅ Get All
-  - ✅ Add
-  - ✅ Remove
-- ✅ Execute `MenuItem`
-- ✅ Run Tests (see note in [running play mode tests](#running-playmode-tests))
-
-#### Editor.Selection
-
-- ✅ Get selection
-- ✅ Set selection
-
-### Prefabs
-
-- ✅ Instantiate
-- 🔲 Create
-- ✅ Open
-- ✅ Modify (GameObject.Modify)
-- ✅ Save
-- ✅ Close
-
-### Package
-
-- 🔲 Get installed
-- 🔲 Install
-- 🔲 Remove
-- 🔲 Update
-
-</td>
-<td valign="top">
-
-### Assets
-
-- ✅ Create
-- ✅ Find
-- ✅ Refresh
-- ✅ Read
-- ✅ Modify
-- ✅ Rename
-- ✅ Delete
-- ✅ Move
-- ✅ Create folder
-
-### Scene
-
-- ✅ Create
-- ✅ Save
-- ✅ Load
-- ✅ Unload
-- ✅ Get Loaded
-- ✅ Get hierarchy
-- 🔲 Search (editor)
-- 🔲 Raycast (understand volume)
-
-### Materials
-
-- ✅ Create
-- ✅ Modify (Assets.Modify)
-- ✅ Read (Assets.Read)
-- ✅ Assign to a Component on a GameObject
-
-### Shader
-
-- ✅ List All
-
-### Scripts
-
-- ✅ Read
-- ✅ Update or Create
-- ✅ Delete
-
-### Scriptable Object
-
-- ✅ Create
-- ✅ Read
-- ✅ Modify
-- ✅ Remove
-
-### Debug
-
-- ✅ Read logs (console)
-
-### Component
-
-- ✅ Get All
-
-</td>
-</tr>
-</table>
-
-# Installation
+> This option is recommended for people well familiar with command line and probably with the NPM package managers.
 
 - [Install OpenUPM-CLI](https://github.com/openupm/openupm-cli#installation)
 - Open command line in Unity project folder
@@ -161,32 +82,51 @@ Here is the list of default AI tools. All of them are available after installati
 openupm add com.ivanmurzak.unity.mcp
 ```
 
-# Usage
+# 👉 Configure MCP client
 
-1. Make sure your project path doesn't have a space symbol " ".
-> - ✅ `C:/MyProjects/Project`
-> - ❌ `C:/My Projects/Project`
+## 🟢 Step 1 Open `AI Connector` window
 
-2. Open Unity project, go 👉 `Window/AI Connector (Unity-MCP)`.
+Open Unity project, go 👉 `Window/AI Connector (Unity-MCP)`.
 
-![Unity_AI](https://github.com/user-attachments/assets/e8049620-6614-45f1-92d7-cc5d00a6b074)
+![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/ai-connector-window.gif)
 
-3. Install MCP client
-> - [Install Cursor](https://www.cursor.com/) (recommended)
-> - [Install Claude](https://claude.ai/download)
+## 🟢 Step 2: Click `Configure` at your MCP client
 
-4. Sign-in into MCP client
-5. Click `Configure` at your MCP client.
+  > If MCP client is not in the list, use the raw JSON below in the window, to inject it into your MCP client. Read instructions for your MCP client how to do that.
 
-![image](https://github.com/user-attachments/assets/19f80179-c5b3-4e9c-bdf6-07edfb773018)
+# 👉 Talk to LLM
 
-6. Restart your MCP client.
-7. Make sure `AI Connector` is "Connected" or "Connecting..." after restart.
-8. Test AI connection in your Client (Cursor, Claude Desktop). Type any question or task into the chat. Something like:
+> Make sure `Agent` mode is turned on in MCP client
 
   ```text
   Explain my scene hierarchy
   ```
+
+  ```text
+  Create 3 cubes in a circle with radius 2
+  ```
+
+  ```text
+  Create metallic golden material and attach it to a sphere gameObject
+  ```
+
+---
+
+# How it works
+
+**[Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)** is a bridge between LLM and Unity. It exposes and explains to LLM Unity's tools. LLM understands the interface and utilizes the tools in the way a user asks.
+
+Connect **[Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)** to LLM client such as [Claude](https://claude.ai/download) or [Cursor](https://www.cursor.com/) using integrated `AI Connector` window. Custom clients are supported as well.
+
+The project is designed to let developers to add custom tools soon. After that the next goal is to enable the same features in player's build. For not it works only in Unity Editor.
+
+The system is extensible: you can define custom `tool`s directly in your Unity project codebase, exposing new capabilities to the AI or automation clients. This makes Unity-MCP a flexible foundation for building advanced workflows, rapid prototyping, or integrating AI-driven features into your development process.
+
+---
+
+# Advanced MCP server setup
+
+Unity-MCP server supports many different launch options and docker docker deployment. Both transport protocol are supported `http` and `stdio`. [Read more...](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/mcp-server.md)
 
 # Add custom `tool`
 
@@ -239,12 +179,13 @@ public class Tool_GameObject
 
 To be able to run Play Mode tests via the TestRunner MCP tool, you should consider configuring Unity to **not** perform a domain reload when entering Play Mode (`Edit -> Project Settings -> Editor -> Enter Play Mode Settings` - set to `Reload Scene only` or `Do not reload Domain or Scene`). Otherwise, starting the Play Mode tests will interrupt the TestRunner MCP tool, leading to a cycle of tests restarting.
 
+---
 
-# Contribution
+# Contribution 💙💛
 
-Feel free to add a new `tool` into the project.
+Contribution is highly appreciated. Brings your ideas and lets make the game development as simple as never before! Do you have an idea of a new `tool`, feature or did you spot a bug and know how to fix it.
 
-1. Fork the project.
-2. Clone the fork and open the resulting folder in Unity.
-3. Implement the new `tool` in your forked repository.
-4. Create Pull Request into original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) repository.
+1. 👉 [Fork the project](https://github.com/IvanMurzak/Unity-MCP/fork)
+2. Clone the fork and open the `./Unity-MCP-Plugin` folder in Unity
+3. Implement new things in the project, commit, push it to GitHub
+4. Create Pull Request targeting original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) repository, `main` branch.
