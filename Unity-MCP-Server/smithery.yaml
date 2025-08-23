@@ -1,0 +1,23 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+#                              https://smithery.ai/docs/build/deployments/custom-container
+runtime: "container"
+build:
+  dockerfile: "Dockerfile"           # Path to your Dockerfile
+  dockerBuildPath: "."               # Docker build context
+startCommand:
+  type: http
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    {}
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'dotnet',
+      args: [
+        'unity-mcp-server.dll',
+        '--client-transport=http',
+        '--client-port=8081'
+      ]
+    })
+  exampleConfig: {}
