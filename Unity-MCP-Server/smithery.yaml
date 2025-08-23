@@ -4,6 +4,9 @@ runtime: "container"
 build:
   dockerfile: "Dockerfile"           # Path to your Dockerfile
   dockerBuildPath: "."               # Docker build context
+env:
+  UNITY_MCP_CLIENT_PORT: 8081
+  UNITY_MCP_CLIENT_TRANSPORT: http
 startCommand:
   type: http
   configSchema:
@@ -14,10 +17,6 @@ startCommand:
     |-
     (config) => ({
       command: 'dotnet',
-      args: [
-        'unity-mcp-server.dll',
-        '--client-transport=http',
-        '--client-port=8081'
-      ]
+      args: ['unity-mcp-server.dll']
     })
   exampleConfig: {}
