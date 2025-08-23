@@ -1,5 +1,6 @@
 # Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
 #                              https://smithery.ai/docs/build/deployments/custom-container
+# Still doesn't work because of the 404 during validation at Smithery
 runtime: "container"
 build:
   dockerfile: "Dockerfile"           # Path to your Dockerfile
