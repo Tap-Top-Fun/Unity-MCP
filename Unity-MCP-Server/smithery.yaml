@@ -5,19 +5,43 @@ build:
   dockerfile: "Dockerfile"           # Path to your Dockerfile
   dockerBuildPath: "."               # Docker build context
 env:
-  UNITY_MCP_CLIENT_PORT: 8080
   UNITY_MCP_CLIENT_TRANSPORT: http
+  UNITY_MCP_CLIENT_PORT: 8080
   UNITY_MCP_PLUGIN_PORT: 60606
 startCommand:
   type: http
   configSchema:
     # JSON Schema defining the configuration options for the MCP.
-    {}
+    type: object
+    required:
+      - UNITY_MCP_CLIENT_TRANSPORT
+      - UNITY_MCP_CLIENT_PORT
+      - UNITY_MCP_PLUGIN_PORT
+      - UNITY_MCP_PLUGIN_TIMEOUT
+    properties:
+      UNITY_MCP_CLIENT_TRANSPORT
+        type: string
+        description: "http or stdio transport options"
+      UNITY_MCP_CLIENT_PORT:
+        type: integer
+        description: "The port for the MCP client"
+      UNITY_MCP_PLUGIN_PORT:
+        type: integer
+        description: "The port for the Unity plugin"
+      UNITY_MCP_PLUGIN_TIMEOUT:
+        type: integer
+        description: "The timeout for the Unity plugin"
   commandFunction:
     # A JS function that produces the CLI command based on the given config to start the MCP on http.
     |-
     (config) => ({
       command: 'dotnet',
-      args: ['unity-mcp-server.dll']
+      args: ['unity-mcp-server.dll'],
+      env: {
+        UNITY_MCP_CLIENT_TRANSPORT: config.UNITY_MCP_CLIENT_TRANSPORT,
+        UNITY_MCP_CLIENT_PORT: config.UNITY_MCP_CLIENT_PORT,
+        UNITY_MCP_PLUGIN_PORT: config.UNITY_MCP_PLUGIN_PORT,
+        UNITY_MCP_PLUGIN_TIMEOUT: config.UNITY_MCP_PLUGIN_TIMEOUT
+      }
     })
   exampleConfig: {}
