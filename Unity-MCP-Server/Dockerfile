@@ -21,4 +21,9 @@ RUN dotnet publish "com.IvanMurzak.Unity.MCP.Server.csproj" -c Release -o /app/p
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+
+# Expose the default plugin port and the HTTP client port so external scanners
+# (like Smithery) and platform port mappings can reach the server.
+EXPOSE 60606 8080
+
 ENTRYPOINT ["dotnet", "unity-mcp-server.dll"]

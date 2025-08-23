@@ -26,10 +26,10 @@ Unity-MCP server is developed with idea of flexibility in mind, that is why it h
 
 #### Default launch
 
-The default the transport method is `http`, that is why the port `80` should be forwarded.
+The default the transport method is `http`, that is why the port `8080` should be forwarded.
 
 ```bash
-docker run --rm -p 80:80 -p 60606:60606 ivanmurzakdev/unity-mcp-server
+docker run --rm -p 8080:8080 -p 60606:60606 ivanmurzakdev/unity-mcp-server
 ```
 
 MCP client config:
@@ -38,7 +38,7 @@ MCP client config:
 {
   "mcpServers": {
     "Unity-MCP": {
-      "url": "http://localhost:80"
+      "url": "http://localhost:8080"
     }
   }
 }
@@ -46,7 +46,7 @@ MCP client config:
 
 #### Use STDIO
 
-The `80` port is not needed for STDIO, because it uses the STDIO to communicate with **Client**. It is a good setup for using in a client with automatic installation and launching. Because this docker command loads the image from docker hub and launches immediately.
+The `8080` port is not needed for STDIO, because it uses the STDIO to communicate with **Client**. It is a good setup for using in a client with automatic installation and launching. Because this docker command loads the image from docker hub and launches immediately.
 
 ```bash
 docker run -t --rm -e UNITY_MCP_CLIENT_TRANSPORT=stdio -p 60606:60606 ivanmurzakdev/unity-mcp-server
@@ -77,7 +77,7 @@ MCP client config:
 #### Custom plugin port
 
 ```bash
-docker run --rm -e UNITY_MCP_PLUGIN_PORT=123 -p 80:80 -p 123:123 ivanmurzakdev/unity-mcp-server
+docker run --rm -e UNITY_MCP_PLUGIN_PORT=123 -p 8080:8080 -p 123:123 ivanmurzakdev/unity-mcp-server
 ```
 
 MCP client config:
@@ -86,13 +86,13 @@ MCP client config:
 {
   "mcpServers": {
     "Unity-MCP": {
-      "url": "http://localhost:80"
+      "url": "http://localhost:8080"
     }
   }
 }
 ```
 
-Port forwarding is need for the launch with docker `-p 80:80` for client and `-p 60606:60606` for plugin.
+Port forwarding is need for the launch with docker `-p 8080:8080` for client and `-p 60606:60606` for plugin.
 
 ---
 
@@ -181,5 +181,5 @@ Doesn't matter what launch option you choose, all of them support custom configu
 |-----------------------------|-----------------------|-----------------------------------------------------------------------------|
 | `UNITY_MCP_PLUGIN_PORT`     | `--plugin-port`       | **Plugin** -> **Server** connection port (default: 60606)                   |
 | `UNITY_MCP_PLUGIN_TIMEOUT`  | `--plugin-timeout`    | **Plugin** -> **Server** connection timeout (ms) (default: 10000)           |
-| `UNITY_MCP_CLIENT_PORT`     | `--client-port`       | **Client** -> **Server** connection port (default: 80)                      |
+| `UNITY_MCP_CLIENT_PORT`     | `--client-port`       | **Client** -> **Server** connection port (default: 8080)                    |
 | `UNITY_MCP_CLIENT_TRANSPORT`| `--client-transport`  | **Client** -> **Server** transport type: `stdio` or `http` (default: `http`) |

@@ -5,8 +5,9 @@ build:
   dockerfile: "Dockerfile"           # Path to your Dockerfile
   dockerBuildPath: "."               # Docker build context
 env:
-  UNITY_MCP_CLIENT_PORT: 8081
+  UNITY_MCP_CLIENT_PORT: 8080
   UNITY_MCP_CLIENT_TRANSPORT: http
+  UNITY_MCP_PLUGIN_PORT: 60606
 startCommand:
   type: http
   configSchema:

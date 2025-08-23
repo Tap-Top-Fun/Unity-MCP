@@ -19,7 +19,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public int PluginPort { get; private set; }
         public int PluginTimeoutMs { get; private set; }
 
-        public int ClientPort { get; private set; } = 80;
+        public int ClientPort { get; private set; } = 8080;
         public Consts.MCP.Server.TransportMethod ClientTransport { get; private set; }
 
         public DataArguments(string[] args)
