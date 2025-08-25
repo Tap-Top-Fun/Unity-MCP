@@ -199,7 +199,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                             "Copyright (c) 2025 Ivan Murzak\n" +
                             "Licensed under the Apache License, Version 2.0.\n" +
                             "See the LICENSE file in the project root for more information.\n";
-                        return Results.Text(header, "text/plain");
+                        return Results.Text(header, Consts.MimeType.TextPlain);
                     });
                     app.MapMcp("mcp");
                 }
