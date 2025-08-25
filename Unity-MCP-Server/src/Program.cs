@@ -184,7 +184,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 // Setup MCP client -------------------------------------------------
                 if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
-                    app.MapMcp();
+                    app.MapMcp("mcp");
 
                 // Print logs -------------------------------------------------------
                 if (logger.IsEnabled(NLog.LogLevel.Debug))
