@@ -22,6 +22,7 @@ using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using com.IvanMurzak.Unity.MCP.Common.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -184,7 +185,24 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 // Setup MCP client -------------------------------------------------
                 if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
+                {
+                    // app.MapGet("/", context =>
+                    // {
+                    //     context.Response.Redirect("/mcp", permanent: false);
+                    //     return Task.CompletedTask;
+                    // });
+                    app.MapGet("/", () =>
+                    {
+                        var header =
+                            "Author: Ivan Murzak (https://github.com/IvanMurzak)\n" +
+                            "Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)\n" +
+                            "Copyright (c) 2025 Ivan Murzak\n" +
+                            "Licensed under the Apache License, Version 2.0.\n" +
+                            "See the LICENSE file in the project root for more information.\n";
+                        return Results.Text(header, "text/plain");
+                    });
                     app.MapMcp("mcp");
+                }
 
                 // Print logs -------------------------------------------------------
                 if (logger.IsEnabled(NLog.LogLevel.Debug))
