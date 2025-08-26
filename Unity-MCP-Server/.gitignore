@@ -29,6 +29,7 @@ artifacts/
 *.psmdcp
 .nuget/
 packages/
+nupkg/
 *.dll
 *.exe
 

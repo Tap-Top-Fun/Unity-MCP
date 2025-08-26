@@ -114,7 +114,7 @@ MCP client config:
     "Unity-MCP": {
       "command": "C:/Projects/Unity/Unity-MCP/Unity-MCP-Plugin/Library/mcp-server/win-x64/unity-mcp-server.exe",
       "args": [
-        "--client-transport stdio"
+        "--client-transport=stdio"
       ]
     }
   }
@@ -137,9 +137,9 @@ MCP client config:
     "Unity-MCP": {
       "command": "C:/Projects/Unity/Unity-MCP/Unity-MCP-Plugin/Library/mcp-server/win-x64/unity-mcp-server.exe",
       "args": [
-        "--plugin-port 60606",
-        "--plugin-timeout 10000",
-        "--client-transport stdio"
+        "--plugin-port=60606",
+        "--plugin-timeout=10000",
+        "--client-transport=stdio"
       ]
     }
   }
@@ -162,9 +162,9 @@ MCP client config:
     "Unity-MCP": {
       "command": "C:/Projects/Unity/Unity-MCP/Unity-MCP-Plugin/Library/mcp-server/win-x64/unity-mcp-server.exe",
       "args": [
-        "--plugin-port 60606",
-        "--plugin-timeout 10000",
-        "--client-transport http"
+        "--plugin-port=60606",
+        "--plugin-timeout=10000",
+        "--client-transport=http"
       ]
     }
   }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,6 +7,22 @@
     <Nullable>enable</Nullable>
     <RootNamespace>com.IvanMurzak.Unity.MCP.Server</RootNamespace>
     <AssemblyName>unity-mcp-server</AssemblyName>
+    
+    <!-- NuGet Package Properties -->
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>unity-mcp-server</ToolCommandName>
+    <PackageId>com.IvanMurzak.Unity.MCP.Server</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Ivan Murzak</Authors>
+    <Company>Ivan Murzak</Company>
+    <Description>Unity MCP Server - A Model Context Protocol server that enables AI assistants to interact with Unity Editor and games through the Unity-MCP Plugin</Description>
+    <PackageTags>unity;mcp;model-context-protocol;ai;assistant;signalr;dotnet-tool</PackageTags>
+    <RepositoryUrl>https://github.com/IvanMurzak/Unity-MCP</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/IvanMurzak/Unity-MCP</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>Initial release of Unity MCP Server as a global dotnet tool</PackageReleaseNotes>
   </PropertyGroup>
 
   <!-- Disable static web assets manifests & strip debug symbols for lean Release output -->
@@ -35,6 +51,12 @@
       <Private>true</Private>
     </Reference>
   </ItemGroup> -->
+
+  <!-- Include package files -->
+  <ItemGroup>
+    <None Include="LICENSE" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <!-- Exclude the local publish output folder so successive publishes don't recursively include previous outputs -->
   <ItemGroup>
