@@ -78,7 +78,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 });
 
                 // Setup MCP Plugin ---------------------------------------------------------------
-                builder.Services.AddMcpPlugin(logger: new NLogAdapter(nameof(McpPluginBuilder)), configure =>
+                builder.Services.AddMcpPlugin(loggerProvider: new NLogLoggerProvider(), configure =>
                 {
                     configure.WithServerFeatures(dataArguments);
                 }).Build(new Reflector());

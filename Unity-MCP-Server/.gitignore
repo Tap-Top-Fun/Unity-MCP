@@ -28,8 +28,6 @@ artifacts/
 *.nuspec
 *.psmdcp
 .nuget/
-packages/
-nupkg/
 *.dll
 *.exe
 
@@ -44,3 +42,5 @@ nupkg/
 
 # Published pre compiled server
 publish/
+packages/
+nupkg/
