@@ -21,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public class RemoteToolRunner : IToolRunner, IDisposable
     {
-        readonly ILogger<RemoteToolRunner> _logger;
+        readonly ILogger _logger;
         readonly IHubContext<RemoteApp> _remoteAppContext;
         readonly CancellationTokenSource cts = new();
         readonly CompositeDisposable _disposables = new();
@@ -29,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public RemoteToolRunner(ILogger<RemoteToolRunner> logger, IHubContext<RemoteApp> remoteAppContext)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogTrace("{0} Ctor.", typeof(RemoteToolRunner).Name);
+            _logger.LogTrace("Ctor.");
             _remoteAppContext = remoteAppContext ?? throw new ArgumentNullException(nameof(remoteAppContext));
         }
 

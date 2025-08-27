@@ -30,7 +30,7 @@ Unity-MCP server is developed with idea of flexibility in mind, that is why it h
 The default the transport method is `http`, that is why the port `8080` should be forwarded.
 
 ```bash
-docker run --rm -p 8080:8080 -p 60606:60606 ivanmurzakdev/unity-mcp-server
+docker run -p 8080:8080 -p 60606:60606 ivanmurzakdev/unity-mcp-server
 ```
 
 MCP client config:
@@ -50,7 +50,7 @@ MCP client config:
 The `8080` port is not needed for STDIO, because it uses the STDIO to communicate with **Client**. It is a good setup for using in a client with automatic installation and launching. Because this docker command loads the image from docker hub and launches immediately.
 
 ```bash
-docker run -t --rm -e UNITY_MCP_CLIENT_TRANSPORT=stdio -p 60606:60606 ivanmurzakdev/unity-mcp-server
+docker run -t -e UNITY_MCP_CLIENT_TRANSPORT=stdio -p 60606:60606 ivanmurzakdev/unity-mcp-server
 ```
 
 MCP client config:
@@ -63,7 +63,6 @@ MCP client config:
       "args": [
         "run",
         "-t",
-        "--rm",
         "-e",
         "UNITY_MCP_CLIENT_TRANSPORT=stdio",
         "-p",
@@ -78,7 +77,7 @@ MCP client config:
 #### Custom plugin port
 
 ```bash
-docker run --rm -e UNITY_MCP_PLUGIN_PORT=123 -p 8080:8080 -p 123:123 ivanmurzakdev/unity-mcp-server
+docker run -e UNITY_MCP_PLUGIN_PORT=123 -p 8080:8080 -p 123:123 ivanmurzakdev/unity-mcp-server
 ```
 
 MCP client config:

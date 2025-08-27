@@ -30,7 +30,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         protected BaseHub(ILogger logger, IHubContext<T> hubContext)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogTrace("{0} Ctor.", _guid);
+            _logger.LogTrace("Ctor. {guid}", _guid);
             _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
         }
 

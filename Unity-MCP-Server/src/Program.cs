@@ -1,4 +1,4 @@
-﻿/*
+/*
 ┌──────────────────────────────────────────────────────────────────┐
 │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
 │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
@@ -33,8 +33,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public static async Task Main(string[] args)
         {
             // Configure NLog
-            var nLog = LogManager.Setup().LoadConfigurationFromFile("NLog.config");
-            var logger = nLog.GetCurrentClassLogger();
+            LogManager.Setup().LoadConfigurationFromFile("NLog.config");
+            var logger = LogManager.GetCurrentClassLogger();
             try
             {
                 var dataArguments = new DataArguments(args);
@@ -63,7 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 var builder = WebApplication.CreateBuilder(args);
 
                 // Replace default logging with NLog
-                // builder.Logging.ClearProviders();
+                builder.Logging.ClearProviders();
                 builder.Logging.AddNLog();
 
                 // Setup SignalR ---------------------------------------------------------------
@@ -78,15 +78,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 });
 
                 // Setup MCP Plugin ---------------------------------------------------------------
-                builder.Services.AddMcpPlugin(logger: new ConsoleLogger("McpPlugin"), configure =>
+                builder.Services.AddMcpPlugin(logger: new NLogAdapter(nameof(McpPluginBuilder)), configure =>
                 {
-                    configure
-                        .WithServerFeatures(dataArguments)
-                        .AddLogging(logging =>
-                        {
-                            logging.AddNLog();
-                            logging.SetMinimumLevel(LogLevel.Debug);
-                        });
+                    configure.WithServerFeatures(dataArguments);
                 }).Build(new Reflector());
 
                 // Setup MCP Server ---------------------------------------------------------------
@@ -104,9 +98,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.stdio)
                 {
-                    // Configure all logs to go to stderr. This is needed for MCP STDIO server to work properly.
-                    builder.Logging.AddConsole(consoleLogOptions => consoleLogOptions.LogToStandardErrorThreshold = LogLevel.Trace);
-
                     // Configure STDIO transport
                     mcpBuilder = mcpBuilder.WithStdioServerTransport();
                 }
@@ -198,7 +189,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
                             "Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)\n" +
                             "Copyright (c) 2025 Ivan Murzak\n" +
                             "Licensed under the Apache License, Version 2.0.\n" +
-                            "See the LICENSE file in the project root for more information.\n";
+                            "See the LICENSE file in the project root for more information.\n" +
+                            "\n" +
+                            "Use /mcp endpoint to get connected to MCP server\n";
                         return Results.Text(header, Consts.MimeType.TextPlain);
                     });
                     app.MapMcp("mcp");

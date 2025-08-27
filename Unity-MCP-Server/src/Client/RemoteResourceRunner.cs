@@ -21,12 +21,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public class RemoteResourceRunner : IResourceRunner, IDisposable
     {
-        readonly ILogger<RemoteToolRunner> _logger;
+        readonly ILogger _logger;
         readonly IHubContext<RemoteApp> _remoteAppContext;
         readonly CancellationTokenSource cts = new();
         readonly CompositeDisposable _disposables = new();
 
-        public RemoteResourceRunner(ILogger<RemoteToolRunner> logger, IHubContext<RemoteApp> remoteAppContext)
+        public RemoteResourceRunner(ILogger<RemoteResourceRunner> logger, IHubContext<RemoteApp> remoteAppContext)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("Ctor.");
