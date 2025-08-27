@@ -23,7 +23,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
         readonly IRpcRouter? _rpcRouter;
         readonly CompositeDisposable _disposables = new();
 
-
         public ILogger Logger => _logger;
         public IMcpRunner McpRunner { get; private set; }
         public ReadOnlyReactiveProperty<HubConnectionState> ConnectionState => _rpcRouter?.ConnectionState
@@ -43,7 +42,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .Where(state => state == HubConnectionState.Connected)
                 .Subscribe(state =>
                 {
-                    _logger.LogDebug("{0}.{1}, connection state: {2}", nameof(McpPlugin), nameof(IRpcRouter.NotifyAboutUpdatedTools), state);
+                    _logger.LogDebug("{0}.{1}, connection state: {2}",
+                        nameof(McpPlugin),
+                        nameof(IRpcRouter.NotifyAboutUpdatedTools),
+                        state);
                     _rpcRouter.NotifyAboutUpdatedTools(_disposables.ToCancellationToken());
                 }).AddTo(_disposables);
 

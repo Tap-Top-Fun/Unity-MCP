@@ -52,6 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                         {
                             [serverName] = new JsonObject
                             {
+                                ["type"] = "stdio",
                                 ["command"] = executablePath,
                                 ["args"] = new JsonArray
                                 {

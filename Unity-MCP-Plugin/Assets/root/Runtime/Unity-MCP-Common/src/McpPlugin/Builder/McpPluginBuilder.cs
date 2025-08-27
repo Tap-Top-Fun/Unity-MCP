@@ -22,6 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
     public class McpPluginBuilder : IMcpPluginBuilder
     {
         readonly ILogger? _logger;
+        readonly ILoggerProvider? _loggerProvider;
         readonly IServiceCollection _services;
 
         readonly List<ToolMethodData> _toolMethods = new();
@@ -35,9 +36,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public IServiceCollection Services => _services;
         public ServiceProvider? ServiceProvider { get; private set; }
 
-        public McpPluginBuilder(ILogger? logger = null, IServiceCollection? services = null)
+        public McpPluginBuilder(ILoggerProvider? loggerProvider = null, IServiceCollection? services = null)
         {
-            _logger = logger;
+            _loggerProvider = loggerProvider;
+            _logger = loggerProvider?.CreateLogger(nameof(McpPluginBuilder));
             _services = services ?? new ServiceCollection();
 
             _services.AddTransient<IConnectionManager, ConnectionManager>();
@@ -169,11 +171,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             _services.AddSingleton(reflector);
 
-            _services.AddSingleton(new ToolRunnerCollection(reflector, _logger)
+            _services.AddSingleton(new ToolRunnerCollection(reflector, _loggerProvider?.CreateLogger(nameof(ToolRunnerCollection)))
                 .Add(_toolMethods)
                 .Add(_toolRunners));
 
-            _services.AddSingleton(new ResourceRunnerCollection(reflector, _logger)
+            _services.AddSingleton(new ResourceRunnerCollection(reflector, _loggerProvider?.CreateLogger(nameof(ResourceRunnerCollection)))
                 .Add(_resourceMethods)
                 .Add(_resourceRunners));
 

@@ -34,7 +34,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public McpRunner(ILogger<McpRunner> logger, Reflector reflector, ToolRunnerCollection tools, ResourceRunnerCollection resources)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogTrace("Ctor.");
+            _logger.LogTrace("Ctor. {guid}", Guid.NewGuid());
             _reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
             _tools = tools ?? throw new ArgumentNullException(nameof(tools));
             _resources = resources ?? throw new ArgumentNullException(nameof(resources));

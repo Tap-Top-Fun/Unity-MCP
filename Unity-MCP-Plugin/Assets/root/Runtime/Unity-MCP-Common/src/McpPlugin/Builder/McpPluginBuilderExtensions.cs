@@ -7,6 +7,8 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+
+#nullable enable
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,10 +18,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class McpPluginBuilderExtensions
     {
-        public static IMcpPluginBuilder AddMcpPlugin(this IServiceCollection services, ILogger? logger = null, Action<IMcpPluginBuilder>? configure = null)
+        public static IMcpPluginBuilder AddMcpPlugin(this IServiceCollection services, ILoggerProvider? loggerProvider = null, Action<IMcpPluginBuilder>? configure = null)
         {
             // Create an instance of McpAppBuilder
-            var mcpPluginBuilder = new McpPluginBuilder(logger, services);
+            var mcpPluginBuilder = new McpPluginBuilder(loggerProvider, services);
 
             // Allow additional configuration of McpAppBuilder
             configure?.Invoke(mcpPluginBuilder);
