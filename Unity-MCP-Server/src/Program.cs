@@ -101,6 +101,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         logger.Debug($"Http transport configuration.");
 
                         options.Stateless = false;
+                        options.PerSessionExecutionContext = true;
                         options.RunSessionHandler = async (context, server, cancellationToken) =>
                         {
                             var connectionGuid = Guid.NewGuid();
