@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public static async ValueTask<ListToolsResult> ListAll(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
         {
             var logger = LogManager.GetCurrentClassLogger();
-            logger.Trace("{0}.ListAll", nameof(ToolRouter));
+            logger.Trace("ListAll");
 
             var mcpServerService = McpServerService.Instance;
             if (mcpServerService == null)
