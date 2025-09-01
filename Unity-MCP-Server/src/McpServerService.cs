@@ -63,6 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogTrace("{0} StartAsync.", GetType().GetTypeShortName());
+            _disposables.Clear();
 
             _eventAppToolsChange
                 .Subscribe(data => OnListToolUpdated(data, cancellationToken))

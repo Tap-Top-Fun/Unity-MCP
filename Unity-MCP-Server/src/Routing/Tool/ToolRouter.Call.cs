@@ -104,24 +104,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
             };
             return Call(request, default);
-
-            // Do we need to return the 'response'? It may work even better.
-
-            // var response = await Call(request, default);
-            // return response;
-
-            // if (response == null)
-            //     return "[Error] Tool response is null";
-
-            // if (response.IsError)
-            //     return response.Content?.FirstOrDefault()?.Text ?? "[Error] Got an error during running tool";
-
-            // var result = response.Content?.FirstOrDefault()?.Text;
-            // if (result == null)
-            //     return "[Error] Tool returned null value";
-
-            // // logger.Trace("Call, result: {0}", JsonSerializer.Serialize(response.Value));
-            // return response.Value.ToCallToolResult();
         }
     }
 }
