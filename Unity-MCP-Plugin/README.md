@@ -65,7 +65,7 @@ Choose MCP client you prefer, don't need to install all of them. This is will be
 
 ## Option 1: Install `.unitypackage` installer
 
--  **[⬇️ Download the Installer ⬇️](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.15.0/AI-Game-Dev-Installer.unitypackage)**
+-  **[⬇️ Download the Installer ⬇️](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.16.0/AI-Game-Dev-Installer.unitypackage)**
 - **📂 Open the installer into Unity project 📂**
   > - You may use double click on the file - Unity will open it
   > - OR: You may open Unity Editor first, then click on `Assets/Import Package/Custom Package`, then choose the file

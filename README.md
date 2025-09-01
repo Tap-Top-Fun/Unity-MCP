@@ -1,6 +1,6 @@
 <div align="center">
   <h1>✨ AI Game Developer — <i>Unity MCP</i></h1>
-  
+
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![MCP](https://badge.mcpx.dev?type=server 'MCP Server')](https://modelcontextprotocol.io/introduction)
 [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)
@@ -97,7 +97,7 @@ Choose MCP client you prefer, don't need to install all of them. This is will be
 
 ## Option 1: Install `.unitypackage` installer
 
--  **[⬇️ Download the Installer ⬇️](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.15.0/AI-Game-Dev-Installer.unitypackage)**
+-  **[⬇️ Download the Installer ⬇️](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.16.0/AI-Game-Dev-Installer.unitypackage)**
 - **📂 Open the installer into Unity project 📂**
   > - You may use double click on the file - Unity will open it
   > - OR: You may open Unity Editor first, then click on `Assets/Import Package/Custom Package`, then choose the file
