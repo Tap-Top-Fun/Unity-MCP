@@ -13,10 +13,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
     {
         public static class Hub
         {
-            public const int DefaultPort = 60606;
+            public const int DefaultPort = 8080;
             public const int MaxPort = 65535;
-            public const string DefaultEndpoint = "http://localhost:60606";
-            public const string RemoteApp = "/mcp/remote-app";
+            public const string DefaultEndpoint = "http://localhost:8080";
+            public const string RemoteApp = "/hub/mcp-server";
             public const int DefaultTimeoutMs = 10000;
         }
 
