@@ -41,3 +41,9 @@ docker login
 ```bash
 docker push ivanmurzakdev/unity-mcp-server:latest
 ```
+
+# Clean local NuGet cache
+
+```bash
+dotnet nuget locals all --clear
+```

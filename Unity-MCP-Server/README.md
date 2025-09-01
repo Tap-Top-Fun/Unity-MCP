@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Unity MCP server</h1>
-  
+
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![MCP](https://badge.mcpx.dev?type=server 'MCP Server')](https://modelcontextprotocol.io/introduction)
 [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)
@@ -36,10 +36,10 @@ Unity-MCP server is developed with idea of flexibility in mind, that is why it h
 
 #### Default launch
 
-The default the transport method is `http`, that is why the port `8080` should be forwarded.
+The default the transport method is `http`. The port `8080` should be forwarded. It will be used for http transport and for **plugin** <-> **server** communication
 
 ```bash
-docker run -p 8080:8080 -p 60606:60606 ivanmurzakdev/unity-mcp-server
+docker run -p 8080:8080 ivanmurzakdev/unity-mcp-server
 ```
 
 MCP client config:
@@ -59,7 +59,7 @@ MCP client config:
 The `8080` port is not needed for STDIO, because it uses the STDIO to communicate with **Client**. It is a good setup for using in a client with automatic installation and launching. Because this docker command loads the image from docker hub and launches immediately.
 
 ```bash
-docker run -t -e UNITY_MCP_CLIENT_TRANSPORT=stdio -p 60606:60606 ivanmurzakdev/unity-mcp-server
+docker run -t -e UNITY_MCP_CLIENT_TRANSPORT=stdio -p 8080:8080 ivanmurzakdev/unity-mcp-server
 ```
 
 MCP client config:
@@ -75,7 +75,7 @@ MCP client config:
         "-e",
         "UNITY_MCP_CLIENT_TRANSPORT=stdio",
         "-p",
-        "60606:60606",
+        "8080:8080",
         "ivanmurzakdev/unity-mcp-server"
       ]
     }
@@ -83,10 +83,10 @@ MCP client config:
 }
 ```
 
-#### Custom plugin port
+#### Custom port
 
 ```bash
-docker run -e UNITY_MCP_PLUGIN_PORT=123 -p 8080:8080 -p 123:123 ivanmurzakdev/unity-mcp-server
+docker run -e UNITY_MCP_PORT=123 -p 123:123 ivanmurzakdev/unity-mcp-server
 ```
 
 MCP client config:
@@ -95,13 +95,13 @@ MCP client config:
 {
   "mcpServers": {
     "Unity-MCP": {
-      "url": "http://localhost:8080"
+      "url": "http://localhost:123"
     }
   }
 }
 ```
 
-Port forwarding is need for the launch with docker `-p 8080:8080` for client and `-p 60606:60606` for plugin.
+Port forwarding is need for the launch with docker `-p 123:123`.
 
 ---
 
@@ -135,7 +135,7 @@ MCP client config:
 Launch server with STDIO transport type for local usage on the same machine with Unity Editor.
 
 ```bash
-./unity-mcp-server --plugin-port 60606 --plugin-timeout 10000 --client-transport stdio
+./unity-mcp-server --port 8080 --plugin-timeout 10000 --client-transport stdio
 ```
 
 MCP client config:
@@ -146,7 +146,7 @@ MCP client config:
     "Unity-MCP": {
       "command": "C:/Projects/Unity/Unity-MCP/Unity-MCP-Plugin/Library/mcp-server/win-x64/unity-mcp-server.exe",
       "args": [
-        "--plugin-port=60606",
+        "--port=8080",
         "--plugin-timeout=10000",
         "--client-transport=stdio"
       ]
@@ -160,7 +160,7 @@ MCP client config:
 Launch server with HTTP transport type for local OR remote usage using HTTP(S) url.
 
 ```bash
-./unity-mcp-server --plugin-port 60606 --plugin-timeout 10000 --client-transport http
+./unity-mcp-server --port 8080 --plugin-timeout 10000 --client-transport http
 ```
 
 MCP client config:
@@ -171,7 +171,7 @@ MCP client config:
     "Unity-MCP": {
       "command": "C:/Projects/Unity/Unity-MCP/Unity-MCP-Plugin/Library/mcp-server/win-x64/unity-mcp-server.exe",
       "args": [
-        "--plugin-port=60606",
+        "--port=8080",
         "--plugin-timeout=10000",
         "--client-transport=http"
       ]
@@ -184,11 +184,10 @@ MCP client config:
 
 ### Variables
 
-Doesn't matter what launch option you choose, all of them support custom configuration using both Environment Variables and Command Line Arguments. It would work with default values, if you just need to launch it, don't waste your time for the variables. Just make sure Unity Plugin also has default values, especially the `--plugin-port`, they should be equal.
+Doesn't matter what launch option you choose, all of them support custom configuration using both Environment Variables and Command Line Arguments. It would work with default values, if you just need to launch it, don't waste your time for the variables. Just make sure Unity Plugin also has default values, especially the `--port`, they should be equal.
 
 | Environment Variable        | Command Line Args     | Description                                                                 |
 |-----------------------------|-----------------------|-----------------------------------------------------------------------------|
-| `UNITY_MCP_PLUGIN_PORT`     | `--plugin-port`       | **Plugin** -> **Server** connection port (default: 60606)                   |
+| `UNITY_MCP_PORT`            | `--port`              | **Client** -> **Server** <- **Plugin** connection port (default: 8080)      |
 | `UNITY_MCP_PLUGIN_TIMEOUT`  | `--plugin-timeout`    | **Plugin** -> **Server** connection timeout (ms) (default: 10000)           |
-| `UNITY_MCP_CLIENT_PORT`     | `--client-port`       | **Client** -> **Server** connection port (default: 8080)                    |
 | `UNITY_MCP_CLIENT_TRANSPORT`| `--client-transport`  | **Client** -> **Server** transport type: `stdio` or `http` (default: `http`) |

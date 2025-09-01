@@ -197,7 +197,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     foundTimeout = true;
 
                 // Check named format
-                else if (arg!.StartsWith($"{Consts.MCP.Server.Args.PluginPort}=") && arg.Substring(Consts.MCP.Server.Args.PluginPort.Length + 1) == targetPort)
+                else if (arg!.StartsWith($"{Consts.MCP.Server.Args.Port}=") && arg.Substring(Consts.MCP.Server.Args.Port.Length + 1) == targetPort)
                     foundPort = true;
                 else if (arg!.StartsWith($"{Consts.MCP.Server.Args.PluginTimeout}=") && arg.Substring(Consts.MCP.Server.Args.PluginTimeout.Length + 1) == targetTimeout)
                     foundTimeout = true;

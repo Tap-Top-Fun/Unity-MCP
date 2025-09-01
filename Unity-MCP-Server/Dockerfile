@@ -24,6 +24,6 @@ COPY --from=build /app/publish .
 
 # Expose the default plugin port and the HTTP client port so external scanners
 # (like Smithery) and platform port mappings can reach the server.
-EXPOSE 60606 8080
+EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "unity-mcp-server.dll"]

@@ -16,15 +16,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public class DataArguments
     {
-        public int PluginPort { get; private set; }
+        public int Port { get; private set; } = 8080;
         public int PluginTimeoutMs { get; private set; }
-
-        public int ClientPort { get; private set; } = 8080;
         public Consts.MCP.Server.TransportMethod ClientTransport { get; private set; }
 
         public DataArguments(string[] args)
         {
-            PluginPort = Consts.Hub.DefaultPort;
+            Port = Consts.Hub.DefaultPort;
             PluginTimeoutMs = Consts.Hub.DefaultTimeoutMs;
             ClientTransport = Consts.MCP.Server.TransportMethod.http;
 
@@ -34,21 +32,19 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         void ParseEnvironmentVariables()
         {
-            // --- Plugin variables ---
+            // --- Global variables ---
 
-            var envPluginPort = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.PluginPort);
-            if (envPluginPort != null && int.TryParse(envPluginPort, out var parsedEnvPort))
-                PluginPort = parsedEnvPort;
+            var envPort = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.Port);
+            if (envPort != null && int.TryParse(envPort, out var parsedEnvPort))
+                Port = parsedEnvPort;
+
+            // --- Plugin variables ---
 
             var envPluginTimeout = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.PluginTimeout);
             if (envPluginTimeout != null && int.TryParse(envPluginTimeout, out var parsedEnvTimeoutMs))
                 PluginTimeoutMs = parsedEnvTimeoutMs;
 
             // --- Client variables ---
-
-            var envClientPort = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.ClientPort);
-            if (envClientPort != null && int.TryParse(envClientPort, out var parsedEnvClientPort))
-                ClientPort = parsedEnvClientPort;
 
             var envClientTransport = Environment.GetEnvironmentVariable(Consts.MCP.Server.Env.ClientTransportMethod);
             if (envClientTransport != null && Enum.TryParse(envClientTransport, out Consts.MCP.Server.TransportMethod parsedEnvTransport))
@@ -58,21 +54,19 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             var commandLineArgs = ArgsUtils.ParseLineArguments(args);
 
-            // --- Plugin variables ---
+            // --- Global variables ---
 
-            var argPluginPort = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.PluginPort.TrimStart('-'));
-            if (argPluginPort != null && int.TryParse(argPluginPort, out var port))
-                PluginPort = port;
+            var argPort = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.Port.TrimStart('-'));
+            if (argPort != null && int.TryParse(argPort, out var port))
+                Port = port;
+
+            // --- Plugin variables ---
 
             var argPluginTimeout = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.PluginTimeout.TrimStart('-'));
             if (argPluginTimeout != null && int.TryParse(argPluginTimeout, out var timeoutMs))
                 PluginTimeoutMs = timeoutMs;
 
             // --- Client variables ---
-
-            var argClientPort = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.ClientPort.TrimStart('-'));
-            if (argClientPort != null && int.TryParse(argClientPort, out var clientPort))
-                ClientPort = clientPort;
 
             var argClientTransport = commandLineArgs.GetValueOrDefault(Consts.MCP.Server.Args.ClientTransportMethod.TrimStart('-'));
             if (argClientTransport != null && Enum.TryParse(argClientTransport, out Consts.MCP.Server.TransportMethod parsedArgTransport))

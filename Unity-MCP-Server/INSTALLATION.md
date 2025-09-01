@@ -28,7 +28,7 @@ Add the following configuration to your Claude Desktop config file:
       "command": "unity-mcp-server",
       "env": {
         "UNITY_MCP_CLIENT_TRANSPORT": "stdio",
-        "UNITY_MCP_PLUGIN_PORT": "60606",
+        "UNITY_MCP_PORT": "8080",
         "UNITY_MCP_PLUGIN_TIMEOUT": "10000"
       }
     }
@@ -46,7 +46,7 @@ If using a VS Code MCP extension, add this to your VS Code settings.json:
       "command": "unity-mcp-server",
       "env": {
         "UNITY_MCP_CLIENT_TRANSPORT": "stdio",
-        "UNITY_MCP_PLUGIN_PORT": "60606",
+        "UNITY_MCP_PORT": "8080",
         "UNITY_MCP_PLUGIN_TIMEOUT": "10000"
       }
     }
@@ -58,14 +58,12 @@ If using a VS Code MCP extension, add this to your VS Code settings.json:
 
 ### Command Line Arguments
 - `--client-transport`: Transport method (`stdio` or `http`)
-- `--client-port`: Client connection port (default: 8080, only for HTTP transport)
-- `--plugin-port`: Unity Plugin connection port (default: 60606)
+- `--port`: Unity Plugin connection port (default: 8080)
 - `--plugin-timeout`: Plugin connection timeout in milliseconds (default: 10000)
 
 ### Environment Variables
 - `UNITY_MCP_CLIENT_TRANSPORT`: Transport type
-- `UNITY_MCP_CLIENT_PORT`: Client port
-- `UNITY_MCP_PLUGIN_PORT`: Plugin port
+- `UNITY_MCP_PORT`: Plugin port
 - `UNITY_MCP_PLUGIN_TIMEOUT`: Plugin timeout
 
 ## Usage
@@ -81,13 +79,13 @@ If using a VS Code MCP extension, add this to your VS Code settings.json:
 
 1. **Server not found**: Ensure the dotnet tool is installed globally and accessible in your PATH
 2. **Connection timeout**: Verify Unity is running and the MCP Plugin is installed
-3. **Port conflicts**: Change the `--plugin-port` if 60606 is already in use
+3. **Port conflicts**: Change the `--port` if 8080 is already in use
 
 ### Debugging
 
 Run the server manually to see debug output:
 ```bash
-unity-mcp-server --client-transport=stdio --plugin-port=60606
+unity-mcp-server --client-transport=stdio --port=8080
 ```
 
 For more information, visit: https://github.com/IvanMurzak/Unity-MCP

@@ -5,28 +5,27 @@ build:
   dockerfile: "Dockerfile"           # Path to your Dockerfile
   dockerBuildPath: "."               # Docker build context
 ports:
-  - 60606:60606                      # Forward Unity plugin port
+  - 8080:8080                        # Forward Unity plugin port
 env:
   UNITY_MCP_CLIENT_TRANSPORT: http
-  UNITY_MCP_PLUGIN_PORT: 60606       # Unity plugin port
+  UNITY_MCP_PORT: 8080               # Unity plugin port
   UNITY_MCP_PLUGIN_TIMEOUT: 15000    # Unity plugin timeout
 startCommand:
   type: http
   configSchema:
-    # JSON Schema defining the configuration options for the MCP.
     type: object
     required:
-      - UNITY_MCP_PLUGIN_PORT
+    #  - UNITY_MCP_PORT
       - UNITY_MCP_PLUGIN_TIMEOUT
     properties:
       UNITY_MCP_CLIENT_TRANSPORT:
         type: string
         description: "http or stdio transport options"
         default: "http"
-      UNITY_MCP_PLUGIN_PORT:
-        type: integer
-        description: "The port for the Unity plugin"
-        default: 60606
+      # UNITY_MCP_PORT:
+      #   type: integer
+      #   description: "The port for the Unity plugin"
+      #   default: 8080
       UNITY_MCP_PLUGIN_TIMEOUT:
         type: integer
         description: "The timeout for the Unity plugin"
@@ -36,18 +35,13 @@ startCommand:
     (config) => ({
       command: 'dotnet',
       args: ['unity-mcp-server.dll'],
-      "args": [
-        `-p`,
-        `${config.UNITY_MCP_PLUGIN_PORT}:${config.UNITY_MCP_PLUGIN_PORT}`
-      ],
       env: {
-        UNITY_MCP_CLIENT_PORT: config.PORT,
+        UNITY_MCP_PORT: config.PORT,
         UNITY_MCP_CLIENT_TRANSPORT: config.UNITY_MCP_CLIENT_TRANSPORT,
-        UNITY_MCP_PLUGIN_PORT: config.UNITY_MCP_PLUGIN_PORT,
         UNITY_MCP_PLUGIN_TIMEOUT: config.UNITY_MCP_PLUGIN_TIMEOUT
       }
     })
   exampleConfig:
     UNITY_MCP_CLIENT_TRANSPORT: "http"
-    UNITY_MCP_PLUGIN_PORT: 60606
+    # UNITY_MCP_PORT: 8080
     UNITY_MCP_PLUGIN_TIMEOUT: 15000

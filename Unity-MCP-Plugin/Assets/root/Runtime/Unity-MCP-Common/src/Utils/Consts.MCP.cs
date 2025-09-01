@@ -23,19 +23,15 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 public static partial class Args
                 {
-                    public const string PluginPort = "--plugin-port";
+                    public const string Port = "--port";
                     public const string PluginTimeout = "--plugin-timeout";
-
-                    public const string ClientPort = "--client-port";
                     public const string ClientTransportMethod = "--client-transport";
                 }
 
                 public static class Env
                 {
-                    public const string PluginPort = "UNITY_MCP_PLUGIN_PORT";
+                    public const string Port = "UNITY_MCP_PORT";
                     public const string PluginTimeout = "UNITY_MCP_PLUGIN_TIMEOUT";
-
-                    public const string ClientPort = "UNITY_MCP_CLIENT_PORT";
                     public const string ClientTransportMethod = "UNITY_MCP_CLIENT_TRANSPORT";
                 }
 
@@ -56,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                                 ["command"] = executablePath,
                                 ["args"] = new JsonArray
                                 {
-                                    $"{Args.PluginPort}={port}",
+                                    $"{Args.Port}={port}",
                                     $"{Args.PluginTimeout}={timeoutMs}",
                                     $"{Args.ClientTransportMethod}={TransportMethod.stdio}"
                                 }

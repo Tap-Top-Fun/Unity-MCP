@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Build scripts create cross-platform executables in the `publish/` directory for:
 - Windows: win-x64, win-x86, win-arm64
-- Linux: linux-x64, linux-arm64  
+- Linux: linux-x64, linux-arm64
 - macOS: osx-x64, osx-arm64
 
 ### Running the Server
@@ -20,19 +20,18 @@ The server supports two transport methods:
 
 #### STDIO Transport (for MCP clients)
 ```bash
-dotnet run -- --client-transport stdio --plugin-port 60606
+dotnet run -- --client-transport stdio --port 8080
 ```
 
 #### HTTP Transport (for web-based clients)
 ```bash
-dotnet run -- --client-transport http --client-port 8080 --plugin-port 60606
+dotnet run -- --client-transport http --port 8080 --port 8080
 ```
 
 ### Configuration
 Key command-line arguments and environment variables:
-- `UNITY_MCP_PLUGIN_PORT` / `--plugin-port`: Plugin connection port (default: 60606)
+- `UNITY_MCP_PORT` / `--port`: Client & Plugin connection port (default: 8080)
 - `UNITY_MCP_PLUGIN_TIMEOUT` / `--plugin-timeout`: Plugin connection timeout (default: 10000ms)
-- `UNITY_MCP_CLIENT_PORT` / `--client-port`: Client connection port (default: 8080)
 - `UNITY_MCP_CLIENT_TRANSPORT` / `--client-transport`: Transport type: `stdio` or `http`
 
 ## Architecture Overview
@@ -40,7 +39,7 @@ Key command-line arguments and environment variables:
 ### Core Components
 - **Program.cs**: Main entry point, configures ASP.NET Core web host with MCP server and SignalR hub
 - **McpServerService.cs**: Hosted service that manages the MCP server lifecycle and tool change notifications
-- **Hub/RemoteApp.cs**: SignalR hub for Unity Plugin communication on port 60606
+- **Hub/RemoteApp.cs**: SignalR hub for Unity Plugin communication on port 8080
 - **Routing/**: MCP protocol handlers for tools and resources
 - **Client/**: Utilities for remote tool and resource execution
 - **Extension/**: Builder extensions for MCP server configuration
@@ -49,7 +48,7 @@ Key command-line arguments and environment variables:
 ```
 MCP Client <--> MCP Server <--> Unity Plugin (via SignalR)
      ^              ^                    ^
-  stdio/http    ASP.NET Core         port 60606
+  stdio/http    ASP.NET Core         port 8080
 ```
 
 ### Key Technologies

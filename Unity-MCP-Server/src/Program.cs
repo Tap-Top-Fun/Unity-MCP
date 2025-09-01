@@ -20,14 +20,11 @@ using NLog.Extensions.Logging;
 using NLog;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using com.IvanMurzak.Unity.MCP.Common.Json;
 using Microsoft.AspNetCore.Http;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
-    using Consts = Common.Consts;
-
     public class Program
     {
         public static async Task Main(string[] args)
@@ -38,11 +35,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
             try
             {
                 var dataArguments = new DataArguments(args);
-
-                if (dataArguments.PluginPort == dataArguments.ClientPort)
-                {
-                    throw new ArgumentException($"Plugin port ({dataArguments.PluginPort}) and client port ({dataArguments.ClientPort}) cannot be the same.");
-                }
 
                 // TODO: remove usage of static ConnectionConfig, replace it with instance with DI injection.
                 // Set the runtime configurable timeout
@@ -106,13 +98,17 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     // Configure HTTP transport
                     mcpBuilder = mcpBuilder.WithHttpTransport(options =>
                     {
+                        logger.Debug($"Http transport configuration.");
+
+                        options.Stateless = false;
                         options.RunSessionHandler = async (context, server, cancellationToken) =>
                         {
+                            var connectionGuid = Guid.NewGuid();
                             try
                             {
                                 // This is where you can run logic before a session starts
                                 // For example, you can log the session start or initialize resources
-                                logger.Debug("Running session handler for HTTP transport.");
+                                logger.Debug($"----------\nRunning session handler for HTTP transport. Connection guid: {connectionGuid}");
 
                                 var service = new McpServerService(
                                     server.Services!.GetRequiredService<ILogger<McpServerService>>(),
@@ -135,7 +131,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
                             }
                             catch (Exception ex)
                             {
-                                logger.Error(ex, "Error occurred while processing HTTP transport session.");
+                                logger.Error(ex, $"Error occurred while processing HTTP transport session. Connection guid: {connectionGuid}.");
+                            }
+                            finally
+                            {
+                                logger.Debug($"Session handler for HTTP transport completed. Connection guid: {connectionGuid}\n----------");
                             }
                         };
                     });
@@ -150,14 +150,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 builder.WebHost.UseKestrel(options =>
                 {
-                    logger.Info($"Start listening on port: {dataArguments.PluginPort}");
-                    options.ListenAnyIP(dataArguments.PluginPort);
-
-                    if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
-                    {
-                        logger.Info($"Start listening on port: {dataArguments.ClientPort}");
-                        options.ListenAnyIP(dataArguments.ClientPort);
-                    }
+                    logger.Info($"Start listening on port: {dataArguments.Port}");
+                    options.ListenAnyIP(dataArguments.Port);
                 });
 
                 var app = builder.Build();
@@ -177,12 +171,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 // Setup MCP client -------------------------------------------------
                 if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
                 {
-                    // app.MapGet("/", context =>
-                    // {
-                    //     context.Response.Redirect("/mcp", permanent: false);
-                    //     return Task.CompletedTask;
-                    // });
-                    app.MapGet("/", () =>
+                    // Add a GET /help endpoint for informational message
+                    app.MapGet("/help", () =>
                     {
                         var header =
                             "Author: Ivan Murzak (https://github.com/IvanMurzak)\n" +
@@ -191,10 +181,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
                             "Licensed under the Apache License, Version 2.0.\n" +
                             "See the LICENSE file in the project root for more information.\n" +
                             "\n" +
-                            "Use /mcp endpoint to get connected to MCP server\n";
+                            "Use \"/\" endpoint to get connected to MCP server\n";
                         return Results.Text(header, Consts.MimeType.TextPlain);
                     });
-                    app.MapMcp("mcp");
+                    app.MapMcp("/");
                 }
 
                 // Print logs -------------------------------------------------------
@@ -210,13 +200,17 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         try
                         {
                             await next.Invoke();
+                            logger.Debug($"Response: {context.Response.StatusCode}");
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // Optionally log as debug or ignore
                         }
                         catch (Exception ex)
                         {
                             logger.Error(ex, $"Error occurred while processing request: {context.Request.Method} {context.Request.Path}");
                             return;
                         }
-                        logger.Debug($"Response: {context.Response.StatusCode}");
                     });
                 }
 
