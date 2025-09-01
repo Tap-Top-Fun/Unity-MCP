@@ -171,8 +171,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 // Setup MCP client -------------------------------------------------
                 if (dataArguments.ClientTransport == Consts.MCP.Server.TransportMethod.http)
                 {
-                    // Map MCP endpoint to root "/"
+                    // Map MCP endpoint
                     app.MapMcp("/");
+                    app.MapMcp("/mcp");
 
                     // Add a GET /help endpoint for informational message
                     app.MapGet("/help", () =>
@@ -186,15 +187,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                             "\n" +
                             "Use \"/\" endpoint to get connected to MCP server\n";
                         return Results.Text(header, Consts.MimeType.TextPlain);
-                    });
-
-                    // Middleware to silently rewrite "/mcp" to "/"
-                    // Needed for Smithery.ai
-                    app.Use((context, next) =>
-                    {
-                        if (context.Request.Path.Equals("/mcp", StringComparison.OrdinalIgnoreCase))
-                            context.Request.Path = "/";
-                        return next();
                     });
                 }
 
