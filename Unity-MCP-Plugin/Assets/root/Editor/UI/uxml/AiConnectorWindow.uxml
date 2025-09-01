@@ -14,9 +14,9 @@
                 </ui:VisualElement>
             </ui:Box>
             <ui:Label text="Connect to MCP server" class="Header" />
-            <ui:TextField picking-mode="Ignore" label="Server URL" value="http://localhost:60606" name="InputServerURL" class="ContentItem" />
+            <ui:TextField picking-mode="Ignore" label="Server URL" value="http://localhost:8080" name="InputServerURL" class="ContentItem" />
             <ui:Foldout text="Information" value="false">
-                <ui:Label text="Usually the server is hosted locally at:&#10;http://localhost:60606&#10;&#10;But feel free to connect to remote MCP server if needed. The connection under the hood is established using SignalR and supports wide range of features." class="section-desc" />
+                <ui:Label text="Usually the server is hosted locally at:&#10;http://localhost:8080&#10;&#10;But feel free to connect to remote MCP server if needed. The connection under the hood is established using SignalR and supports wide range of features." class="section-desc" />
             </ui:Foldout>
             <ui:VisualElement name="ServerConnectionInfo" class="row">
                 <ui:VisualElement name="connectionStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />

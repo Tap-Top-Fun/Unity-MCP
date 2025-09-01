@@ -126,7 +126,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     };
                     inputFieldHost.tooltip = plugin.KeepConnected.CurrentValue
                         ? "Editable only when disconnected from the MCP Server."
-                        : "The server URL. https://localhost:60606";
+                        : $"The server URL. https://localhost:{Consts.Hub.DefaultPort}";
 
                     // Update the style class
                     if (inputFieldHost.isReadOnly)
