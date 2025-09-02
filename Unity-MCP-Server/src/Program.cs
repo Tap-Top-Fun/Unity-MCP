@@ -60,6 +60,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                 // Setup SignalR ---------------------------------------------------------------
 
+                var reflector = new Reflector();
+
                 builder.Services.AddSignalR(configure =>
                 {
                     configure.EnableDetailedErrors = true;
@@ -67,13 +69,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     configure.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
                     configure.KeepAliveInterval = TimeSpan.FromSeconds(10);
                     configure.HandshakeTimeout = TimeSpan.FromSeconds(15);
-                });
+                })
+                .AddJsonProtocol(options => RpcJsonConfiguration.ConfigureJsonSerializer(reflector, options));
 
                 // Setup MCP Plugin ---------------------------------------------------------------
                 builder.Services.AddMcpPlugin(loggerProvider: new NLogLoggerProvider(), configure =>
                 {
                     configure.WithServerFeatures(dataArguments);
-                }).Build(new Reflector());
+                }).Build(reflector);
 
                 // Setup MCP Server ---------------------------------------------------------------
 

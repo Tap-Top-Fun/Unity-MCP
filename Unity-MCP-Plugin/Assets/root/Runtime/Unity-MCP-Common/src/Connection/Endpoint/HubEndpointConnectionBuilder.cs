@@ -37,17 +37,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .WithUrl(connectionConfig.Endpoint + endpoint)
                 .WithAutomaticReconnect(new FixedRetryPolicy(TimeSpan.FromSeconds(1)))
                 .WithServerTimeout(TimeSpan.FromSeconds(30))
-                .AddJsonProtocol(options =>
-                {
-                    var jsonSerializerOptions = _reflector.JsonSerializer.JsonSerializerOptions;
-
-                    options.PayloadSerializerOptions.DefaultIgnoreCondition = jsonSerializerOptions.DefaultIgnoreCondition;
-                    options.PayloadSerializerOptions.PropertyNamingPolicy = jsonSerializerOptions.PropertyNamingPolicy;
-                    options.PayloadSerializerOptions.WriteIndented = jsonSerializerOptions.WriteIndented;
-
-                    foreach (var converter in jsonSerializerOptions.Converters)
-                        options.PayloadSerializerOptions.Converters.Add(converter);
-                })
+                .AddJsonProtocol(options => RpcJsonConfiguration.ConfigureJsonSerializer(_reflector, options))
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();

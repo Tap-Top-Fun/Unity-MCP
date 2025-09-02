@@ -9,6 +9,7 @@
 */
 
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Model;
@@ -28,6 +29,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _eventAppToolsChange = eventAppToolsChange ?? throw new ArgumentNullException(nameof(eventAppToolsChange));
             _requestTrackingService = requestTrackingService ?? throw new ArgumentNullException(nameof(requestTrackingService));
         }
+
+        static JsonSerializerOptions CreateJsonOptions() => new()
+        {
+            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
         public Task<IResponseData<string>> OnListToolsUpdated(string data)
         {
@@ -73,7 +80,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             try
             {
-                var response = System.Text.Json.JsonSerializer.Deserialize<IResponseData<object>>(responseJson);
+                var response = System.Text.Json.JsonSerializer.Deserialize<IResponseData<object>>(responseJson, CreateJsonOptions());
                 if (response != null)
                 {
                     _requestTrackingService.CompleteRequest(requestId, response);
@@ -93,7 +100,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             try
             {
-                var response = System.Text.Json.JsonSerializer.Deserialize<IResponseData<object>>(responseJson);
+                var response = System.Text.Json.JsonSerializer.Deserialize<IResponseData<object>>(responseJson, CreateJsonOptions());
                 if (response != null)
                 {
                     _requestTrackingService.CompleteRequest(requestId, response);
