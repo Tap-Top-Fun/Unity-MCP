@@ -7,20 +7,20 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 #if UNITY_EDITOR
 using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -28,11 +28,11 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
     {
         public override bool TryPopulate(
             Reflector reflector,
-            ref object obj,
+            ref object? obj,
             SerializedMember data,
             Type? dataType = null,
             int depth = 0,
-            StringBuilder stringBuilder = null,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {

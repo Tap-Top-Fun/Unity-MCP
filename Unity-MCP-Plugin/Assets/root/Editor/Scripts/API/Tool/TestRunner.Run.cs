@@ -18,7 +18,9 @@ using System.Text.RegularExpressions;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Editor.API.TestRunner;
+using com.IvanMurzak.Unity.MCP.Runtime.DomainReload;
 using com.IvanMurzak.Unity.MCP.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 
@@ -47,7 +49,9 @@ Be default recommended to use 'EditMode' for faster iteration during development
             [Description("Specific test class name to run (optional). Example: 'MyTestClass'")]
             string? testClass = null,
             [Description("Specific fully qualified test method to run (optional). Example: 'MyTestNamespace.FixtureName.TestName'")]
-            string? testMethod = null
+            string? testMethod = null,
+            [Description("Original MCP request (internal use - automatically provided by framework)")]
+            RequestCallTool? _originalRequest = null
         )
         {
             try
@@ -60,6 +64,9 @@ Be default recommended to use 'EditMode' for faster iteration during development
 
                     _isTestRunning = true;
                 }
+
+                // Generate unique operation ID for this test run
+                var operationId = Guid.NewGuid().ToString();
 
                 // Validate test mode
                 if (!IsValidTestMode(testMode))
@@ -95,7 +102,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
 
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
                         Debug.Log($"[TestRunner] Running tests in modes: {string.Join(", ", modesToRun)} (EditMode: {editModeTestCount}, PlayMode: {playModeTestCount})");
-                    return await RunSequentialTests(testRunnerApi, filterParams, timeoutMs, editModeTestCount > 0, playModeTestCount > 0);
+                    return await RunSequentialTests(testRunnerApi, filterParams, timeoutMs, editModeTestCount > 0, playModeTestCount > 0, operationId, _originalRequest);
                 }
                 else
                 {
@@ -115,7 +122,14 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
                         Debug.Log($"[TestRunner] Running {testMode} tests.");
 
-                    var resultCollector = await RunSingleTestModeWithCollector(testModeEnum, testRunnerApi, filterParams, timeoutMs);
+                    var resultCollector = await RunSingleTestModeWithCollector(testModeEnum, testRunnerApi, filterParams, timeoutMs, operationId, _originalRequest);
+
+                    // For PlayMode tests, domain reload may have occurred - results will be sent async
+                    if (testModeEnum == TestMode.PlayMode && HasDomainReloadPersistence(operationId))
+                    {
+                        return "[Info] PlayMode test execution started. Results will be sent asynchronously after domain reload completion.";
+                    }
+
                     return resultCollector.FormatTestResults();
                 }
             }
@@ -274,7 +288,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     var dllIndex = test.UniqueName.IndexOf(".dll");
                     if (dllIndex > 0)
                     {
-                        var assemblyName = test.UniqueName.Substring(0, dllIndex);
+                        var assemblyName = test.UniqueName[..dllIndex];
                         if (assemblyName.Equals(filterParams.TestAssembly, StringComparison.OrdinalIgnoreCase))
                             matches = true;
                     }
@@ -317,7 +331,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
             return count;
         }
 
-        private async Task<string> RunSequentialTests(TestRunnerApi testRunnerApi, TestFilterParameters filterParams, int timeoutMs, bool runEditMode, bool runPlayMode)
+        private async Task<string> RunSequentialTests(TestRunnerApi testRunnerApi, TestFilterParameters filterParams, int timeoutMs, bool runEditMode, bool runPlayMode, string operationId, RequestCallTool? originalRequest)
         {
             var combinedCollector = new CombinedTestResultCollector();
             var totalStartTime = DateTime.Now;
@@ -333,7 +347,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                         Debug.Log($"[TestRunner] Starting EditMode tests...");
 
                     var editModeStartTime = DateTime.Now;
-                    var editModeCollector = await RunSingleTestModeWithCollector(TestMode.EditMode, testRunnerApi, filterParams, timeoutMs);
+                    var editModeCollector = await RunSingleTestModeWithCollector(TestMode.EditMode, testRunnerApi, filterParams, timeoutMs, $"{operationId}_edit", originalRequest);
 
                     combinedCollector.AddResults(editModeCollector);
 
@@ -355,7 +369,14 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
                         Debug.Log($"[TestRunner] Starting PlayMode tests with {remainingTimeoutMs}ms timeout...");
 
-                    var playModeCollector = await RunSingleTestModeWithCollector(TestMode.PlayMode, testRunnerApi, filterParams, remainingTimeoutMs);
+                    var playModeCollector = await RunSingleTestModeWithCollector(TestMode.PlayMode, testRunnerApi, filterParams, remainingTimeoutMs, $"{operationId}_play", originalRequest);
+
+                    // Check if PlayMode triggered domain reload
+                    if (HasDomainReloadPersistence($"{operationId}_play"))
+                    {
+                        return "[Info] PlayMode test execution started. Results will be sent asynchronously after domain reload completion.";
+                    }
+
                     combinedCollector.AddResults(playModeCollector);
 
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
@@ -392,13 +413,27 @@ Be default recommended to use 'EditMode' for faster iteration during development
             }
         }
 
-        private async Task<TestResultCollector> RunSingleTestModeWithCollector(TestMode testMode, TestRunnerApi testRunnerApi, TestFilterParameters filterParams, int timeoutMs)
+        private async Task<TestResultCollector> RunSingleTestModeWithCollector(TestMode testMode, TestRunnerApi testRunnerApi, TestFilterParameters filterParams, int timeoutMs, string operationId = null, RequestCallTool? originalRequest = null)
         {
             var filter = CreateTestFilter(testMode, filterParams);
             var runNumber = testMode == TestMode.EditMode
                 ? 1
                 : 2;
             var resultCollector = new TestResultCollector(testMode, runNumber);
+
+            // Save state for domain reload continuation if this is PlayMode
+            if (testMode == TestMode.PlayMode && !string.IsNullOrEmpty(operationId) && originalRequest != null)
+            {
+                TestRunnerDomainReloadHandler.SaveTestExecutionState(
+                    operationId,
+                    testMode,
+                    filter,
+                    timeoutMs,
+                    runNumber,
+                    DateTime.Now,
+                    originalRequest
+                );
+            }
 
             await MainThread.Instance.RunAsync(() =>
             {
@@ -411,18 +446,43 @@ Be default recommended to use 'EditMode' for faster iteration during development
             {
                 var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(timeoutMs));
                 await resultCollector.WaitForCompletionAsync(timeoutCts.Token);
+
+                // Clean up domain reload state on successful completion
+                if (testMode == TestMode.PlayMode && !string.IsNullOrEmpty(operationId))
+                {
+                    DomainReloadManager.CompleteOperation("TestRunner", operationId);
+                }
+
                 return resultCollector;
             }
             catch (OperationCanceledException)
             {
                 if (McpPluginUnity.IsLogActive(LogLevel.Warning))
                     Debug.LogWarning($"[TestRunner] {testMode} tests timed out after {timeoutMs} ms.");
+
+                // Clean up domain reload state on timeout
+                if (testMode == TestMode.PlayMode && !string.IsNullOrEmpty(operationId))
+                {
+                    DomainReloadManager.CompleteOperation("TestRunner", operationId);
+                }
+
                 return resultCollector;
             }
             finally
             {
                 await MainThread.Instance.RunAsync(() => testRunnerApi.UnregisterCallbacks(resultCollector));
             }
+        }
+
+        /// <summary>
+        /// Checks if domain reload persistence was triggered for this operation.
+        /// </summary>
+        /// <param name="operationId">Operation ID to check for</param>
+        /// <returns>True if domain reload persistence exists</returns>
+        private bool HasDomainReloadPersistence(string operationId)
+        {
+            var key = $"TestRunner_{operationId}";
+            return DomainReloadPersistence.HasData(key);
         }
     }
 }

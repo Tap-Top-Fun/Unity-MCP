@@ -13,8 +13,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -23,6 +22,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using com.IvanMurzak.Unity.MCP.Utils;
 using System.Text.Json;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {

@@ -11,6 +11,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -69,6 +70,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public Task Disconnect(CancellationToken cancellationToken = default)
             => _rpcRouter?.Disconnect(cancellationToken) ?? Task.FromResult(false);
+
+        public Task SendDelayedToolResponse(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
+            => _rpcRouter?.SendDelayedToolResponse(response, cancellationToken) ?? Task.CompletedTask;
 
         public void Dispose()
         {

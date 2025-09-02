@@ -7,20 +7,26 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+#nullable enable
 using System;
 using System.Collections.Generic;
-using com.IvanMurzak.ReflectorNet.Utils;
 
-namespace com.IvanMurzak.ReflectorNet.Model
+namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
     public class ResponseCallTool : IResponseCallTool
     {
+        public string RequestID { get; set; }
         public virtual bool IsError { get; set; }
         public virtual List<ResponseCallToolContent> Content { get; set; } = new List<ResponseCallToolContent>();
 
         public ResponseCallTool() { }
-        public ResponseCallTool(bool isError, List<ResponseCallToolContent> content)
+        public ResponseCallTool(bool isError, List<ResponseCallToolContent> content) : this(string.Empty, isError, content)
         {
+            // none
+        }
+        public ResponseCallTool(string requestId, bool isError, List<ResponseCallToolContent> content)
+        {
+            RequestID = requestId;
             IsError = isError;
             Content = content;
         }

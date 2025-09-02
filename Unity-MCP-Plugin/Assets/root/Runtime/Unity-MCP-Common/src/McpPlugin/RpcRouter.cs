@@ -10,7 +10,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -114,6 +114,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             _logger.LogTrace("{0} Notify server about updated resources.", nameof(RpcRouter));
             return _connectionManager.InvokeAsync<string, ResponseData<string>>(Consts.RPC.Server.OnListResourcesUpdated, string.Empty, cancellationToken);
+        }
+
+        public Task SendDelayedToolResponse(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
+        {
+            _logger.LogTrace("{0} Sending delayed tool response for request: {1}", nameof(RpcRouter), response.RequestID);
+            return _connectionManager.InvokeAsync(Consts.RPC.Server.SendDelayedToolResponse, response, cancellationToken);
         }
 
         public void Dispose()

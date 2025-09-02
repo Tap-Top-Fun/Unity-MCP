@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace com.IvanMurzak.ReflectorNet.Model.Unity
+namespace com.IvanMurzak.Unity.MCP.Common.Model.Unity
 {
     [System.Serializable]
     [Description(@"GameObject references array. Used to specify GameObjects in opened Prefab or in the active Scene.")]

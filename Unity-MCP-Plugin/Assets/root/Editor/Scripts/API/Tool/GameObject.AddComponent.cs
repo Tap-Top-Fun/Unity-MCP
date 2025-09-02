@@ -13,7 +13,7 @@ using System.Text;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {

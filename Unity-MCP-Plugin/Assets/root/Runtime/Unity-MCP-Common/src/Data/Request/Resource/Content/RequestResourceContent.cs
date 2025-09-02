@@ -9,7 +9,7 @@
 */
 using System;
 
-namespace com.IvanMurzak.ReflectorNet.Model
+namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
     public class RequestResourceContent : IRequestResourceContent
     {

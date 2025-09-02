@@ -14,7 +14,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Reflection.Convertor;
 using NUnit.Framework;

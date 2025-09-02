@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
@@ -93,6 +93,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Failed to run tool '{data.Name}'. Exception: {ex}")
                     .Log(_logger, ex);
             }
+        }
+
+        public Task SendDelayedToolResponse(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool data, CancellationToken cancellationToken = default)

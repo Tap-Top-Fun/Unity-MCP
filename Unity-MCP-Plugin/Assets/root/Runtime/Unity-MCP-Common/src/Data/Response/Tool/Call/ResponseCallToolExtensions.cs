@@ -11,7 +11,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.ReflectorNet.Model
+namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
     public static class ResponseCallToolExtensions
     {

@@ -37,6 +37,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 public const string OnListToolsUpdated = "OnListToolsUpdated";
                 public const string OnListResourcesUpdated = "OnListResourcesUpdated";
+                public const string SendDelayedToolResponse = "SendDelayedToolResponse";
             }
         }
     }

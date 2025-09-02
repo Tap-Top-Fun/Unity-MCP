@@ -11,15 +11,16 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.Text.Json.Nodes;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
 using System.Text.Json;
 using System.Collections.Generic;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {

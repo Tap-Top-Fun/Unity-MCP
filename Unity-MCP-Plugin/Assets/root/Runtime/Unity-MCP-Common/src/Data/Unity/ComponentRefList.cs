@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace com.IvanMurzak.ReflectorNet.Model.Unity
+namespace com.IvanMurzak.Unity.MCP.Common.Model.Unity
 {
     [Description(@"Component reference array. Used to find Component at GameObject.")]
     public class ComponentRefList : List<ComponentRef>

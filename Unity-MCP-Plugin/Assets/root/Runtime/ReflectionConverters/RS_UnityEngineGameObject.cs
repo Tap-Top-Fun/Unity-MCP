@@ -7,7 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -24,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -31,7 +31,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
     {
         const string ComponentNamePrefix = "component_";
         static string GetComponentName(int index) => $"{ComponentNamePrefix}{index}";
-        static bool TryParseComponentIndex(string name, out int index)
+        static bool TryParseComponentIndex(string? name, out int index)
         {
             index = -1;
             if (string.IsNullOrEmpty(name) || !name.StartsWith(ComponentNamePrefix))
@@ -86,11 +86,11 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                         depth: depth,
                         stringBuilder: stringBuilder,
                         logger: logger)
-                }.SetValue(reflector, new GameObjectRef(unityObject.GetInstanceID()));
+                }.SetValue(reflector, new GameObjectRef(unityObject?.GetInstanceID() ?? 0));
             }
             else
             {
-                var objectRef = new GameObjectRef(unityObject.GetInstanceID());
+                var objectRef = new GameObjectRef(unityObject?.GetInstanceID() ?? 0);
                 return SerializedMember.FromValue(reflector, type, objectRef, name);
             }
         }
@@ -136,7 +136,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected override bool SetValue(
             Reflector reflector,
-            ref object obj,
+            ref object? obj,
             Type type,
             JsonElement? value,
             int depth = 0,
@@ -156,7 +156,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected override bool TryPopulateField(
             Reflector reflector,
-            ref object obj,
+            ref object? obj,
             Type objType,
             SerializedMember fieldValue,
             int depth = 0,
@@ -231,7 +231,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 logger: logger);
         }
 
-        protected virtual UnityEngine.Component GetComponent(
+        protected virtual UnityEngine.Component? GetComponent(
             UnityEngine.GameObject go,
             int? instanceID,
             int? index,
@@ -293,13 +293,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 .FindGameObject();
         }
 
-        protected override object DeserializeValueAsJsonElement(
+        protected override object? DeserializeValueAsJsonElement(
             Reflector reflector,
             SerializedMember data,
             Type type,
             int depth = 0,
-            StringBuilder stringBuilder = null,
-            ILogger logger = null)
+            StringBuilder? stringBuilder = null,
+            ILogger? logger = null)
         {
             return data.valueJsonElement
                 .ToGameObjectRef(

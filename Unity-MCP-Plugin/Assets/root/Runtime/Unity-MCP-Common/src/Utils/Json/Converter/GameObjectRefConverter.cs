@@ -11,7 +11,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {

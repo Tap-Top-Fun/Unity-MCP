@@ -10,7 +10,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -41,6 +41,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
     {
         Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, CancellationToken cancellationToken = default);
         Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, CancellationToken cancellationToken = default);
+        Task SendDelayedToolResponse(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default);
     }
 
     public interface IResourceRunner

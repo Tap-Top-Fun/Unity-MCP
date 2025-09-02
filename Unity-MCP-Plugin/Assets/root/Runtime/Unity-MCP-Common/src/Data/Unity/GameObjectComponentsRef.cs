@@ -10,8 +10,9 @@
 #nullable enable
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using com.IvanMurzak.ReflectorNet.Model;
 
-namespace com.IvanMurzak.ReflectorNet.Model.Unity
+namespace com.IvanMurzak.Unity.MCP.Common.Model.Unity
 {
     [System.Serializable]
     [Description(@"GameObject reference. Used to find GameObject in opened Prefab or in a Scene.")]

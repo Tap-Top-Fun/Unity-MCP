@@ -23,63 +23,89 @@ namespace com.IvanMurzak.Unity.MCP.Server
     {
         readonly ILogger _logger;
         readonly IHubContext<RemoteApp> _remoteAppContext;
+        readonly IRequestTrackingService _requestTrackingService;
         readonly CancellationTokenSource cts = new();
         readonly CompositeDisposable _disposables = new();
 
-        public RemoteResourceRunner(ILogger<RemoteResourceRunner> logger, IHubContext<RemoteApp> remoteAppContext)
+        public RemoteResourceRunner(ILogger<RemoteResourceRunner> logger, IHubContext<RemoteApp> remoteAppContext, IRequestTrackingService requestTrackingService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("Ctor.");
             _remoteAppContext = remoteAppContext ?? throw new ArgumentNullException(nameof(remoteAppContext));
+            _requestTrackingService = requestTrackingService ?? throw new ArgumentNullException(nameof(requestTrackingService));
         }
 
         public Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, CancellationToken cancellationToken = default)
-            => ClientUtils.InvokeAsync<IRequestResourceContent, ResponseResourceContent[], RemoteApp>(
-                logger: _logger,
-                hubContext: _remoteAppContext,
-                methodName: Consts.RPC.Client.RunResourceContent,
-                requestData: requestData,
-                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
-                .ContinueWith(task =>
-            {
-                var response = task.Result;
-                if (response.IsError)
-                    return ResponseData<ResponseResourceContent[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
+        {
+            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
+            
+            return _requestTrackingService.TrackRequestAsync(
+                requestData.RequestID,
+                async () =>
+                {
+                    var response = await ClientUtils.InvokeAsync<IRequestResourceContent, ResponseResourceContent[], RemoteApp>(
+                        logger: _logger,
+                        hubContext: _remoteAppContext,
+                        methodName: Consts.RPC.Client.RunResourceContent,
+                        requestData: requestData,
+                        cancellationToken: linkedCts.Token);
 
-                return response;
-            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+                    if (response.IsError)
+                        return ResponseData<ResponseResourceContent[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking resource");
+
+                    return response;
+                },
+                ConnectionConfig.TimeoutMs,
+                linkedCts.Token);
+        }
 
         public Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, CancellationToken cancellationToken = default)
-            => ClientUtils.InvokeAsync<IRequestListResources, ResponseListResource[], RemoteApp>(
-                logger: _logger,
-                hubContext: _remoteAppContext,
-                methodName: Consts.RPC.Client.RunListResources,
-                requestData: requestData,
-                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
-                .ContinueWith(task =>
-            {
-                var response = task.Result;
-                if (response.IsError)
-                    return ResponseData<ResponseListResource[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
+        {
+            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
+            
+            return _requestTrackingService.TrackRequestAsync(
+                requestData.RequestID,
+                async () =>
+                {
+                    var response = await ClientUtils.InvokeAsync<IRequestListResources, ResponseListResource[], RemoteApp>(
+                        logger: _logger,
+                        hubContext: _remoteAppContext,
+                        methodName: Consts.RPC.Client.RunListResources,
+                        requestData: requestData,
+                        cancellationToken: linkedCts.Token);
 
-                return response;
-            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+                    if (response.IsError)
+                        return ResponseData<ResponseListResource[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking resource");
+
+                    return response;
+                },
+                ConnectionConfig.TimeoutMs,
+                linkedCts.Token);
+        }
 
         public Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, CancellationToken cancellationToken = default)
-            => ClientUtils.InvokeAsync<IRequestListResourceTemplates, ResponseResourceTemplate[], RemoteApp>(
-                logger: _logger,
-                hubContext: _remoteAppContext,
-                methodName: Consts.RPC.Client.RunListResourceTemplates,
-                requestData: requestData,
-                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
-                .ContinueWith(task =>
-            {
-                var response = task.Result;
-                if (response.IsError)
-                    return ResponseData<ResponseResourceTemplate[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
+        {
+            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
+            
+            return _requestTrackingService.TrackRequestAsync(
+                requestData.RequestID,
+                async () =>
+                {
+                    var response = await ClientUtils.InvokeAsync<IRequestListResourceTemplates, ResponseResourceTemplate[], RemoteApp>(
+                        logger: _logger,
+                        hubContext: _remoteAppContext,
+                        methodName: Consts.RPC.Client.RunListResourceTemplates,
+                        requestData: requestData,
+                        cancellationToken: linkedCts.Token);
 
-                return response;
-            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+                    if (response.IsError)
+                        return ResponseData<ResponseResourceTemplate[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking resource");
+
+                    return response;
+                },
+                ConnectionConfig.TimeoutMs,
+                linkedCts.Token);
+        }
 
         public void Dispose()
         {

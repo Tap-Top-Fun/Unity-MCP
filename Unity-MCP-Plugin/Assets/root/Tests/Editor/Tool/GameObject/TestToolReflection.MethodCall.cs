@@ -13,7 +13,6 @@ using com.IvanMurzak.Unity.MCP.Editor.API;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
