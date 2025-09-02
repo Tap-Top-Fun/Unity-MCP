@@ -124,13 +124,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             try
             {
                 var mcpPlugin = McpPlugin.Instance;
-                if (mcpPlugin?.McpRunner == null)
+                if (mcpPlugin?.RpcRouter == null)
                 {
-                    Debug.LogError("[TestRunnerDomainReloadHandler] McpPlugin instance not available for sending response");
+                    Debug.LogError("[TestRunnerDomainReloadHandler] RpcRouter instance not available for sending response");
                     return;
                 }
 
-                // Send response via SignalR (this would need to be implemented in McpPlugin)
+                // Send response via SignalR
                 if (McpPluginUnity.IsLogActive(LogLevel.Info))
                     Debug.Log($"[TestRunnerDomainReloadHandler] Sending successful test results for request: {originalRequest.RequestID}");
 
@@ -143,7 +143,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     )
                 };
 
-                await mcpPlugin.McpRunner.SendDelayedToolResponse(response);
+                await mcpPlugin.RpcRouter.SendDelayedToolResponse(response);
 
                 if (McpPluginUnity.IsLogActive(LogLevel.Debug))
                     Debug.Log($"[TestRunnerDomainReloadHandler] Test results sent successfully: {result[..Math.Min(200, result.Length)]}...");
@@ -160,13 +160,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             try
             {
                 var mcpPlugin = McpPlugin.Instance;
-                if (mcpPlugin?.McpRunner == null)
+                if (mcpPlugin?.RpcRouter == null)
                 {
-                    Debug.LogError("[TestRunnerDomainReloadHandler] McpPlugin instance not available for sending error response");
+                    Debug.LogError("[TestRunnerDomainReloadHandler] RpcRouter instance not available for sending error response");
                     return;
                 }
 
-                // Send response via SignalR (this would need to be implemented in McpPlugin)
+                // Send response via SignalR
                 if (McpPluginUnity.IsLogActive(LogLevel.Info))
                     Debug.Log($"[TestRunnerDomainReloadHandler] Sending error response for request: {originalRequest.RequestID}");
 
@@ -179,7 +179,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     )
                 };
 
-                await mcpPlugin.McpRunner.SendDelayedToolResponse(response);
+                await mcpPlugin.RpcRouter.SendDelayedToolResponse(response);
             }
             catch (Exception ex)
             {

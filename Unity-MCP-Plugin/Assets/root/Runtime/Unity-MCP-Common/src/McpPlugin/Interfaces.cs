@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+#nullable enable
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
     {
         ILogger Logger { get; }
         IMcpRunner McpRunner { get; }
+        IRpcRouter? RpcRouter { get; }
     }
     public interface IConnection : IDisposableAsync
     {
@@ -41,7 +43,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
     {
         Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, CancellationToken cancellationToken = default);
         Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, CancellationToken cancellationToken = default);
-        Task SendDelayedToolResponse(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default);
     }
 
     public interface IResourceRunner

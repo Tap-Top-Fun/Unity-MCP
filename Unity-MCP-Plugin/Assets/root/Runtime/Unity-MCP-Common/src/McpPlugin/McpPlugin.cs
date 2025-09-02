@@ -26,6 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public ILogger Logger => _logger;
         public IMcpRunner McpRunner { get; private set; }
+        public IRpcRouter? RpcRouter => _rpcRouter;
         public ReadOnlyReactiveProperty<HubConnectionState> ConnectionState => _rpcRouter?.ConnectionState
             ?? new ReactiveProperty<HubConnectionState>(HubConnectionState.Disconnected);
         public ReadOnlyReactiveProperty<bool> KeepConnected => _rpcRouter?.KeepConnected
