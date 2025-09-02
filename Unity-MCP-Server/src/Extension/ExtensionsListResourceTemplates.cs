@@ -9,7 +9,7 @@
 */
 
 using System;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using ModelContextProtocol.Protocol;
 
 namespace com.IvanMurzak.Unity.MCP.Server

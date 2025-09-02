@@ -13,6 +13,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.Extensions.Logging;
 using R3;
 
@@ -72,7 +73,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 var initialResponse = await executeRequest();
 
-                if (!initialResponse.IsError)
+                if (initialResponse.Status != ResponseStatus.Processing)
                 {
                     _logger.LogTrace("Request {RequestId} completed immediately", requestId);
                     _pendingRequests.TryRemove(requestId, out _);

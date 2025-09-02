@@ -11,7 +11,7 @@
 using System;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
@@ -56,9 +56,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public Task<IResponseData<string>> OnDomainReloadCompleted(DomainReloadCompletedData data)
         {
-            _logger.LogInformation("RemoteApp OnDomainReloadCompleted. {0}. ConnectionId: {1}, PendingRequests: {2}", 
+            _logger.LogInformation("RemoteApp OnDomainReloadCompleted. {0}. ConnectionId: {1}, PendingRequests: {2}",
                 _guid, data.ConnectionId, data.PendingRequestIds?.Length ?? 0);
-            
+
             if (data.PendingRequestIds != null && data.PendingRequestIds.Length > 0)
             {
                 _requestTrackingService.RegisterPendingRequests(Context.ConnectionId, data.PendingRequestIds);
@@ -70,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public Task<IResponseData<string>> OnToolRequestCompleted(string requestId, string responseJson)
         {
             _logger.LogTrace("RemoteApp OnToolRequestCompleted. {0}. RequestId: {1}", _guid, requestId);
-            
+
             try
             {
                 var response = System.Text.Json.JsonSerializer.Deserialize<IResponseData<object>>(responseJson);
@@ -83,14 +83,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 _logger.LogError(ex, "Error deserializing tool response for RequestId: {RequestId}", requestId);
             }
-            
+
             return ResponseData<string>.Success(string.Empty, string.Empty).TaskFromResult<IResponseData<string>>();
         }
 
         public Task<IResponseData<string>> OnResourceRequestCompleted(string requestId, string responseJson)
         {
             _logger.LogTrace("RemoteApp OnResourceRequestCompleted. {0}. RequestId: {1}", _guid, requestId);
-            
+
             try
             {
                 var response = System.Text.Json.JsonSerializer.Deserialize<IResponseData<object>>(responseJson);
@@ -103,7 +103,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 _logger.LogError(ex, "Error deserializing resource response for RequestId: {RequestId}", requestId);
             }
-            
+
             return ResponseData<string>.Success(string.Empty, string.Empty).TaskFromResult<IResponseData<string>>();
         }
     }

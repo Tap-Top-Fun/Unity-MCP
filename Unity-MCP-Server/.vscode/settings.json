@@ -1,7 +1,8 @@
 {
     "cSpell.words": [
         "ivanmurzakdev",
-        "Murzak"
+        "Murzak",
+        "signalr"
     ],
     "files.exclude": {
         "**/*.meta": true

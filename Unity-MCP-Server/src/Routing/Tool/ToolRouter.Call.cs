@@ -19,6 +19,7 @@ using NLog;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -65,7 +66,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (logger.IsTraceEnabled)
                 logger.Trace("Call tool response:\n{0}", response.ToJsonOrEmptyJsonObject(McpPlugin.Instance?.McpRunner.Reflector));
 
-            if (response.IsError)
+            if (response.Status == ResponseStatus.Error)
                 return new CallToolResult().SetError(response.Message ?? "[Error] Got an error during running tool");
 
             if (response.Value == null)

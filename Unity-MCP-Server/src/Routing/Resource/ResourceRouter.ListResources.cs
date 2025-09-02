@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 
@@ -36,7 +36,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (response == null)
                 return new ListResourcesResult().SetError("[Error] Resource is null");
 
-            if (response.IsError)
+            if (response.Status == ResponseStatus.Error)
                 return new ListResourcesResult().SetError(response.Message ?? "[Error] Got an error during getting resources");
 
             if (response.Value == null)

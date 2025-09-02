@@ -16,6 +16,7 @@ using com.IvanMurzak.ReflectorNet.Model;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using R3;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -38,7 +39,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, CancellationToken cancellationToken = default)
         {
             var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
-            
+
             return _requestTrackingService.TrackRequestAsync(
                 requestData.RequestID,
                 async () =>
@@ -50,7 +51,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         requestData: requestData,
                         cancellationToken: linkedCts.Token);
 
-                    if (response.IsError)
+                    if (response.Status == ResponseStatus.Error)
                         return ResponseData<ResponseResourceContent[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking resource");
 
                     return response;
@@ -62,7 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, CancellationToken cancellationToken = default)
         {
             var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
-            
+
             return _requestTrackingService.TrackRequestAsync(
                 requestData.RequestID,
                 async () =>
@@ -74,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         requestData: requestData,
                         cancellationToken: linkedCts.Token);
 
-                    if (response.IsError)
+                    if (response.Status == ResponseStatus.Error)
                         return ResponseData<ResponseListResource[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking resource");
 
                     return response;
@@ -86,7 +87,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, CancellationToken cancellationToken = default)
         {
             var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
-            
+
             return _requestTrackingService.TrackRequestAsync(
                 requestData.RequestID,
                 async () =>
@@ -98,7 +99,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         requestData: requestData,
                         cancellationToken: linkedCts.Token);
 
-                    if (response.IsError)
+                    if (response.Status == ResponseStatus.Error)
                         return ResponseData<ResponseResourceTemplate[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking resource");
 
                     return response;

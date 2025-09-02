@@ -16,6 +16,7 @@ using com.IvanMurzak.ReflectorNet.Model;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using R3;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -38,7 +39,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, CancellationToken cancellationToken = default)
         {
             var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
-            
+
             return _requestTrackingService.TrackRequestAsync(
                 requestData.RequestID,
                 async () =>
@@ -50,7 +51,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         requestData: requestData,
                         cancellationToken: linkedCts.Token);
 
-                    if (response.IsError)
+                    if (response.Status == ResponseStatus.Error)
                         return ResponseData<ResponseCallTool>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
 
                     return response;
@@ -69,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 .ContinueWith(task =>
             {
                 var response = task.Result;
-                if (response.IsError)
+                if (response.Status == ResponseStatus.Error)
                     return ResponseData<ResponseListTool[]>.Error(requestData.RequestID, response.Message ?? "Got an error during listing tools");
 
                 return response;

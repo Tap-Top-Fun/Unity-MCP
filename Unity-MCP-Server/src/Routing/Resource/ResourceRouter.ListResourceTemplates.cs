@@ -11,7 +11,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 
@@ -35,7 +35,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (response == null)
                 return new ListResourceTemplatesResult().SetError("[Error] Resource is null");
 
-            if (response.IsError)
+            if (response.Status == ResponseStatus.Error)
                 return new ListResourceTemplatesResult().SetError(response.Message ?? "[Error] Got an error during getting resource templates");
 
             if (response.Value == null)
