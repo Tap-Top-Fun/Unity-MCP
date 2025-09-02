@@ -39,22 +39,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _logger.LogTrace("RequestTrackingService initialized");
         }
 
-        static bool IsSignalRConnectionException(Exception ex)
-        {
-            return ex switch
-            {
-                Microsoft.AspNetCore.SignalR.HubException => true,
-                InvalidOperationException invalidOp when invalidOp.Message.Contains("connection", StringComparison.OrdinalIgnoreCase) => true,
-                OperationCanceledException => true,
-                System.Net.Sockets.SocketException => true,
-                System.IO.IOException => true,
-                _ when ex.Message.Contains("connection", StringComparison.OrdinalIgnoreCase) => true,
-                _ when ex.Message.Contains("SignalR", StringComparison.OrdinalIgnoreCase) => true,
-                _ when ex.InnerException != null => IsSignalRConnectionException(ex.InnerException),
-                _ => false
-            };
-        }
-
         public async Task<IResponseData<TResponse>> TrackRequestAsync<TResponse>(
             string requestId,
             Func<Task<IResponseData<TResponse>>> executeRequest,
@@ -80,25 +64,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     return initialResponse;
                 }
 
-                if (initialResponse.Message?.Contains("domain reload", StringComparison.OrdinalIgnoreCase) == true)
-                {
-                    _logger.LogInformation("Request {RequestId} requires domain reload, waiting for completion", requestId);
-                    return await pendingRequest.WaitForCompletion<TResponse>(cancellationToken);
-                }
-
                 _logger.LogTrace("Request {RequestId} failed without domain reload: {Message}", requestId, initialResponse.Message);
                 _pendingRequests.TryRemove(requestId, out _);
                 return initialResponse;
-            }
-            catch (TaskCanceledException ex)
-            {
-                _logger.LogInformation(ex, "SignalR connection lost for request {RequestId}, likely due to domain reload. Waiting for completion via dedicated SignalR call", requestId);
-                return await pendingRequest.WaitForCompletion<TResponse>(cancellationToken);
-            }
-            catch (Exception ex) when (IsSignalRConnectionException(ex))
-            {
-                _logger.LogInformation(ex, "SignalR connection lost for request {RequestId}, likely due to domain reload. Waiting for completion via dedicated SignalR call", requestId);
-                return await pendingRequest.WaitForCompletion<TResponse>(cancellationToken);
             }
             catch (Exception ex)
             {
