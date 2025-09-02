@@ -135,10 +135,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     Debug.Log($"[TestRunnerDomainReloadHandler] Sending successful test results for request: {originalRequest.RequestID}");
 
                 // Create response using the original request ID
-                var response = new ResponseData<ResponseCallTool>(requestId: originalRequest.RequestID, isError: false)
+                var response = new ResponseData<ResponseCallTool>(requestId: originalRequest.RequestID, status: ResponseStatus.Success)
                 {
                     Value = new ResponseCallTool(
-                        isError: false,
+                        status: ResponseStatus.Success,
                         content: new List<ResponseCallToolContent> { new ResponseCallToolContent { Type = "text", Text = result } }
                     )
                 };
@@ -171,10 +171,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     Debug.Log($"[TestRunnerDomainReloadHandler] Sending error response for request: {originalRequest.RequestID}");
 
                 // Create response using the original request ID
-                var response = new ResponseData<ResponseCallTool>(requestId: originalRequest.RequestID, isError: false)
+                var response = new ResponseData<ResponseCallTool>(requestId: originalRequest.RequestID, status: ResponseStatus.Error)
                 {
                     Value = new ResponseCallTool(
-                        isError: false,
+                        status: ResponseStatus.Error,
                         content: new List<ResponseCallToolContent> { new ResponseCallToolContent { Type = "text", Text = $"[Error] {error}" } }
                     )
                 };

@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+#nullable enable
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -17,22 +18,30 @@ namespace com.IvanMurzak.Unity.MCP.Common.Model
     {
         public static ResponseCallTool Log(this ResponseCallTool target, ILogger logger, Exception? ex = null)
         {
-            if (target.IsError)
-                logger.LogError(ex, $"Response to AI:\n{target.Content.FirstOrDefault()?.Text}");
-            else
-                logger.LogInformation(ex, $"Response to AI:\n{target.Content.FirstOrDefault()?.Text}");
+            if (target.Status == ResponseStatus.Error)
+                logger.LogError(ex, $"Error Response to AI:\n{target.Content.FirstOrDefault()?.Text}");
+            else if (target.Status == ResponseStatus.Success)
+                logger.LogInformation(ex, $"Success Response to AI:\n{target.Content.FirstOrDefault()?.Text}");
+            else if (target.Status == ResponseStatus.Processing)
+                logger.LogInformation(ex, $"Processing Response to AI:\n{target.Content.FirstOrDefault()?.Text}");
 
             return target;
         }
 
         public static IResponseData<ResponseCallTool> Pack(this ResponseCallTool target, string requestId, string? message = null)
         {
-            if (target.IsError)
+            if (target.Status == ResponseStatus.Error)
                 return ResponseData<ResponseCallTool>.Error(requestId, message ?? target.Content.FirstOrDefault()?.Text ?? "Tool execution error.")
                     .SetData(target);
-            else
+            else if (target.Status == ResponseStatus.Success)
                 return ResponseData<ResponseCallTool>.Success(requestId, message ?? target.Content.FirstOrDefault()?.Text ?? "Tool executed successfully.")
                     .SetData(target);
+            else if (target.Status == ResponseStatus.Processing)
+                return ResponseData<ResponseCallTool>.Processing(requestId, message ?? target.Content.FirstOrDefault()?.Text ?? "Tool is processing.")
+                    .SetData(target);
+
+            return ResponseData<ResponseCallTool>.Error(requestId, $"Unknown tool status `{target.Status}`.")
+                .SetData(target);
         }
     }
 }

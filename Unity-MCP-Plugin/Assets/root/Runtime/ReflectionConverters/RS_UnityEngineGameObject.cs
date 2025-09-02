@@ -112,6 +112,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 logger: logger) ?? new();
 
             var go = obj as UnityEngine.GameObject;
+            if (go == null)
+                throw new ArgumentException("Object is not a GameObject.", nameof(obj));
             var components = go.GetComponents<UnityEngine.Component>();
 
             serializedFields.Capacity += components.Length;
@@ -166,6 +168,16 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             var padding = StringUtils.GetPadding(depth);
             var go = obj as UnityEngine.GameObject;
+            if (go == null)
+            {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}[Error] Object is not a GameObject.");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] Object is not a GameObject.");
+
+                return false;
+            }
 
             // it is fine if type is unknown here, we will try to find the component by name or index
             var type = TypeUtils.GetType(fieldValue.typeName);

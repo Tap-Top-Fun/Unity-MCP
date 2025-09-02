@@ -132,7 +132,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
     void ValidateResult(IResponseData<ResponseCallTool> result)
     {
       Assert.IsNotNull(result);
-      Assert.IsFalse(result.IsError, "Modification failed");
+      Assert.IsFalse(result.Status == ResponseStatus.Error, "Modification failed");
       Assert.IsTrue(result.Message.Contains("[Success]"), "Result should contain success message.");
       Assert.IsFalse(result.Message.Contains("[Error]"), "Result should not contain error message.");
     }

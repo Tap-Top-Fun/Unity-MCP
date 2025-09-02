@@ -15,27 +15,27 @@ namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
     public class ResponseCallTool : IResponseCallTool
     {
-        public string RequestID { get; set; }
-        public virtual bool IsError { get; set; }
+        public string RequestID { get; set; } = string.Empty;
+        public virtual ResponseStatus Status { get; set; } = ResponseStatus.Error;
         public virtual List<ResponseCallToolContent> Content { get; set; } = new List<ResponseCallToolContent>();
 
         public ResponseCallTool() { }
-        public ResponseCallTool(bool isError, List<ResponseCallToolContent> content) : this(string.Empty, isError, content)
+        public ResponseCallTool(ResponseStatus status, List<ResponseCallToolContent> content) : this(string.Empty, status, content)
         {
             // none
         }
-        public ResponseCallTool(string requestId, bool isError, List<ResponseCallToolContent> content)
+        public ResponseCallTool(string requestId, ResponseStatus status, List<ResponseCallToolContent> content)
         {
             RequestID = requestId;
-            IsError = isError;
+            Status = status;
             Content = content;
         }
 
         public static ResponseCallTool Error(Exception exception)
             => Error($"[Error] {exception?.Message}\n{exception?.StackTrace}");
 
-        public static ResponseCallTool Error(string? message)
-            => new ResponseCallTool(isError: true, new List<ResponseCallToolContent>
+        public static ResponseCallTool Error(string? message = null)
+            => new ResponseCallTool(status: ResponseStatus.Error, new List<ResponseCallToolContent>
             {
                 new ResponseCallToolContent()
                 {
@@ -45,8 +45,19 @@ namespace com.IvanMurzak.Unity.MCP.Common.Model
                 }
             });
 
-        public static ResponseCallTool Success(string? message)
-            => new ResponseCallTool(isError: false, new List<ResponseCallToolContent>
+        public static ResponseCallTool Success(string? message = null)
+            => new ResponseCallTool(status: ResponseStatus.Success, new List<ResponseCallToolContent>
+            {
+                new ResponseCallToolContent()
+                {
+                    Type = "text",
+                    Text = message,
+                    MimeType = Consts.MimeType.TextPlain
+                }
+            });
+
+        public static ResponseCallTool Processing(string? message = null)
+            => new ResponseCallTool(status: ResponseStatus.Processing, new List<ResponseCallToolContent>
             {
                 new ResponseCallToolContent()
                 {

@@ -143,7 +143,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             if (!isRestricted)
                 return true;
 
-            var node = JsonNode.Parse(data.valueJsonElement.Value.GetRawText()).AsObject();
+            var node = JsonNode.Parse(data.valueJsonElement.Value.GetRawText())?.AsObject();
+            if (node == null)
+                return true;
 
             foreach (var knownField in GetKnownSerializableFields(reflector, obj))
             {

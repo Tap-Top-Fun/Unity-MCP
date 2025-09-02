@@ -7,13 +7,12 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#nullable enable
 namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
-    public interface IResponseData<T> : IRequestID
+    public enum ResponseStatus
     {
-        ResponseStatus Status { get; set; }
-        string? Message { get; set; }
-        T? Value { get; set; }
+        Error, // request failed
+        Success, // request completed successfully
+        Processing // the request needs longer processing. It will be callback later, please wait
     }
 }

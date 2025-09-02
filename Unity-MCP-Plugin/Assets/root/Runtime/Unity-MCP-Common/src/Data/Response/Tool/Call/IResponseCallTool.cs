@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Model
     public interface IResponseCallTool
     {
         string RequestID { get; set; }
-        bool IsError { get; set; }
+        ResponseStatus Status { get; set; }
         List<ResponseCallToolContent> Content { get; set; }
     }
 }
