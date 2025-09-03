@@ -110,6 +110,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                         InputSchema = kvp.Value.InputSchema.ToJsonElement() ?? EmptyInputSchema,
                     })
                     .ToArray();
+                _logger.LogDebug("{0} Tools listed.", result.Length);
 
                 return result
                     .Log(_logger)

@@ -75,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP
         {
             get
             {
-                if (Uri.TryCreate(Host, UriKind.Absolute, out var uri) && uri.Port > 0)
+                if (Uri.TryCreate(Host, UriKind.Absolute, out var uri) && uri.Port > 0 && uri.Port <= Consts.Hub.MaxPort)
                     return uri.Port;
 
                 return Consts.Hub.DefaultPort;

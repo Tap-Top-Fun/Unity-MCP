@@ -129,7 +129,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     if (client == null)
                     {
                         logger.LogWarning("No connected clients. Retrying [{0}/{1}]...", retryCount, maxRetries);
-                        await Task.Delay(retryDelayMs, cancellationToken); // Wait before retrying
+                        await Task.Delay(50, cancellationToken); // Wait before retrying
                         continue;
                     }
 
@@ -139,7 +139,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         logger.LogTrace("Invoke '{0}', ConnectionId ='{1}'. RequestData:\n{2}\n{3}", methodName, connectionId, requestData, allConnections);
                     }
                     var invokeTask = client.InvokeAsync<ResponseData<TResponse>>(methodName, requestData, cancellationToken);
-                    var completed = await invokeTask.WaitWithTimeout(ConnectionConfig.TimeoutMs, cancellationToken);
+                    var completed = await invokeTask.WaitWithTimeout(/*ConnectionConfig.TimeoutMs*/ 2000, cancellationToken);
                     if (completed)
                     {
                         try
@@ -156,7 +156,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         {
                             logger.LogError(ex, $"Error invoking '{requestData}' on client '{connectionId}': {ex.Message}");
                             // RemoveCurrentClient(client);
-                            await Task.Delay(retryDelayMs, cancellationToken); // Wait before retrying
+                            await Task.Delay(50, cancellationToken); // Wait before retrying
                             continue;
                         }
                     }

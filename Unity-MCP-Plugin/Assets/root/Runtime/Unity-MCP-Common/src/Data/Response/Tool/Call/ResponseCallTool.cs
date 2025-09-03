@@ -31,6 +31,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Model
             Content = content;
         }
 
+        public ResponseCallTool SetRequestID(string requestId)
+        {
+            RequestID = requestId;
+            return this;
+        }
+
         public static ResponseCallTool Error(Exception exception)
             => Error($"[Error] {exception?.Message}\n{exception?.StackTrace}");
 

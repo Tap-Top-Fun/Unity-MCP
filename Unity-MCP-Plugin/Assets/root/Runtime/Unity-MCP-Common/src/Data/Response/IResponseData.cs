@@ -10,10 +10,13 @@
 #nullable enable
 namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
-    public interface IResponseData<T> : IRequestID
+    public interface IResponseData<T> : IResponseData
+    {
+        T? Value { get; set; }
+    }
+    public interface IResponseData : IRequestID
     {
         ResponseStatus Status { get; set; }
         string? Message { get; set; }
-        T? Value { get; set; }
     }
 }

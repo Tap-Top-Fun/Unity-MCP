@@ -16,18 +16,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public interface IRemoteApp : IToolResponseReceiver, IResourceResponseReceiver, IDisposable
     {
-        Task<IResponseData<string>> OnListToolsUpdated(string data);
-        Task<IResponseData<string>> OnListResourcesUpdated(string data);
-        Task<IResponseData<string>> OnDomainReloadStarted(string data);
-        Task<IResponseData<string>> OnDomainReloadCompleted(DomainReloadCompletedData data);
-        Task<IResponseData<string>> OnToolRequestCompleted(string requestId, string responseJson);
-        Task<IResponseData<string>> OnResourceRequestCompleted(string requestId, string responseJson);
-    }
-
-    public class DomainReloadCompletedData
-    {
-        public string[]? PendingRequestIds { get; set; }
-        public string? ConnectionId { get; set; }
+        Task<IResponseData> OnListToolsUpdated(string data);
+        Task<IResponseData> OnListResourcesUpdated(string data);
+        Task<IResponseData> OnDomainReloadStarted(string data);
+        Task<IResponseData> OnDomainReloadCompleted(DomainReloadCompletedData data);
+        Task<IResponseData> OnToolRequestCompleted(ToolRequestCompletedData data);
     }
 
     public interface IToolResponseReceiver

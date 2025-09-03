@@ -32,11 +32,14 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public Task<HubConnection> CreateConnectionAsync(string endpoint)
         {
+            _logger.LogInformation($"Creating HubConnection to {endpoint}");
+            _logger.LogInformation($"------------ BUILD CONNECTION to {endpoint}");
             var connectionConfig = _serviceProvider.GetRequiredService<IOptions<ConnectionConfig>>().Value;
             var hubConnection = new HubConnectionBuilder()
                 .WithUrl(connectionConfig.Endpoint + endpoint)
                 .WithAutomaticReconnect(new FixedRetryPolicy(TimeSpan.FromSeconds(1)))
-                .WithServerTimeout(TimeSpan.FromSeconds(30))
+                .WithKeepAliveInterval(TimeSpan.FromSeconds(30))
+                .WithServerTimeout(TimeSpan.FromMinutes(5))
                 .AddJsonProtocol(options => RpcJsonConfiguration.ConfigureJsonSerializer(_reflector, options))
                 .ConfigureLogging(logging =>
                 {

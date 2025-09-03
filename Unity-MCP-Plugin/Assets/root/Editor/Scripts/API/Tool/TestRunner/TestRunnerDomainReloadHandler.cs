@@ -10,7 +10,6 @@
 #nullable enable
 using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -135,15 +134,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     Debug.Log($"[TestRunnerDomainReloadHandler] Sending successful test results for request: {originalRequest.RequestID}");
 
                 // Create response using the original request ID
-                var response = new ResponseData<ResponseCallTool>(requestId: originalRequest.RequestID, status: ResponseStatus.Success)
-                {
-                    Value = new ResponseCallTool(
-                        status: ResponseStatus.Success,
-                        content: new List<ResponseCallToolContent> { new ResponseCallToolContent { Type = "text", Text = result } }
-                    )
-                };
-
-                await mcpPlugin.RpcRouter.SendDelayedToolResponse(response);
+                await mcpPlugin.RpcRouter.NotifyToolRequestCompleted(
+                    ResponseCallTool.Success(result).SetRequestID(originalRequest.RequestID)
+                );
 
                 if (McpPluginUnity.IsLogActive(LogLevel.Debug))
                     Debug.Log($"[TestRunnerDomainReloadHandler] Test results sent successfully: {result[..Math.Min(200, result.Length)]}...");
@@ -171,15 +164,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     Debug.Log($"[TestRunnerDomainReloadHandler] Sending error response for request: {originalRequest.RequestID}");
 
                 // Create response using the original request ID
-                var response = new ResponseData<ResponseCallTool>(requestId: originalRequest.RequestID, status: ResponseStatus.Error)
-                {
-                    Value = new ResponseCallTool(
-                        status: ResponseStatus.Error,
-                        content: new List<ResponseCallToolContent> { new ResponseCallToolContent { Type = "text", Text = $"[Error] {error}" } }
-                    )
-                };
-
-                await mcpPlugin.RpcRouter.SendDelayedToolResponse(response);
+                await mcpPlugin.RpcRouter.NotifyToolRequestCompleted(
+                    ResponseCallTool.Error(error).SetRequestID(originalRequest.RequestID)
+                );
             }
             catch (Exception ex)
             {

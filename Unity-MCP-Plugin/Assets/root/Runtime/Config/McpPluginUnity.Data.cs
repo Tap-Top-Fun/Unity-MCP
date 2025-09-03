@@ -16,7 +16,6 @@ namespace com.IvanMurzak.Unity.MCP
     {
         public class Data
         {
-            public const int DefaultPort = 8080;
             public const string DefaultHost = "http://localhost:8080";
 
             public string Host { get; set; } = DefaultHost;

@@ -28,6 +28,24 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             if (Application.dataPath.Contains(" "))
                 Debug.LogError("The project path contains spaces, which may cause issues during usage of Unity-MCP. Please consider the move the project to a folder without spaces.");
+
+            // Fires before assemblies are reloaded
+            AssemblyReloadEvents.beforeAssemblyReload += OnBeforeReload;
+
+            // Fires after assemblies are reloaded
+            AssemblyReloadEvents.afterAssemblyReload += OnAfterReload;
+        }
+        static void OnBeforeReload()
+        {
+            var instance = McpPlugin.Instance;
+            if (instance == null)
+                return; // ignore
+
+            instance.RpcRouter?.Disconnect();
+        }
+        static void OnAfterReload()
+        {
+            // none
         }
 
         /// <summary>

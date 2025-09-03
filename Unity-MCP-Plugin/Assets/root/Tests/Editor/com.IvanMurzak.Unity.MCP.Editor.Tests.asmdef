@@ -7,7 +7,9 @@
         "com.IvanMurzak.Unity.MCP.Runtime",
         "com.IvanMurzak.Unity.MCP.TestFiles",
         "com.IvanMurzak.Unity.MCP.Editor",
-        "com.IvanMurzak.Unity.MCP.Common"
+        "com.IvanMurzak.Unity.MCP.Common",
+        "Extensions.Unity.PlayerPrefsEx",
+        "Extensions.Unity.PlayerPrefsEx.Tests.Editor"
     ],
     "includePlatforms": [
         "Editor"

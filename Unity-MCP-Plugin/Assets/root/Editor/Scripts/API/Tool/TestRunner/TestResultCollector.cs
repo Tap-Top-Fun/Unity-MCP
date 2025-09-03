@@ -7,7 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Utils;
+using Extensions.Unity.PlayerPrefsEx;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 
@@ -35,25 +36,35 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
         public List<string> GetLogs() => _logs;
         public TestMode GetTestMode() => _testMode;
 
+        public PlayerPrefsString McpRequestID { get; private set; } = new PlayerPrefsString("MCP_TestRunner_RequestID");
+
+        public TestResultCollector()
+        {
+
+        }
+
         public TestResultCollector(TestMode testMode, int runNumber = 1)
         {
             _testMode = testMode;
             _runNumber = runNumber;
+            Debug.Log($"[TestResultCollector] ------------------------------------- Ctor.");
         }
 
         public void RunStarted(ITestAdaptor testsToRun)
         {
+            Debug.Log($"[TestResultCollector] ------------------------------------- RunStarted.");
             _startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
 
             _summary.TotalTests = testCount;
 
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) started: {testCount} tests.");
+                Debug.Log($"[TestResultCollector] Run {_runNumber} ({_testMode}) started: {testCount} tests.");
         }
 
         public void RunFinished(ITestResultAdaptor result)
         {
+            Debug.Log($"[TestResultCollector] ------------------------------------- RunFinished.");
             var endTime = DateTime.Now;
             var duration = endTime - _startTime;
             _summary.Duration = duration;

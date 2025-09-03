@@ -4,7 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "com.IvanMurzak.Unity.MCP.Runtime",
-        "com.IvanMurzak.Unity.MCP.Common"
+        "com.IvanMurzak.Unity.MCP.Common",
+        "Extensions.Unity.PlayerPrefsEx"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

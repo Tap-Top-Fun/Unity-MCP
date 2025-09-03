@@ -17,6 +17,7 @@
     "dependencies": {
         "com.unity.test-framework": "1.1.33",
         "com.unity.modules.uielements": "1.0.0",
+        "extensions.unity.playerprefsex": "2.0.2",
         "org.nuget.microsoft.bcl.memory": "9.0.7",
         "org.nuget.microsoft.aspnetcore.signalr.client": "9.0.7",
         "org.nuget.microsoft.aspnetcore.signalr.protocols.json": "9.0.7",
@@ -34,7 +35,8 @@
             "name": "package.openupm.com",
             "url": "https://package.openupm.com",
             "scopes": [
-                "org.nuget"
+                "org.nuget",
+                "extensions.unity"
             ]
         }
     ]

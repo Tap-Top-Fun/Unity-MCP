@@ -7,7 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,7 +26,7 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
-    public partial class Tool_TestRunner
+    public static partial class Tool_TestRunner
     {
         private static bool _isTestRunning;
         private static readonly object _testLock = new();
@@ -38,7 +38,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         )]
         [Description(@"Execute Unity tests and return detailed results. Supports filtering by test mode, assembly, namespace, class, and method.
 Be default recommended to use 'EditMode' for faster iteration during development.")]
-        public async Task<string> Run
+        public static ResponseCallTool Run
         (
             [Description("Test mode to run. Options: 'EditMode', 'PlayMode', 'All'. Default: 'EditMode'")]
             string testMode = "EditMode",
@@ -56,21 +56,12 @@ Be default recommended to use 'EditMode' for faster iteration during development
         {
             try
             {
-                // Check if tests are already running
-                lock (_testLock)
-                {
-                    if (_isTestRunning)
-                        return "[Error] Test execution is already in progress. Please wait for the current test run to complete.";
-
-                    _isTestRunning = true;
-                }
-
                 // Generate unique operation ID for this test run
                 var operationId = Guid.NewGuid().ToString();
 
                 // Validate test mode
                 if (!IsValidTestMode(testMode))
-                    return Error.InvalidTestMode(testMode);
+                    return ResponseCallTool.Error(Error.InvalidTestMode(testMode));
 
                 // Get timeout from MCP server configuration
                 var timeoutMs = McpPluginUnity.TimeoutMs;
@@ -78,76 +69,122 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     Debug.Log($"[TestRunner] Using timeout: {timeoutMs} ms (from MCP plugin configuration)");
 
                 // Get Test Runner API (must be on main thread)
-                var testRunnerApi = await MainThread.Instance.RunAsync(() => ScriptableObject.CreateInstance<TestRunnerApi>());
-                if (testRunnerApi == null)
-                    return Error.TestRunnerNotAvailable();
+                if (_testRunnerApi == null)
+                    return ResponseCallTool.Error(Error.TestRunnerNotAvailable());
 
-                if (testMode == "All")
+                var postTask = MainThread.Instance.RunAsync(async () =>
                 {
-                    // Create filter parameters
-                    var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
-
-                    // Check which modes have matching tests
-                    var editModeTestCount = await GetMatchingTestCount(testRunnerApi, TestMode.EditMode, filterParams);
-                    var playModeTestCount = await GetMatchingTestCount(testRunnerApi, TestMode.PlayMode, filterParams);
-
-                    // If neither mode has tests, return error
-                    if (editModeTestCount == 0 && playModeTestCount == 0)
-                        return Error.NoTestsFound(filterParams);
-
-                    // Handle "All" mode by running only the modes that have matching tests
-                    var modesToRun = new List<string>();
-                    if (editModeTestCount > 0) modesToRun.Add("EditMode");
-                    if (playModeTestCount > 0) modesToRun.Add("PlayMode");
-
-                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                        Debug.Log($"[TestRunner] Running tests in modes: {string.Join(", ", modesToRun)} (EditMode: {editModeTestCount}, PlayMode: {playModeTestCount})");
-                    return await RunSequentialTests(testRunnerApi, filterParams, timeoutMs, editModeTestCount > 0, playModeTestCount > 0, operationId, _originalRequest);
-                }
-                else
-                {
-                    // Create filter parameters
-                    var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
-
-                    // Convert string to TestMode enum
-                    var testModeEnum = testMode == "EditMode"
-                        ? TestMode.EditMode
-                        : TestMode.PlayMode;
-
-                    // Validate specific test mode filter
-                    var validation = await ValidateTestFilters(testRunnerApi, testModeEnum, filterParams);
-                    if (validation != null)
-                        return validation;
-
-                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                        Debug.Log($"[TestRunner] Running {testMode} tests.");
-
-                    var resultCollector = await RunSingleTestModeWithCollector(testModeEnum, testRunnerApi, filterParams, timeoutMs, operationId, _originalRequest);
-
-                    // For PlayMode tests, domain reload may have occurred - results will be sent async
-                    if (testModeEnum == TestMode.PlayMode && HasDomainReloadPersistence(operationId))
+                    try
                     {
-                        return "[Info] PlayMode test execution started. Results will be sent asynchronously after domain reload completion.";
-                    }
+                        // Check if tests are already running
+                        lock (_testLock)
+                        {
+                            if (_isTestRunning)
+                            {
+                                McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(
+                                    ResponseCallTool.Error("Test execution is already in progress. Please wait for the current test run to complete."));
+                                return;
+                            }
 
-                    return resultCollector.FormatTestResults();
-                }
+                            _isTestRunning = true;
+                        }
+                        if (testMode == "All")
+                        {
+                            // Create filter parameters
+                            var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
+
+                            // Check which modes have matching tests
+                            var editModeTestCount = await GetMatchingTestCount(_testRunnerApi, TestMode.EditMode, filterParams);
+                            var playModeTestCount = await GetMatchingTestCount(_testRunnerApi, TestMode.PlayMode, filterParams);
+
+                            // If neither mode has tests, return error
+                            if (editModeTestCount == 0 && playModeTestCount == 0)
+                            {
+                                await McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(
+                                    ResponseCallTool.Error(Error.NoTestsFound(filterParams)));
+                                return;
+                            }
+
+                            // Handle "All" mode by running only the modes that have matching tests
+                            var modesToRun = new List<string>();
+                            if (editModeTestCount > 0) modesToRun.Add("EditMode");
+                            if (playModeTestCount > 0) modesToRun.Add("PlayMode");
+
+                            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                                Debug.Log($"[TestRunner] Running tests in modes: {string.Join(", ", modesToRun)} (EditMode: {editModeTestCount}, PlayMode: {playModeTestCount})");
+                            var response = await RunSequentialTests(_testRunnerApi, filterParams, timeoutMs, editModeTestCount > 0, playModeTestCount > 0, operationId, _originalRequest);
+                            await McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(ResponseCallTool.Success(response));
+                        }
+                        else
+                        {
+                            // Create filter parameters
+                            var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
+
+                            // Convert string to TestMode enum
+                            var testModeEnum = testMode == "EditMode"
+                                ? TestMode.EditMode
+                                : TestMode.PlayMode;
+
+                            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                                Debug.Log($"[TestRunner] Running {testMode} tests with filters: {filterParams}");
+                            // Validate specific test mode filter
+                            var validation = await ValidateTestFilters(_testRunnerApi, testModeEnum, filterParams);
+                            if (validation != null)
+                            {
+                                await McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(ResponseCallTool.Success(validation));
+                                return;
+                            }
+
+                            Debug.Log($"[TestRunner] ------------------------------------- Running {testMode} tests.");
+
+                            var resultCollector = await RunSingleTestModeWithCollector(testModeEnum, _testRunnerApi, filterParams, timeoutMs, operationId, _originalRequest);
+
+                            Debug.Log($"[TestRunner] ------------------------------------- Completed {testMode} tests.");
+                            // For PlayMode tests, domain reload may have occurred - results will be sent async
+                            if (testModeEnum == TestMode.PlayMode && HasDomainReloadPersistence(operationId))
+                            {
+                                await McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(
+                                    ResponseCallTool.Success("[Info] PlayMode test execution started. Results will be sent asynchronously after domain reload completion."));
+                                return;
+                            }
+
+                            await McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(
+                                ResponseCallTool.Success(resultCollector.FormatTestResults()));
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        Debug.LogError($"[TestRunner] ------------------------------------- Canceled {testMode} tests.");
+                        await McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(
+                            ResponseCallTool.Error(Error.TestTimeout(McpPluginUnity.TimeoutMs)));
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[TestRunner] ------------------------------------- Exception {testMode} tests.");
+                        await McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(
+                            ResponseCallTool.Error(Error.TestExecutionFailed(ex.Message)));
+                        return;
+                    }
+                    finally
+                    {
+                        // Always release the lock when done
+                        lock (_testLock)
+                        {
+                            _isTestRunning = false;
+                        }
+                    }
+                });
+
+                return ResponseCallTool.Processing();
             }
             catch (OperationCanceledException)
             {
-                return Error.TestTimeout(McpPluginUnity.TimeoutMs);
+                return ResponseCallTool.Error(Error.TestTimeout(McpPluginUnity.TimeoutMs));
             }
             catch (Exception ex)
             {
-                return Error.TestExecutionFailed(ex.Message);
-            }
-            finally
-            {
-                // Always release the lock when done
-                lock (_testLock)
-                {
-                    _isTestRunning = false;
-                }
+                return ResponseCallTool.Error(Error.TestExecutionFailed(ex.Message));
             }
         }
 
@@ -168,15 +205,15 @@ Be default recommended to use 'EditMode' for faster iteration during development
 
             // Handle specific test method in FixtureName.TestName format
             if (!string.IsNullOrEmpty(filterParams.TestMethod))
-                testNames.Add(filterParams.TestMethod);
+                testNames.Add(filterParams.TestMethod!);
 
             // Handle namespace filtering with regex (shared pattern ensures validation sync)
             if (!string.IsNullOrEmpty(filterParams.TestNamespace))
-                groupNames.Add(CreateNamespaceRegexPattern(filterParams.TestNamespace));
+                groupNames.Add(CreateNamespaceRegexPattern(filterParams.TestNamespace!));
 
             // Handle class filtering with regex (shared pattern ensures validation sync)
             if (!string.IsNullOrEmpty(filterParams.TestClass))
-                groupNames.Add(CreateClassRegexPattern(filterParams.TestClass));
+                groupNames.Add(CreateClassRegexPattern(filterParams.TestClass!));
 
             if (groupNames.Any())
                 filter.groupNames = groupNames.ToArray();
@@ -204,7 +241,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
         /// </summary>
         /// <param name="className">The class name to filter by</param>
         /// <returns>Regex pattern for Unity's Filter.groupNames field</returns>
-        private static string CreateClassRegexPattern(string className)
+        static string CreateClassRegexPattern(string className)
             => $"^.*\\.{EscapeRegex(className)}\\.[^\\.]+$";
 
         /// <summary>
@@ -213,10 +250,10 @@ Be default recommended to use 'EditMode' for faster iteration during development
         /// </summary>
         /// <param name="input">The string to escape</param>
         /// <returns>Regex-safe escaped string</returns>
-        private static string EscapeRegex(string input)
+        static string EscapeRegex(string input)
             => Regex.Escape(input);
 
-        private async Task<int> GetMatchingTestCount(TestRunnerApi testRunnerApi, TestMode testMode, TestFilterParameters filterParams)
+        static async Task<int> GetMatchingTestCount(TestRunnerApi testRunnerApi, TestMode testMode, TestFilterParameters filterParams)
         {
             try
             {
@@ -253,7 +290,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
             }
         }
 
-        private async Task<string?> ValidateTestFilters(TestRunnerApi testRunnerApi, TestMode testMode, TestFilterParameters filterParams)
+        static async Task<string?> ValidateTestFilters(TestRunnerApi testRunnerApi, TestMode testMode, TestFilterParameters filterParams)
         {
             try
             {
@@ -269,7 +306,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
             }
         }
 
-        private static int CountFilteredTests(ITestAdaptor test, TestFilterParameters filterParams)
+        static int CountFilteredTests(ITestAdaptor test, TestFilterParameters filterParams)
         {
             // If no filters are specified, count all tests
             if (!filterParams.HasAnyFilter)
@@ -297,7 +334,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                 // Check namespace filter using same regex pattern as Filter.groupNames (ensures sync with Unity's execution)
                 if (!matches && !string.IsNullOrEmpty(filterParams.TestNamespace))
                 {
-                    var namespacePattern = CreateNamespaceRegexPattern(filterParams.TestNamespace);
+                    var namespacePattern = CreateNamespaceRegexPattern(filterParams.TestNamespace!);
                     if (Regex.IsMatch(test.FullName, namespacePattern))
                         matches = true;
                 }
@@ -305,7 +342,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                 // Check class filter using same regex pattern as Filter.groupNames (ensures sync with Unity's execution)
                 if (!matches && !string.IsNullOrEmpty(filterParams.TestClass))
                 {
-                    var classPattern = CreateClassRegexPattern(filterParams.TestClass);
+                    var classPattern = CreateClassRegexPattern(filterParams.TestClass!);
                     if (Regex.IsMatch(test.FullName, classPattern))
                         matches = true;
                 }
@@ -331,7 +368,14 @@ Be default recommended to use 'EditMode' for faster iteration during development
             return count;
         }
 
-        private async Task<string> RunSequentialTests(TestRunnerApi testRunnerApi, TestFilterParameters filterParams, int timeoutMs, bool runEditMode, bool runPlayMode, string operationId, RequestCallTool? originalRequest)
+        static async Task<string> RunSequentialTests(
+            TestRunnerApi testRunnerApi,
+            TestFilterParameters filterParams,
+            int timeoutMs,
+            bool runEditMode,
+            bool runPlayMode,
+            string operationId,
+            RequestCallTool? originalRequest)
         {
             var combinedCollector = new CombinedTestResultCollector();
             var totalStartTime = DateTime.Now;
@@ -413,7 +457,13 @@ Be default recommended to use 'EditMode' for faster iteration during development
             }
         }
 
-        private async Task<TestResultCollector> RunSingleTestModeWithCollector(TestMode testMode, TestRunnerApi testRunnerApi, TestFilterParameters filterParams, int timeoutMs, string operationId = null, RequestCallTool? originalRequest = null)
+        static async Task<TestResultCollector> RunSingleTestModeWithCollector(
+            TestMode testMode,
+            TestRunnerApi testRunnerApi,
+            TestFilterParameters filterParams,
+            int timeoutMs,
+            string? operationId = null,
+            RequestCallTool? originalRequest = null)
         {
             var filter = CreateTestFilter(testMode, filterParams);
             var runNumber = testMode == TestMode.EditMode
@@ -425,7 +475,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
             if (testMode == TestMode.PlayMode && !string.IsNullOrEmpty(operationId) && originalRequest != null)
             {
                 TestRunnerDomainReloadHandler.SaveTestExecutionState(
-                    operationId,
+                    operationId!,
                     testMode,
                     filter,
                     timeoutMs,
@@ -435,22 +485,24 @@ Be default recommended to use 'EditMode' for faster iteration during development
                 );
             }
 
-            await MainThread.Instance.RunAsync(() =>
-            {
-                testRunnerApi.RegisterCallbacks(resultCollector);
-                var executionSettings = new ExecutionSettings(filter);
-                testRunnerApi.Execute(executionSettings);
-            });
+            testRunnerApi.RegisterCallbacks(resultCollector);
+            var executionSettings = new ExecutionSettings(filter);
+            var output = testRunnerApi.Execute(executionSettings);
+
+            Debug.Log($"[TestRunner] ------------------------------------- Started Execute for {testMode} tests. output={output}");
 
             try
             {
-                var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(timeoutMs));
+                Debug.Log($"[TestRunner] ------------------------------------- Started WaitForCompletionAsync.");
+                var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(30));
                 await resultCollector.WaitForCompletionAsync(timeoutCts.Token);
+
+                Debug.Log($"[TestRunner] ------------------------------------- Completed WaitForCompletionAsync.");
 
                 // Clean up domain reload state on successful completion
                 if (testMode == TestMode.PlayMode && !string.IsNullOrEmpty(operationId))
                 {
-                    DomainReloadManager.CompleteOperation("TestRunner", operationId);
+                    DomainReloadManager.CompleteOperation("TestRunner", operationId!);
                 }
 
                 return resultCollector;
@@ -463,14 +515,14 @@ Be default recommended to use 'EditMode' for faster iteration during development
                 // Clean up domain reload state on timeout
                 if (testMode == TestMode.PlayMode && !string.IsNullOrEmpty(operationId))
                 {
-                    DomainReloadManager.CompleteOperation("TestRunner", operationId);
+                    DomainReloadManager.CompleteOperation("TestRunner", operationId!);
                 }
 
                 return resultCollector;
             }
             finally
             {
-                await MainThread.Instance.RunAsync(() => testRunnerApi.UnregisterCallbacks(resultCollector));
+                testRunnerApi.UnregisterCallbacks(resultCollector);
             }
         }
 
@@ -479,7 +531,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
         /// </summary>
         /// <param name="operationId">Operation ID to check for</param>
         /// <returns>True if domain reload persistence exists</returns>
-        private bool HasDomainReloadPersistence(string operationId)
+        static bool HasDomainReloadPersistence(string operationId)
         {
             var key = $"TestRunner_{operationId}";
             return DomainReloadPersistence.HasData(key);

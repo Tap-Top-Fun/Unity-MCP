@@ -21,13 +21,18 @@
     "com.unity.modules.physics": "1.0.0",
     "com.unity.modules.physics2d": "1.0.0",
     "com.unity.modules.terrain": "1.0.0",
-    "com.unity.modules.terrainphysics": "1.0.0"
+    "com.unity.modules.terrainphysics": "1.0.0",
+    "extensions.unity.playerprefsex": "2.0.2"
   },
   "scopedRegistries": [
     {
       "name": "package.openupm.com",
       "url": "https://package.openupm.com",
       "scopes": [
+        "com.ivanmurzak",
+        "extensions.unity",
+        "extensions.unity.playerprefsex",
+        "org.nuget",
         "org.nuget.microsoft.aspnetcore.connections.abstractions",
         "org.nuget.microsoft.aspnetcore.http.connections.client",
         "org.nuget.microsoft.aspnetcore.http.connections.common",
@@ -87,10 +92,7 @@
         "org.nuget.system.text.encodings.web",
         "org.nuget.system.text.json",
         "org.nuget.system.threading.channels",
-        "org.nuget.system.threading.tasks.extensions",
-        "org.nuget",
-        "com.ivanmurzak",
-        "extensions.unity"
+        "org.nuget.system.threading.tasks.extensions"
       ]
     }
   ]

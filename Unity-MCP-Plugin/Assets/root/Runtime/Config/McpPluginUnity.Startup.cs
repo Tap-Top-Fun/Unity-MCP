@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP
             MainThreadInstaller.Init();
 
             var mcpPlugin = new McpPluginBuilder()
-                .WithAppFeatures()
+                .AddMcpPlugin()
                 .WithConfig(config =>
                 {
                     if (McpPluginUnity.LogLevel.IsActive(LogLevel.Info))
@@ -71,6 +71,7 @@ namespace com.IvanMurzak.Unity.MCP
                     var message = "<b><color=yellow>Connecting</color></b>";
                     Debug.Log($"{Consts.Log.Tag} {message} <color=orange>ಠ‿ಠ</color>");
                 }
+                Debug.Log("---------- CONNECT (Startup)");
                 mcpPlugin.Connect();
             }
         }

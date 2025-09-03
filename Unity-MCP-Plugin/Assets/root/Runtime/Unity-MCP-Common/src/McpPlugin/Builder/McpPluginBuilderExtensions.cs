@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class McpPluginBuilderExtensions
     {
-        public static IMcpPluginBuilder AddMcpPlugin(this IServiceCollection services, ILoggerProvider? loggerProvider = null, Action<IMcpPluginBuilder>? configure = null)
+        public static IMcpPluginBuilder WithAppFeatures(this IServiceCollection services, ILoggerProvider? loggerProvider = null, Action<IMcpPluginBuilder>? configure = null)
         {
             // Create an instance of McpAppBuilder
             var mcpPluginBuilder = new McpPluginBuilder(loggerProvider, services);
@@ -28,7 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             return mcpPluginBuilder;
         }
-        public static IMcpPluginBuilder WithAppFeatures(this IMcpPluginBuilder builder)
+        public static IMcpPluginBuilder AddMcpPlugin(this IMcpPluginBuilder builder)
         {
             builder.AddMcpRunner();
             builder.Services.AddTransient<IRpcRouter, RpcRouter>();

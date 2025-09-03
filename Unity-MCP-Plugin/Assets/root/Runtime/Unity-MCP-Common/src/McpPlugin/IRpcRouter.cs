@@ -22,8 +22,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
         Task<bool> Connect(CancellationToken cancellationToken = default);
         Task Disconnect(CancellationToken cancellationToken = default);
 
-        Task<ResponseData<string>> NotifyAboutUpdatedTools(CancellationToken cancellationToken = default);
-        Task<ResponseData<string>> NotifyAboutUpdatedResources(CancellationToken cancellationToken = default);
-        Task SendDelayedToolResponse(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default);
+        Task<ResponseData> NotifyAboutUpdatedTools(CancellationToken cancellationToken = default);
+        Task<ResponseData> NotifyAboutUpdatedResources(CancellationToken cancellationToken = default);
+        Task<ResponseData> NotifyToolRequestCompleted(IResponseCallTool response, CancellationToken cancellationToken = default);
     }
 }

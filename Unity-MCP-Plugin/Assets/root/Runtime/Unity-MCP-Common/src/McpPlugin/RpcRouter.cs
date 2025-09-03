@@ -45,6 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public Task<bool> Connect(CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("{0} Connecting... (to RemoteApp: {1}).", nameof(RpcRouter), _connectionManager.Endpoint);
+            _logger.LogInformation("---------- CONNECT (RpcRouter)");
             return _connectionManager.Connect(cancellationToken);
         }
         public Task Disconnect(CancellationToken cancellationToken = default)
@@ -105,22 +106,22 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .AddTo(_serverEventsDisposables);
         }
 
-        public Task<ResponseData<string>> NotifyAboutUpdatedTools(CancellationToken cancellationToken = default)
+        public Task<ResponseData> NotifyAboutUpdatedTools(CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("{0} Notify server about updated tools.", nameof(RpcRouter));
-            return _connectionManager.InvokeAsync<string, ResponseData<string>>(Consts.RPC.Server.OnListToolsUpdated, string.Empty, cancellationToken);
+            return _connectionManager.InvokeAsync<string, ResponseData>(Consts.RPC.Server.OnListToolsUpdated, string.Empty, cancellationToken);
         }
 
-        public Task<ResponseData<string>> NotifyAboutUpdatedResources(CancellationToken cancellationToken = default)
+        public Task<ResponseData> NotifyAboutUpdatedResources(CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("{0} Notify server about updated resources.", nameof(RpcRouter));
-            return _connectionManager.InvokeAsync<string, ResponseData<string>>(Consts.RPC.Server.OnListResourcesUpdated, string.Empty, cancellationToken);
+            return _connectionManager.InvokeAsync<string, ResponseData>(Consts.RPC.Server.OnListResourcesUpdated, string.Empty, cancellationToken);
         }
 
-        public Task SendDelayedToolResponse(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
+        public Task<ResponseData> NotifyToolRequestCompleted(IResponseCallTool response, CancellationToken cancellationToken = default)
         {
-            _logger.LogTrace("{0} Sending delayed tool response for request: {1}", nameof(RpcRouter), response.RequestID);
-            return _connectionManager.InvokeAsync(Consts.RPC.Server.SendDelayedToolResponse, response, cancellationToken);
+            _logger.LogTrace("{0} Notify tool request completed for request: {1}", nameof(RpcRouter), response.RequestID);
+            return _connectionManager.InvokeAsync<IResponseCallTool, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, response, cancellationToken);
         }
 
         public void Dispose()

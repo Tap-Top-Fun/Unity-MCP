@@ -12,7 +12,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -40,7 +39,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
 
-            return _requestTrackingService.TrackRequestAsync(
+            var task = _requestTrackingService.TrackRequestAsync(
                 requestData.RequestID,
                 async () =>
                 {
@@ -58,6 +57,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 },
                 ConnectionConfig.TimeoutMs,
                 linkedCts.Token);
+
+            return task;
         }
 
         public Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, CancellationToken cancellationToken = default)

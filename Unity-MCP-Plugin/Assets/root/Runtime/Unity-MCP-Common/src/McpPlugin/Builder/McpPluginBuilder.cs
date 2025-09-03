@@ -42,7 +42,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _logger = loggerProvider?.CreateLogger(nameof(McpPluginBuilder));
             _services = services ?? new ServiceCollection();
 
-            _services.AddTransient<IConnectionManager, ConnectionManager>();
+            _services.AddSingleton<IConnectionManager, ConnectionManager>();
             _services.AddSingleton<IMcpPlugin, McpPlugin>();
             _services.AddSingleton<IHubEndpointConnectionBuilder, HubEndpointConnectionBuilder>();
 

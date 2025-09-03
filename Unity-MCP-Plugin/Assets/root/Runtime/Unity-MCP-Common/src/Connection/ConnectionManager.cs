@@ -11,6 +11,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -27,7 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         readonly ReactiveProperty<bool> _continueToReconnect = new(false);
         readonly CompositeDisposable _disposables = new();
 
-        Task<bool>? connectionTask;
+        volatile Task<bool>? connectionTask;
         HubConnectionLogger? hubConnectionLogger;
         HubConnectionObservable? hubConnectionObservable;
         CancellationTokenSource? internalCts;
@@ -42,23 +43,28 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _logger.LogTrace("{0} Ctor.", _guid);
 
             _hubConnectionBuilder = hubConnectionBuilder ?? throw new ArgumentNullException(nameof(hubConnectionBuilder));
-            _hubConnection.Subscribe(hubConnection =>
-            {
-                if (hubConnection == null)
+            _hubConnection
+                .Subscribe(hubConnection =>
                 {
-                    _connectionState.Value = HubConnectionState.Disconnected;
-                    return;
-                }
+                    if (hubConnection == null)
+                    {
+                        _connectionState.Value = HubConnectionState.Disconnected;
+                        return;
+                    }
 
-                hubConnection.ToObservable().State
-                    .Subscribe(state => _connectionState.Value = state)
-                    .AddTo(_disposables);
-            })
-            .AddTo(_disposables);
+                    hubConnection.ToObservable().State
+                        .Subscribe(state => _connectionState.Value = state)
+                        .AddTo(_disposables);
+                })
+                .AddTo(_disposables);
 
             _connectionState
                 .Where(state => state == HubConnectionState.Reconnecting && _continueToReconnect.CurrentValue)
-                .Subscribe(async state => await Connect())
+                .Subscribe(async state =>
+                {
+                    _logger.LogInformation("---------- CONNECT (ConnectionManager 1)");
+                    await Connect(_disposables.ToCancellationToken());
+                })
                 .AddTo(_disposables);
         }
 
@@ -66,6 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
             {
+                _logger.LogInformation("---------- CONNECT (ConnectionManager 2)");
                 await Connect(cancellationToken);
                 if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
                 {
@@ -82,7 +89,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
             await _hubConnection.CurrentValue.InvokeAsync(methodName, input, cancellationToken).ContinueWith(task =>
             {
                 if (task.IsCompletedSuccessfully)
+                {
+                    _logger.LogInformation("{0} Completed to invoke method {1}", _guid, methodName);
                     return;
+                }
 
                 _logger.LogError("{0} Failed to invoke method {1}: {2}", _guid, methodName, task.Exception?.Message);
             });
@@ -94,6 +104,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 _logger.LogDebug("{0} Connection is not established. Attempting to connect...", _guid);
                 // Attempt to connect if the connection is not established
+                MainThread.Instance.Run(() => _logger.LogInformation("---------- CONNECT (ConnectionManager 3)"));
                 await Connect(cancellationToken);
 
                 if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
@@ -111,7 +122,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
             return await _hubConnection.CurrentValue.InvokeAsync<TResult>(methodName, input, cancellationToken).ContinueWith(task =>
             {
                 if (task.IsCompletedSuccessfully)
+                {
+                    _logger.LogInformation("{0} Completed to invoke method {1}", _guid, methodName);
                     return task.Result;
+                }
 
                 _logger.LogError("{0} Failed to invoke method {1}: {2}", _guid, methodName, task.Exception?.Message);
                 return default!;
@@ -192,8 +206,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         async Task<bool> InternalConnect(CancellationToken cancellationToken)
         {
+            _logger.LogTrace("{0} InternalConnect", _guid);
+
             if (_hubConnection.Value == null)
             {
+                MainThread.Instance.Run(() => _logger.LogDebug("{0} Creating new HubConnection instance {1}.", _guid, Endpoint));
                 _logger.LogDebug("{0} Creating new HubConnection instance {1}.", _guid, Endpoint);
                 var hubConnection = await _hubConnectionBuilder.CreateConnectionAsync(Endpoint);
                 if (hubConnection == null)
@@ -201,6 +218,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     _logger.LogError("{0} Can't create connection instance. Something may be wrong with Connection Config {1}.", _guid, Endpoint);
                     return false;
                 }
+
+                MainThread.Instance.Run(() => _logger.LogDebug("{0} Created new HubConnection instance {1}.", _guid, Endpoint));
 
                 _hubConnection.Value = hubConnection;
 
@@ -210,12 +229,13 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 hubConnectionObservable?.Dispose();
                 hubConnectionObservable = new(hubConnection);
                 hubConnectionObservable.Closed
+                    .Subscribe(_ => connectionTask = null)
+                    .RegisterTo(cancellationToken);
+                hubConnectionObservable.Closed
                     .Where(_ => _continueToReconnect.CurrentValue)
+                    .Where(_ => !cancellationToken.IsCancellationRequested)
                     .Subscribe(async _ =>
                     {
-                        connectionTask = null;
-                        if (cancellationToken.IsCancellationRequested)
-                            return;
                         _logger.LogWarning("{0} Connection closed. Attempting to reconnect... {1}.", _guid, Endpoint);
                         await InternalConnect(cancellationToken);
                     })

@@ -7,16 +7,27 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System.Collections.Generic;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Editor.API.TestRunner;
+using UnityEditor;
+using UnityEditor.TestTools.TestRunner.Api;
+using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
     [McpPluginToolType]
-    public partial class Tool_TestRunner
+    [InitializeOnLoad]
+    public static partial class Tool_TestRunner
     {
+        static TestRunnerApi _testRunnerApi = null!;
+        static Tool_TestRunner()
+        {
+            _testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
+            _testRunnerApi.RegisterCallbacks(new TestResultCollector());
+        }
+
         private static class Error
         {
             public static string InvalidTestMode(string testMode)

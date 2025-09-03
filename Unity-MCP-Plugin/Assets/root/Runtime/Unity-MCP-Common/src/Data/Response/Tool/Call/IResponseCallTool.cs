@@ -11,9 +11,8 @@ using System.Collections.Generic;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
-    public interface IResponseCallTool
+    public interface IResponseCallTool : IRequestID
     {
-        string RequestID { get; set; }
         ResponseStatus Status { get; set; }
         List<ResponseCallToolContent> Content { get; set; }
     }
