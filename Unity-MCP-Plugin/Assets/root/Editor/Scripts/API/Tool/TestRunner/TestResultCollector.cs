@@ -23,13 +23,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 {
     public class TestResultCollector : ICallbacks
     {
-        private readonly List<TestResultData> _results = new();
-        private readonly List<string> _logs = new();
-        private readonly TaskCompletionSource<bool> _completionSource = new();
-        private readonly TestSummaryData _summary = new();
-        private DateTime _startTime;
-        private readonly TestMode _testMode;
-        private readonly int _runNumber;
+        readonly TaskCompletionSource<bool> _completionSource = new();
+        readonly List<TestResultData> _results = new();
+        readonly TestSummaryData _summary = new();
+        readonly List<string> _logs = new();
+        readonly TestMode _testMode;
+        readonly int _runNumber;
+
+        DateTime startTime;
 
         public List<TestResultData> GetResults() => _results;
         public TestSummaryData GetSummary() => _summary;
@@ -55,7 +56,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
                 Debug.Log($"[TestResultCollector] RunStarted.");
 
-            _startTime = DateTime.Now;
+            startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
 
             _summary.TotalTests = testCount;
@@ -70,7 +71,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 Debug.Log($"[TestResultCollector] RunFinished.");
 
             var endTime = DateTime.Now;
-            var duration = endTime - _startTime;
+            var duration = endTime - startTime;
             _summary.Duration = duration;
             if (_summary.FailedTests > 0)
             {
@@ -143,7 +144,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 }
 
                 // Update duration as tests complete
-                _summary.Duration = DateTime.Now - _startTime;
+                _summary.Duration = DateTime.Now - startTime;
 
                 // Check if all tests are complete
                 if (_results.Count >= _summary.TotalTests)
