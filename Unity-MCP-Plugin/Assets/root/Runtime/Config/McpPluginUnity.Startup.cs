@@ -39,10 +39,21 @@ namespace com.IvanMurzak.Unity.MCP
                     return;
                 IsInitializationStarted = true;
             }
-            await BuildAndStartInternal(openConnection);
-            lock (mutex)
+            try
             {
-                IsInitializationStarted = false;
+                await BuildAndStartInternal(openConnection);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                Debug.LogError($"{Consts.Log.Tag} Error during MCP plugin initialization: {ex}");
+            }
+            finally
+            {
+                lock (mutex)
+                {
+                    IsInitializationStarted = false;
+                }
             }
         }
 
