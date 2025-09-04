@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public Task<HubConnection> CreateConnectionAsync(string endpoint)
         {
             _logger.LogInformation($"Creating HubConnection to {endpoint}");
-            _logger.LogInformation($"------------ BUILD CONNECTION to {endpoint}");
+
             var connectionConfig = _serviceProvider.GetRequiredService<IOptions<ConnectionConfig>>().Value;
             var hubConnection = new HubConnectionBuilder()
                 .WithUrl(connectionConfig.Endpoint + endpoint)

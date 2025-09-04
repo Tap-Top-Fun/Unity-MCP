@@ -87,6 +87,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 Debug.Log($"[TestRunner] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
             }
 
+            McpPluginUnity.BuildAndStart(McpPluginUnity.KeepConnected);
+
             _completionSource.TrySetResult(true);
         }
 

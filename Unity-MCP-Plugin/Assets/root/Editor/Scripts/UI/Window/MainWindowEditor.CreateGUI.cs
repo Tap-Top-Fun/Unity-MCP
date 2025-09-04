@@ -198,17 +198,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 .AddTo(_disposables);
             }).AddTo(_disposables);
 
-
             btnConnectOrDisconnect.RegisterCallback<ClickEvent>(evt =>
             {
-                if (btnConnectOrDisconnect.text == ServerButtonText_Connect)
+                if (btnConnectOrDisconnect.text.Equals(ServerButtonText_Connect, StringComparison.OrdinalIgnoreCase))
                 {
-                    // btnConnectOrDisconnect.text = ServerButtonText_Stop;
                     McpPluginUnity.KeepConnected = true;
                     McpPluginUnity.Save();
                     if (McpPlugin.HasInstance)
                     {
-                        Debug.Log("---------- CONNECT");
                         McpPlugin.Instance.Connect();
                     }
                     else
@@ -216,21 +213,27 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                         McpPluginUnity.BuildAndStart();
                     }
                 }
-                else if (btnConnectOrDisconnect.text == ServerButtonText_Disconnect)
+                else if (btnConnectOrDisconnect.text.Equals(ServerButtonText_Disconnect, StringComparison.OrdinalIgnoreCase))
                 {
-                    // btnConnectOrDisconnect.text = ServerButtonText_Connect;
                     McpPluginUnity.KeepConnected = false;
                     McpPluginUnity.Save();
                     if (McpPlugin.HasInstance)
+                    {
                         McpPlugin.Instance.Disconnect();
+                    }
                 }
-                else if (btnConnectOrDisconnect.text == ServerButtonText_Stop)
+                else if (btnConnectOrDisconnect.text.Equals(ServerButtonText_Stop, StringComparison.OrdinalIgnoreCase))
                 {
-                    // btnConnectOrDisconnect.text = ServerButtonText_Connect;
                     McpPluginUnity.KeepConnected = false;
                     McpPluginUnity.Save();
                     if (McpPlugin.HasInstance)
+                    {
                         McpPlugin.Instance.Disconnect();
+                    }
+                }
+                else
+                {
+                    throw new Exception("Unknown button state: " + btnConnectOrDisconnect.text);
                 }
             });
 

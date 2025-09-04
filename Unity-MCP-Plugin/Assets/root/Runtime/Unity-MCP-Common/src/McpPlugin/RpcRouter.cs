@@ -45,7 +45,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public Task<bool> Connect(CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("{0} Connecting... (to RemoteApp: {1}).", nameof(RpcRouter), _connectionManager.Endpoint);
-            _logger.LogInformation("---------- CONNECT (RpcRouter)");
             return _connectionManager.Connect(cancellationToken);
         }
         public Task Disconnect(CancellationToken cancellationToken = default)

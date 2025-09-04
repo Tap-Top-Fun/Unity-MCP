@@ -10,6 +10,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using UnityEditor;
 using UnityEngine;
@@ -29,23 +30,27 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             if (Application.dataPath.Contains(" "))
                 Debug.LogError("The project path contains spaces, which may cause issues during usage of Unity-MCP. Please consider the move the project to a folder without spaces.");
 
+            Application.unloading += OnBeforeReload;
+            Application.quitting += OnBeforeReload;
+
             // Fires before assemblies are reloaded
             AssemblyReloadEvents.beforeAssemblyReload += OnBeforeReload;
 
             // Fires after assemblies are reloaded
             AssemblyReloadEvents.afterAssemblyReload += OnAfterReload;
         }
-        static void OnBeforeReload()
+        static async void OnBeforeReload()
         {
-            var instance = McpPlugin.Instance;
-            if (instance == null)
-                return; // ignore
+            await McpPlugin.StaticDisposeAsync();
+            // var instance = McpPlugin.Instance;
+            // if (instance == null)
+            //     return; // ignore
 
-            instance.RpcRouter?.Disconnect();
+            // await (instance.RpcRouter?.Disconnect() ?? Task.CompletedTask);
         }
         static void OnAfterReload()
         {
-            // none
+            McpPluginUnity.BuildAndStart(openConnection: !IsCi());
         }
 
         /// <summary>

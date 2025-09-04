@@ -8,6 +8,7 @@
 └──────────────────────────────────────────────────────────────────┘
 */
 using System;
+using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Convertor;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -27,10 +28,28 @@ namespace com.IvanMurzak.Unity.MCP
 
     public partial class McpPluginUnity
     {
-        public static void BuildAndStart(bool openConnection = true)
+        static volatile object mutex = new();
+        static volatile bool IsInitializationStarted = false;
+
+        public static async void BuildAndStart(bool openConnection = true)
         {
-            McpPlugin.StaticDisposeAsync();
+            lock (mutex)
+            {
+                if (IsInitializationStarted)
+                    return;
+                IsInitializationStarted = true;
+            }
+            await BuildAndStartInternal(openConnection);
+            lock (mutex)
+            {
+                IsInitializationStarted = false;
+            }
+        }
+
+        static async Task BuildAndStartInternal(bool openConnection)
+        {
             MainThreadInstaller.Init();
+            await McpPlugin.StaticDisposeAsync();
 
             var mcpPlugin = new McpPluginBuilder()
                 .AddMcpPlugin()
@@ -71,8 +90,7 @@ namespace com.IvanMurzak.Unity.MCP
                     var message = "<b><color=yellow>Connecting</color></b>";
                     Debug.Log($"{Consts.Log.Tag} {message} <color=orange>ಠ‿ಠ</color>");
                 }
-                Debug.Log("---------- CONNECT (Startup)");
-                mcpPlugin.Connect();
+                await mcpPlugin.Connect();
             }
         }
 

@@ -210,7 +210,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             if (_hubConnection.Value == null)
             {
-                MainThread.Instance.Run(() => _logger.LogDebug("{0} Creating new HubConnection instance {1}.", _guid, Endpoint));
+                hubConnectionLogger?.Dispose();
+                hubConnectionObservable?.Dispose();
+
                 _logger.LogDebug("{0} Creating new HubConnection instance {1}.", _guid, Endpoint);
                 var hubConnection = await _hubConnectionBuilder.CreateConnectionAsync(Endpoint);
                 if (hubConnection == null)
@@ -219,14 +221,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     return false;
                 }
 
-                MainThread.Instance.Run(() => _logger.LogDebug("{0} Created new HubConnection instance {1}.", _guid, Endpoint));
+                _logger.LogDebug("{0} Created new HubConnection instance {1}.", _guid, Endpoint);
 
                 _hubConnection.Value = hubConnection;
 
-                hubConnectionLogger?.Dispose();
                 hubConnectionLogger = new(_logger, hubConnection, guid: _guid);
 
-                hubConnectionObservable?.Dispose();
                 hubConnectionObservable = new(hubConnection);
                 hubConnectionObservable.Closed
                     .Subscribe(_ => connectionTask = null)
@@ -253,6 +253,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     continue;
                 }
 
+                _logger.LogInformation("{0} Starting connection to {1}...", _guid, Endpoint);
                 var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 var task = connection.StartAsync(cts.Token);
                 try
@@ -328,11 +329,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             _logger.LogTrace("{0} DisposeAsync.", _guid);
 
-            connectionTask = null;
-            _disposables.Dispose();
-
             if (!_continueToReconnect.IsDisposed)
                 _continueToReconnect.Value = false;
+
+            _disposables.Dispose();
+            connectionTask = null;
 
             hubConnectionLogger?.Dispose();
             hubConnectionObservable?.Dispose();

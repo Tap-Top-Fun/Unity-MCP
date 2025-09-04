@@ -45,13 +45,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _services.AddSingleton<IConnectionManager, ConnectionManager>();
             _services.AddSingleton<IMcpPlugin, McpPlugin>();
             _services.AddSingleton<IHubEndpointConnectionBuilder, HubEndpointConnectionBuilder>();
-
-            // The Func for backward compatibility
-            _services.AddSingleton<Func<string, Task<HubConnection>>>(provider =>
-            {
-                var factory = provider.GetRequiredService<IHubEndpointConnectionBuilder>();
-                return factory.CreateConnectionAsync;
-            });
         }
 
         public IMcpPluginBuilder WithTool(string name, Type classType, MethodInfo method)
