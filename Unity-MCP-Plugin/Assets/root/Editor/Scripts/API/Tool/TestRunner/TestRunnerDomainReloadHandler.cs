@@ -75,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     Debug.Log($"[TestRunnerDomainReloadHandler] Collecting results with {remainingTimeout}ms timeout remaining");
 
                 // Create result collector for PlayMode execution
-                var resultCollector = new TestResultCollector(state.TestMode, state.RunNumber);
+                var resultCollector = new TestResultCollector(state.TestMode);
 
                 // Register callbacks and execute
                 testRunnerApi.RegisterCallbacks(resultCollector);

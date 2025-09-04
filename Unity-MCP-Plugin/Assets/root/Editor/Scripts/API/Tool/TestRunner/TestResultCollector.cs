@@ -28,7 +28,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
         readonly TestSummaryData _summary = new();
         readonly List<string> _logs = new();
         readonly TestMode _testMode;
-        readonly int _runNumber;
 
         DateTime startTime;
 
@@ -37,38 +36,45 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
         public List<string> GetLogs() => _logs;
         public TestMode GetTestMode() => _testMode;
 
+        public string TestModeAsString => _testMode switch
+        {
+            TestMode.EditMode => "EditMode",
+            TestMode.PlayMode => "PlayMode",
+            _ => "Unknown"
+        };
+
         public PlayerPrefsString McpRequestID { get; private set; } = new PlayerPrefsString("MCP_TestRunner_RequestID");
 
         public TestResultCollector()
         {
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                Debug.Log($"[TestResultCollector] Ctor.");
+                Debug.Log($"[{nameof(TestResultCollector)}] Ctor.");
         }
 
-        public TestResultCollector(TestMode testMode, int runNumber = 1) : this()
+        public TestResultCollector(TestMode testMode) : this()
         {
             _testMode = testMode;
-            _runNumber = runNumber;
         }
 
         public void RunStarted(ITestAdaptor testsToRun)
         {
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                Debug.Log($"[TestResultCollector] RunStarted.");
+                Debug.Log($"[{nameof(TestResultCollector)}] RunStarted.");
 
             startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
 
+            _results.Clear();
             _summary.TotalTests = testCount;
 
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                Debug.Log($"[TestResultCollector] Run {_runNumber} ({_testMode}) started: {testCount} tests.");
+                Debug.Log($"[{nameof(TestResultCollector)}] Run {TestModeAsString} started: {testCount} tests.");
         }
 
         public void RunFinished(ITestResultAdaptor result)
         {
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                Debug.Log($"[TestResultCollector] RunFinished.");
+                Debug.Log($"[{nameof(TestResultCollector)}] RunFinished.");
 
             var endTime = DateTime.Now;
             var duration = endTime - startTime;
@@ -88,8 +94,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
             {
-                Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) finished with {CountTests(result.Test)} test results. Result status: {result.TestStatus}");
-                Debug.Log($"[TestRunner] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
+                Debug.Log($"[{nameof(TestResultCollector)}] Run {TestModeAsString} finished with {CountTests(result.Test)} test results. Result status: {result.TestStatus}");
+                Debug.Log($"[{nameof(TestResultCollector)}] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
             }
 
             McpPluginUnity.BuildAndStart(McpPluginUnity.KeepConnected);
@@ -127,7 +133,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 };
 
                 if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                    Debug.Log($"[TestRunner] {statusEmoji} Test finished: {result.Test.FullName} - {result.TestStatus} ({_results.Count}/{_summary.TotalTests})");
+                    Debug.Log($"[{nameof(TestResultCollector)}] {statusEmoji} Test finished: {result.Test.FullName} - {result.TestStatus} ({_results.Count}/{_summary.TotalTests})");
 
                 // Update summary counts
                 switch (result.TestStatus)
@@ -150,7 +156,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 if (_results.Count >= _summary.TotalTests)
                 {
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                        Debug.Log($"[TestRunner] All tests completed via TestFinished. Final duration: {_summary.Duration:mm\\:ss\\.fff}");
+                        Debug.Log($"[{nameof(TestResultCollector)}] All tests completed via TestFinished. Final duration: {_summary.Duration:mm\\:ss\\.fff}");
 
                     _completionSource.TrySetResult(true);
                 }

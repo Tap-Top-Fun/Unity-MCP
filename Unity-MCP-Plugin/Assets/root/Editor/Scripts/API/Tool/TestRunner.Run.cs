@@ -469,7 +469,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
             var runNumber = testMode == TestMode.EditMode
                 ? 1
                 : 2;
-            var resultCollector = new TestResultCollector(testMode, runNumber);
+            var resultCollector = new TestResultCollector(testMode);
 
             // Save state for domain reload continuation if this is PlayMode
             if (testMode == TestMode.PlayMode && !string.IsNullOrEmpty(operationId) && originalRequest != null)
