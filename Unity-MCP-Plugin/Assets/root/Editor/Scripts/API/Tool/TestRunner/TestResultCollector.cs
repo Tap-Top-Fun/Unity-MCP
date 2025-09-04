@@ -45,14 +45,18 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
         public TestResultCollector(TestMode testMode, int runNumber = 1)
         {
+            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                Debug.Log($"[TestResultCollector] Ctor.");
+
             _testMode = testMode;
             _runNumber = runNumber;
-            Debug.Log($"[TestResultCollector] ------------------------------------- Ctor.");
         }
 
         public void RunStarted(ITestAdaptor testsToRun)
         {
-            Debug.Log($"[TestResultCollector] ------------------------------------- RunStarted.");
+            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                Debug.Log($"[TestResultCollector] RunStarted.");
+
             _startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
 
@@ -64,7 +68,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
         public void RunFinished(ITestResultAdaptor result)
         {
-            Debug.Log($"[TestResultCollector] ------------------------------------- RunFinished.");
+            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                Debug.Log($"[TestResultCollector] RunFinished.");
+
             var endTime = DateTime.Now;
             var duration = endTime - _startTime;
             _summary.Duration = duration;
