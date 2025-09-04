@@ -28,6 +28,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             _testRunnerApi.RegisterCallbacks(new TestResultCollector());
         }
 
+        public static void Init()
+        {
+            // none
+        }
+
         private static class Error
         {
             public static string InvalidTestMode(string testMode)

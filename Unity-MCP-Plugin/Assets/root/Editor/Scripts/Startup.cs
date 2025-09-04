@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         static Startup()
         {
-            McpPluginUnity.BuildAndStart(openConnection: !IsCi());
+            McpPluginUnity.BuildAndStart(openConnection: !IsCi()).GetAwaiter();
             Server.DownloadServerBinaryIfNeeded();
 
             if (Application.dataPath.Contains(" "))
@@ -32,11 +32,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             Application.unloading += OnBeforeReload;
             Application.quitting += OnBeforeReload;
 
-            // Fires before assemblies are reloaded
             AssemblyReloadEvents.beforeAssemblyReload += OnBeforeReload;
-
-            // Fires after assemblies are reloaded
             AssemblyReloadEvents.afterAssemblyReload += OnAfterReload;
+
+            // Initialize sub-systems
+            API.Tool_TestRunner.Init();
         }
         static async void OnBeforeReload()
         {
@@ -52,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         }
         static void OnAfterReload()
         {
-            McpPluginUnity.BuildAndStart(openConnection: !IsCi());
+            McpPluginUnity.BuildAndStart(openConnection: !IsCi()).GetAwaiter();
         }
 
         /// <summary>
