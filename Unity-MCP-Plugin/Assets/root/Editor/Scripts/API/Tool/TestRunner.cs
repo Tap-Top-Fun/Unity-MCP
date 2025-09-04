@@ -21,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
     [InitializeOnLoad]
     public static partial class Tool_TestRunner
     {
-        static TestRunnerApi _testRunnerApi = null!;
+        static volatile TestRunnerApi _testRunnerApi = null!;
         static Tool_TestRunner()
         {
             _testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
