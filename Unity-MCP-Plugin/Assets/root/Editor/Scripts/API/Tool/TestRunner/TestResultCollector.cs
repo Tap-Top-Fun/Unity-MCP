@@ -40,14 +40,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
         public TestResultCollector()
         {
-
-        }
-
-        public TestResultCollector(TestMode testMode, int runNumber = 1)
-        {
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
                 Debug.Log($"[TestResultCollector] Ctor.");
+        }
 
+        public TestResultCollector(TestMode testMode, int runNumber = 1) : this()
+        {
             _testMode = testMode;
             _runNumber = runNumber;
         }
