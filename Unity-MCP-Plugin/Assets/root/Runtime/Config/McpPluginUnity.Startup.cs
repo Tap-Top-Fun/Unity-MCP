@@ -31,7 +31,7 @@ namespace com.IvanMurzak.Unity.MCP
         static volatile object mutex = new();
         static volatile bool IsInitializationStarted = false;
 
-        public static async Task BuildAndStart(bool openConnection = true)
+        public static async void BuildAndStart(bool openConnection = true)
         {
             lock (mutex)
             {
