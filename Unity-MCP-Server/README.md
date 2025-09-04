@@ -28,6 +28,18 @@
 
 ---
 
+### Variables
+
+Doesn't matter what launch option you choose, all of them support custom configuration using both Environment Variables and Command Line Arguments. It would work with default values, if you just need to launch it, don't waste your time for the variables. Just make sure Unity Plugin also has default values, especially the `--port`, they should be equal.
+
+| Environment Variable        | Command Line Args     | Description                                                                 |
+|-----------------------------|-----------------------|-----------------------------------------------------------------------------|
+| `UNITY_MCP_PORT`            | `--port`              | **Client** -> **Server** <- **Plugin** connection port (default: 8080)      |
+| `UNITY_MCP_PLUGIN_TIMEOUT`  | `--plugin-timeout`    | **Plugin** -> **Server** connection timeout (ms) (default: 10000)           |
+| `UNITY_MCP_CLIENT_TRANSPORT`| `--client-transport`  | **Client** -> **Server** transport type: `stdio` or `http` (default: `http`) |
+
+---
+
 ## Launch
 
 Unity-MCP server is developed with idea of flexibility in mind, that is why it has many launch options.
@@ -181,13 +193,3 @@ MCP client config:
 ```
 
 ---
-
-### Variables
-
-Doesn't matter what launch option you choose, all of them support custom configuration using both Environment Variables and Command Line Arguments. It would work with default values, if you just need to launch it, don't waste your time for the variables. Just make sure Unity Plugin also has default values, especially the `--port`, they should be equal.
-
-| Environment Variable        | Command Line Args     | Description                                                                 |
-|-----------------------------|-----------------------|-----------------------------------------------------------------------------|
-| `UNITY_MCP_PORT`            | `--port`              | **Client** -> **Server** <- **Plugin** connection port (default: 8080)      |
-| `UNITY_MCP_PLUGIN_TIMEOUT`  | `--plugin-timeout`    | **Plugin** -> **Server** connection timeout (ms) (default: 10000)           |
-| `UNITY_MCP_CLIENT_TRANSPORT`| `--client-transport`  | **Client** -> **Server** transport type: `stdio` or `http` (default: `http`) |
