@@ -10,6 +10,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using UnityEditor;
 using UnityEngine;
@@ -47,8 +48,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 return; // ignore
             }
 
-            await instance.Disconnect();
-            await McpPlugin.StaticDisposeAsync();
+            await (instance.RpcRouter?.Disconnect() ?? Task.CompletedTask);
+            //await instance.Disconnect();
+            //await McpPlugin.StaticDisposeAsync();
+            // await Task.WhenAll(
+            //     instance.Disconnect(),
+            //     McpPlugin.StaticDisposeAsync()
+            // );
         }
         static void OnAfterReload()
         {
