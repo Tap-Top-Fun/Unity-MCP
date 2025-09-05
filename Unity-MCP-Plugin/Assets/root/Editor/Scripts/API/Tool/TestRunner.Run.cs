@@ -161,6 +161,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     }
                     catch (Exception ex)
                     {
+                        Debug.LogException(ex);
                         Debug.LogError($"[TestRunner] ------------------------------------- Exception {testMode} tests.");
                         await McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted(
                             ResponseCallTool.Error(Error.TestExecutionFailed(ex.Message)));
