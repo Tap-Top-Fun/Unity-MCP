@@ -91,7 +91,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
             try
             {
                 if (_rpcRouter != null)
+                {
+                    await _rpcRouter.Disconnect();
                     await _rpcRouter.DisposeAsync();
+                }
             }
             catch (Exception ex)
             {
