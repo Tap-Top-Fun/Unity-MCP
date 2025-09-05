@@ -139,7 +139,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 };
 
                 if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                    Debug.Log($"[{nameof(TestResultCollector)}] {statusEmoji} Test finished: {result.Test.FullName} - {result.TestStatus} ({_results.Count}/{_summary.TotalTests})");
+                    Debug.Log($"[{nameof(TestResultCollector)}] {statusEmoji} Test finished ({_results.Count}/{_summary.TotalTests}): {result.Test.FullName} - {result.TestStatus}");
 
                 // Update summary counts
                 switch (result.TestStatus)

@@ -22,10 +22,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
     public static partial class Tool_TestRunner
     {
         static volatile TestRunnerApi _testRunnerApi = null!;
+        static volatile TestResultCollector _resultCollector = null!;
         static Tool_TestRunner()
         {
             _testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
-            _testRunnerApi.RegisterCallbacks(new TestResultCollector());
+            _testRunnerApi.RegisterCallbacks(_resultCollector = new TestResultCollector());
         }
 
         public static void Init()
