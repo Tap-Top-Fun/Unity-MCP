@@ -58,10 +58,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 builder.Logging.ClearProviders();
                 builder.Logging.AddNLog();
 
-                // Setup SignalR ---------------------------------------------------------------
-
                 var reflector = new Reflector();
 
+                // Setup SignalR ---------------------------------------------------------------
                 builder.Services.AddSignalR(configure =>
                 {
                     configure.EnableDetailedErrors = false;

@@ -72,8 +72,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
             {
-                _logger.LogInformation("---------- CONNECT (ConnectionManager 2)");
+                _logger.LogDebug("{0} Connection is not established. Attempting to connect...", _guid);
+
+                // Attempt to connect if the connection is not established
                 await Connect(cancellationToken);
+
                 if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
                 {
                     _logger.LogError("{0} Can't establish connection with Remote.", _guid);
@@ -103,8 +106,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
             if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
             {
                 _logger.LogDebug("{0} Connection is not established. Attempting to connect...", _guid);
+
                 // Attempt to connect if the connection is not established
-                MainThread.Instance.Run(() => _logger.LogInformation("---------- CONNECT (ConnectionManager 3)"));
                 await Connect(cancellationToken);
 
                 if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
@@ -258,7 +261,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 var task = connection.StartAsync(cts.Token);
                 try
                 {
-                    await Task.WhenAny(task, Task.Delay(TimeSpan.FromSeconds(3), cancellationToken));
+                    await Task.WhenAny(task.WaitAsync(TimeSpan.FromSeconds(30), TimeProvider.System, cancellationToken), Task.Delay(TimeSpan.FromSeconds(3), cancellationToken));
                     if (!task.IsCompletedSuccessfully)
                     {
                         if (_continueToReconnect.CurrentValue && !cancellationToken.IsCancellationRequested)
