@@ -245,6 +245,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     .RegisterTo(cancellationToken);
             }
 
+            await Task.Delay(50, cancellationToken);
+
             _logger.LogDebug("{0} Connecting to {1}...", _guid, Endpoint);
             while (_continueToReconnect.CurrentValue && !cancellationToken.IsCancellationRequested)
             {
