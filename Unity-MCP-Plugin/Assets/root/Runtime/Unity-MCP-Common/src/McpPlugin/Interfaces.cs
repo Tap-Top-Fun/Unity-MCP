@@ -41,15 +41,20 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
     public interface IToolRunner
     {
-        Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool request, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool request, CancellationToken cancellationToken = default);
+    }
+
+    public interface IToolDelayedResult
+    {
+        Task SetDelayedToolResult(IRequestCallTool request, IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default);
     }
 
     public interface IResourceRunner
     {
-        Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent request, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources request, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates request, CancellationToken cancellationToken = default);
     }
 
     // -----------------------------------------------------------------
