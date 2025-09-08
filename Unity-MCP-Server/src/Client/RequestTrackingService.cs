@@ -26,7 +26,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
             int timeoutMs,
             CancellationToken cancellationToken = default);
         void CompleteRequest(IResponseData response);
-        void RegisterPendingRequests(string connectionId, string[] requestIds);
     }
 
     public class RequestTrackingService : IRequestTrackingService, IDisposable
@@ -105,48 +104,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
             }
         }
 
-        public void NotifyDomainReload(string connectionId)
-        {
-            _logger.LogInformation("Domain reload notification received from connection: {ConnectionId}", connectionId);
-
-            var activeRequests = 0;
-            foreach (var kvp in _pendingRequests)
-            {
-                if (kvp.Value.ConnectionId == connectionId && !kvp.Value.IsCompleted)
-                {
-                    activeRequests++;
-                }
-            }
-
-            _logger.LogInformation("Connection {ConnectionId} has {ActiveRequests} active requests after domain reload",
-                connectionId, activeRequests);
-        }
-
-        public void RegisterPendingRequests(string connectionId, string[] requestIds)
-        {
-            if (requestIds == null || requestIds.Length == 0)
-            {
-                _logger.LogTrace("No pending requests to register for connection: {ConnectionId}", connectionId);
-                return;
-            }
-
-            _logger.LogInformation("Registering {Count} pending requests for connection: {ConnectionId}",
-                requestIds.Length, connectionId);
-
-            foreach (var requestId in requestIds)
-            {
-                if (_pendingRequests.TryGetValue(requestId, out var pendingRequest))
-                {
-                    pendingRequest.ConnectionId = connectionId;
-                    _logger.LogTrace("Updated connection for pending request: {RequestId}", requestId);
-                }
-                else
-                {
-                    _logger.LogWarning("Attempted to register unknown pending request: {RequestId}", requestId);
-                }
-            }
-        }
-
         public void Dispose()
         {
             _logger.LogTrace("RequestTrackingService disposing");
@@ -170,7 +127,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
         class PendingRequest
         {
             public string RequestId { get; }
-            public string? ConnectionId { get; set; }
             public bool IsCompleted { get; protected set; }
             protected readonly CancellationTokenSource TimeoutCts;
 

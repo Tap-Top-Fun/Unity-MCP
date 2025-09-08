@@ -17,7 +17,6 @@ using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NLog;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common.Model;
 

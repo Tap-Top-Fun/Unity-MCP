@@ -48,38 +48,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
             return ResponseData.Success(data, string.Empty).TaskFromResult<IResponseData>();
         }
 
-        public Task<IResponseData> OnDomainReloadStarted(string data)
-        {
-            _logger.LogInformation("RemoteApp OnDomainReloadStarted. {0}. Data: {1}", _guid, data);
-            return ResponseData.Success(data, string.Empty).TaskFromResult<IResponseData>();
-        }
-
-        public Task<IResponseData> OnDomainReloadCompleted(DomainReloadCompletedData data)
-        {
-            _logger.LogInformation("RemoteApp OnDomainReloadCompleted. {0}. ConnectionId: {1}, PendingRequests: {2}",
-                _guid, data.ConnectionId, data.PendingRequestIds?.Length ?? 0);
-
-            if (data.PendingRequestIds != null && data.PendingRequestIds.Length > 0)
-            {
-                _requestTrackingService.RegisterPendingRequests(Context.ConnectionId, data.PendingRequestIds);
-            }
-
-            return ResponseData.Success(string.Empty, string.Empty).TaskFromResult<IResponseData>();
-        }
-
         public Task<IResponseData> OnToolRequestCompleted(ToolRequestCompletedData data)
         {
             _logger.LogTrace("RemoteApp OnToolRequestCompleted. {0}. RequestId: {1}", _guid, data.RequestId);
 
             try
             {
-                var response = JsonSerializer.Deserialize<IResponseData<JsonElement>>(
-                    data.ResponseJson,
-                    McpPlugin.Instance!.McpRunner.Reflector.JsonSerializer.JsonSerializerOptions);
-                if (response != null)
-                {
-                    _requestTrackingService.CompleteRequest(response);
-                }
+                _requestTrackingService.CompleteRequest(data.Result);
             }
             catch (Exception ex)
             {

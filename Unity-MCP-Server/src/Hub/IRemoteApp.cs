@@ -18,8 +18,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
     {
         Task<IResponseData> OnListToolsUpdated(string data);
         Task<IResponseData> OnListResourcesUpdated(string data);
-        Task<IResponseData> OnDomainReloadStarted(string data);
-        Task<IResponseData> OnDomainReloadCompleted(DomainReloadCompletedData data);
         Task<IResponseData> OnToolRequestCompleted(ToolRequestCompletedData data);
     }
 

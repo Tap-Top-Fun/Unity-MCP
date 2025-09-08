@@ -86,7 +86,39 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Tool '{data.Name}' returned null result.")
                         .Log(_logger);
 
-                return result.Log(_logger).Pack(data.RequestID);
+                result.Log(_logger);
+
+                // if (result is ResponseCallTool responseCallTool)
+                // {
+                //     if (responseCallTool.Status == ResponseStatus.Processing)
+                //     {
+                //         _logger.LogInformation("Tool '{0}' is processing. Waiting for completion...", data.Name);
+                //         // wait for the tool completion external event
+
+                //         while (cancellationToken.IsCancellationRequested == false)
+                //         {
+                //             if (_delayedToolResults.TryRemove(data.RequestID, out var delayedResultObj))
+                //             {
+                //                 _logger.LogInformation("Tool '{0}' processing completed.", data.Name);
+
+                //                 if (delayedResultObj is IResponseData<ResponseCallTool> delayedResult)
+                //                 {
+                //                     return delayedResult;
+                //                 }
+                //                 else
+                //                 {
+                //                     return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Tool '{data.Name}' returned invalid delayed result type.")
+                //                         .Log(_logger);
+                //                 }
+                //             }
+
+                //             await Task.Delay(500, cancellationToken);
+                //         }
+                //     }
+                //     return responseCallTool.Pack(data.RequestID);
+                // }
+
+                return result.Pack(data.RequestID);
             }
             catch (Exception ex)
             {

@@ -14,6 +14,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Extensions.Unity.PlayerPrefsEx;
 using UnityEditor.TestTools.TestRunner.Api;
@@ -44,7 +46,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             _ => "Unknown"
         };
 
-        public PlayerPrefsString McpRequestID { get; private set; } = new PlayerPrefsString("MCP_TestRunner_RequestID");
+        public PlayerPrefsString TestCallRequestID = new PlayerPrefsString("Unity_MCP_TestRunner_TestCallRequestID");
 
         public TestResultCollector()
         {
@@ -105,6 +107,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             }
 
             McpPluginUnity.BuildAndStart(McpPluginUnity.KeepConnected);
+
+            var requestId = TestCallRequestID.Value;
+            TestCallRequestID.Value = string.Empty;
+            if (string.IsNullOrEmpty(requestId) == false)
+            {
+                var response = ResponseCallTool.Success(FormatTestResults());
+                McpPluginUnity.NotifyToolRequestCompleted(response.Pack(requestId));
+            }
 
             _completionSource.TrySetResult(true);
         }

@@ -117,10 +117,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
             return _connectionManager.InvokeAsync<string, ResponseData>(Consts.RPC.Server.OnListResourcesUpdated, string.Empty, cancellationToken);
         }
 
-        public Task<ResponseData> NotifyToolRequestCompleted(IResponseCallTool response, CancellationToken cancellationToken = default)
+        public Task<ResponseData> NotifyToolRequestCompleted(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("{0} Notify tool request completed for request: {1}", nameof(RpcRouter), response.RequestID);
-            return _connectionManager.InvokeAsync<IResponseCallTool, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, response, cancellationToken);
+            return _connectionManager.InvokeAsync<IResponseData<ResponseCallTool>, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, response, cancellationToken);
         }
 
         public void Dispose()

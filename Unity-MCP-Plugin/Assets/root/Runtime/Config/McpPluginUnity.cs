@@ -7,8 +7,12 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+#nullable enable
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using R3;
@@ -19,9 +23,9 @@ namespace com.IvanMurzak.Unity.MCP
     public partial class McpPluginUnity
     {
         Data data = new Data();
-        static event Action<Data> onChanged;
+        static event Action<Data>? onChanged;
 
-        static McpPluginUnity instance;
+        static McpPluginUnity instance = null!;
         static McpPluginUnity Instance
         {
             get
@@ -102,11 +106,27 @@ namespace com.IvanMurzak.Unity.MCP
             }
         }
         public static ReadOnlyReactiveProperty<HubConnectionState> ConnectionState
-            => McpPlugin.Instance.ConnectionState;
+            => McpPlugin.Instance!.ConnectionState;
 
-        public static ReadOnlyReactiveProperty<bool> IsConnected => McpPlugin.Instance.ConnectionState
+        public static ReadOnlyReactiveProperty<bool> IsConnected => McpPlugin.Instance!.ConnectionState
             .Select(x => x == HubConnectionState.Connected)
             .ToReadOnlyReactiveProperty(false);
+
+        public static async Task NotifyToolRequestCompleted(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
+        {
+            // wait when connection will be established
+            while (McpPlugin.Instance?.ConnectionState.CurrentValue != HubConnectionState.Connected)
+                await Task.Delay(100, cancellationToken);
+
+            if (McpPlugin.Instance?.RpcRouter == null)
+            {
+                if (IsLogActive(LogLevel.Warning))
+                    Debug.LogWarning("[McpPluginUnity] NotifyToolRequestCompleted: RpcRouter is null");
+                return;
+            }
+
+            await McpPlugin.Instance.RpcRouter.NotifyToolRequestCompleted(response, cancellationToken);
+        }
 
         public static void Validate()
         {

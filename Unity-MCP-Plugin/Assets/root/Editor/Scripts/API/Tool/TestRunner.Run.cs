@@ -78,6 +78,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                         }
                         _isTestRunning = true;
                     }
+                    _resultCollector.TestCallRequestID.Value = requestId;
                     // Create filter parameters
                     var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
 

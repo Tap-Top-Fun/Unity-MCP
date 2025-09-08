@@ -58,4 +58,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
     }
 
     // -----------------------------------------------------------------
+
+    public interface IServerHub
+    {
+        Task<IResponseData> OnListToolsUpdated(string data);
+        Task<IResponseData> OnListResourcesUpdated(string data);
+        Task<IResponseData> OnToolRequestCompleted(ToolRequestCompletedData data);
+    }
 }
