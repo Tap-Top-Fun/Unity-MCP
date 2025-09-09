@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
-    public class ResponseCallTool : IResponseCallTool
+    public class ResponseCallTool : IResponseCallTool, IRequestID
     {
         public string RequestID { get; set; } = string.Empty;
         public virtual ResponseStatus Status { get; set; } = ResponseStatus.Error;
