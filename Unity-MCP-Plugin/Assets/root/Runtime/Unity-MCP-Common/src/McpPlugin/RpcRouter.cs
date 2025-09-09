@@ -128,7 +128,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     System.Text.Json.JsonSerializer.Serialize(response, JsonOptions.Pretty)
                 );
             }
-            return _connectionManager.InvokeAsync<ResponseCallTool, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, response, cancellationToken);
+            var data = new ToolRequestCompletedData
+            {
+                RequestId = response.RequestID,
+                Result = response
+            };
+            return _connectionManager.InvokeAsync<ToolRequestCompletedData, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, data, cancellationToken);
         }
 
         public void Dispose()

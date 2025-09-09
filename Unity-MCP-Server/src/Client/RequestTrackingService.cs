@@ -12,6 +12,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Json;
 using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -83,7 +85,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             if (string.IsNullOrEmpty(response?.RequestID))
             {
-                _logger.LogError("Attempted to complete request with null or empty RequestID");
+                _logger.LogError("Attempted to complete request with null or empty RequestID\n{Json}",
+                    System.Text.Json.JsonSerializer.Serialize(response, JsonOptions.Pretty));
                 return;
             }
 
