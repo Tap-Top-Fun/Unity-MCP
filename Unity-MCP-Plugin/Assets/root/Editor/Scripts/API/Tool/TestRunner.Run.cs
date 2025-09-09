@@ -52,15 +52,21 @@ Be default recommended to use 'EditMode' for faster iteration during development
             if (requestId == null || string.IsNullOrWhiteSpace(requestId))
                 return ResponseCallTool.Error("Original request with valid RequestID must be provided.");
 
+            Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests.");
+
             return await MainThread.Instance.RunAsync(() =>
             {
                 try
                 {
+                    Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests 2.");
                     // Get Test Runner API (must be on main thread)
                     if (TestRunnerApi == null)
-                        return ResponseCallTool.Error(Error.TestRunnerNotAvailable());
+                        return ResponseCallTool.Error("[Error] Unity Test Runner API is not available");
 
-                    _resultCollector.TestCallRequestID.Value = requestId;
+                    Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests 3.");
+                    TestResultCollector.TestCallRequestID.Value = requestId;
+                    Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests 4.");
+
                     // Create filter parameters
                     var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
 

@@ -14,7 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Extensions.Unity.PlayerPrefsEx;
@@ -46,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             _ => "Unknown"
         };
 
-        public PlayerPrefsString TestCallRequestID = new PlayerPrefsString("Unity_MCP_TestRunner_TestCallRequestID");
+        public static PlayerPrefsString TestCallRequestID = new PlayerPrefsString("Unity_MCP_TestRunner_TestCallRequestID");
 
         public TestResultCollector()
         {

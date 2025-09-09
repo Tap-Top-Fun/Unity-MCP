@@ -113,6 +113,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 try
                 {
                     kvp.Value.Cancel();
+                    kvp.Value.Dispose();
                 }
                 catch (Exception ex)
                 {
@@ -124,7 +125,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _disposables.Dispose();
         }
 
-        class PendingRequest
+        class PendingRequest : IDisposable
         {
             public string RequestId { get; }
             public bool IsCompleted { get; protected set; }
@@ -188,6 +189,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     _completionSource.TrySetCanceled();
                     TimeoutCts.Cancel();
                 }
+            }
+
+            public void Dispose()
+            {
+                TimeoutCts?.Dispose();
             }
         }
     }

@@ -21,14 +21,26 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
     [InitializeOnLoad]
     public static partial class Tool_TestRunner
     {
-        static volatile TestRunnerApi _testRunnerApi = null!;
-        static volatile TestResultCollector _resultCollector = null!;
+        static readonly object _lock = new();
+        static volatile TestRunnerApi? _testRunnerApi = null!;
+        static volatile TestResultCollector? _resultCollector = null!;
         static Tool_TestRunner()
         {
             _testRunnerApi ??= CreateInstance();
         }
 
-        public static TestRunnerApi TestRunnerApi => _testRunnerApi ??= CreateInstance();
+        public static TestRunnerApi TestRunnerApi
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _testRunnerApi == null
+                        ? _testRunnerApi = CreateInstance()
+                        : _testRunnerApi;
+                }
+            }
+        }
         public static TestRunnerApi CreateInstance()
         {
             if (McpPluginUnity.IsLogActive(MCP.Utils.LogLevel.Trace))
@@ -54,9 +66,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             public static string TestTimeout(int timeoutMs)
                 => $"[Error] Test execution timed out after {timeoutMs} ms";
-
-            public static string TestRunnerNotAvailable()
-                => $"[Error] Unity Test Runner API is not available";
 
             public static string NoTestsFound(TestFilterParameters filterParams)
             {
