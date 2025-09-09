@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         )]
         [Description(@"Execute Unity tests and return detailed results. Supports filtering by test mode, assembly, namespace, class, and method.
 Be default recommended to use 'EditMode' for faster iteration during development.")]
-        public static async Task<ResponseCallTool> Run
+        public static ResponseCallTool Run
         (
             [Description("Test mode to run. Options: '" + nameof(TestMode.EditMode) + "', '" + nameof(TestMode.PlayMode) + "'. Default: '" + nameof(TestMode.EditMode) + "'")]
             TestMode testMode = TestMode.EditMode,
@@ -54,14 +54,15 @@ Be default recommended to use 'EditMode' for faster iteration during development
 
             Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests.");
 
-            return await MainThread.Instance.RunAsync(() =>
+            return MainThread.Instance.Run(() =>
             {
                 try
                 {
                     Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests 2.");
                     // Get Test Runner API (must be on main thread)
-                    if (TestRunnerApi == null)
-                        return ResponseCallTool.Error("[Error] Unity Test Runner API is not available");
+                    // if (TestRunnerApi == null)
+                    // if (_testRunnerApi == null)
+                    //     return ResponseCallTool.Error("[Error] Unity Test Runner API is not available");
 
                     Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests 3.");
                     TestResultCollector.TestCallRequestID.Value = requestId;
@@ -75,6 +76,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
 
                     // Validate specific test mode filter
                     var validation = ValidateTestFilters(TestRunnerApi, testMode, filterParams).Result;
+                    Debug.Log($"[TestRunner] ------------------------------------- Validation completed: {validation}.");
                     if (validation != null)
                         return ResponseCallTool.Error(validation).SetRequestID(requestId);
 

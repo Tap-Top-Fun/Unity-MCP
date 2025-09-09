@@ -35,19 +35,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             {
                 lock (_lock)
                 {
-                    return _testRunnerApi == null
-                        ? _testRunnerApi = CreateInstance()
-                        : _testRunnerApi;
+                    if (_testRunnerApi == null)
+                        _testRunnerApi = CreateInstance();
+                    return _testRunnerApi;
                 }
             }
         }
         public static TestRunnerApi CreateInstance()
         {
-            if (McpPluginUnity.IsLogActive(MCP.Utils.LogLevel.Trace))
-                Debug.Log($"[{nameof(Tool_TestRunner)}] Ctor.");
+            // if (McpPluginUnity.IsLogActive(MCP.Utils.LogLevel.Trace))
+            //     Debug.Log($"[{nameof(TestRunnerApi)}] Ctor.");
 
+            _resultCollector ??= new TestResultCollector();
             var testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
-            testRunnerApi.RegisterCallbacks(_resultCollector = new TestResultCollector());
+            testRunnerApi.RegisterCallbacks(_resultCollector);
             return testRunnerApi;
         }
 
