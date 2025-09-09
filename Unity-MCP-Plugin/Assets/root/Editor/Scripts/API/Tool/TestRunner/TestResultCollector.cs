@@ -12,9 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Extensions.Unity.PlayerPrefsEx;
@@ -26,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
     public class TestResultCollector : ICallbacks
     {
         static int counter = 0;
-        readonly TaskCompletionSource<bool> _completionSource = new();
+        // readonly TaskCompletionSource<bool> _completionSource = new();
         readonly List<TestResultData> _results = new();
         readonly TestSummaryData _summary = new();
         readonly List<string> _logs = new();
@@ -112,7 +109,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 McpPluginUnity.NotifyToolRequestCompleted(response.Pack(requestId));
             }
 
-            _completionSource.TrySetResult(true);
+            // _completionSource.TrySetResult(true);
         }
 
         public void TestStarted(ITestAdaptor test)
@@ -170,23 +167,23 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
                         Debug.Log($"[{nameof(TestResultCollector)}] All tests completed via TestFinished. Final duration: {_summary.Duration:mm\\:ss\\.fff}");
 
-                    _completionSource.TrySetResult(true);
+                    // _completionSource.TrySetResult(true);
                 }
             }
         }
 
-        public async Task WaitForCompletionAsync(CancellationToken cancellationToken)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => tcs.TrySetCanceled()))
-            {
-                var completedTask = await Task.WhenAny(_completionSource.Task, tcs.Task);
-                if (completedTask == tcs.Task)
-                    cancellationToken.ThrowIfCancellationRequested();
+        // public async Task WaitForCompletionAsync(CancellationToken cancellationToken)
+        // {
+        //     var tcs = new TaskCompletionSource<bool>();
+        //     using (cancellationToken.Register(() => tcs.TrySetCanceled()))
+        //     {
+        //         var completedTask = await Task.WhenAny(_completionSource.Task, tcs.Task);
+        //         if (completedTask == tcs.Task)
+        //             cancellationToken.ThrowIfCancellationRequested();
 
-                await _completionSource.Task; // Re-await to get the result or exception
-            }
-        }
+        //         await _completionSource.Task; // Re-await to get the result or exception
+        //     }
+        // }
 
         public string FormatTestResults()
         {

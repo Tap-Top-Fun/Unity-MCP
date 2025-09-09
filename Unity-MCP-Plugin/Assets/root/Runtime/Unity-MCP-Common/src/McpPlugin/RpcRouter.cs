@@ -9,8 +9,11 @@
 */
 #nullable enable
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Json;
 using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -119,7 +122,14 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public Task<ResponseData> NotifyToolRequestCompleted(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
         {
-            _logger.LogTrace("{0} Notify tool request completed for request: {1}", nameof(RpcRouter), response.RequestID);
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("{0} Notify tool request completed for request: {1}\n",
+                    nameof(RpcRouter),
+                    response.RequestID,
+                    System.Text.Json.JsonSerializer.Serialize(response, JsonOptions.Pretty)
+                );
+            }
             return _connectionManager.InvokeAsync<IResponseData<ResponseCallTool>, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, response, cancellationToken);
         }
 
