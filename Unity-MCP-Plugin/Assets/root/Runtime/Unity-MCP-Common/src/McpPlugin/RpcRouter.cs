@@ -124,7 +124,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("{0} Notify tool request completed for request: {1}\n",
+                _logger.LogTrace("{0} Notify tool request completed for request: {1}\n{Json}",
                     nameof(RpcRouter),
                     response.RequestID,
                     System.Text.Json.JsonSerializer.Serialize(response, JsonOptions.Pretty)
