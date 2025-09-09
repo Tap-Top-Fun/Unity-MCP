@@ -40,7 +40,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             var mcpServerService = McpServerService.Instance;
             if (mcpServerService == null)
-                return new CallToolResult().SetError($"[Error] '{nameof(mcpServerService)}' is null");
+                return new CallToolResult().SetError($"[Error] '{nameof(mcpServerService)}' instance is null");
 
             var toolRunner = mcpServerService.McpRunner.HasTool(request.Params.Name)
                 ? mcpServerService.McpRunner

@@ -26,9 +26,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
     public static partial class Tool_TestRunner
     {
-        private static bool _isTestRunning;
-        private static readonly object _testLock = new();
-
         [McpPluginTool
         (
             "TestRunner_Run",
@@ -63,17 +60,6 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     if (TestRunnerApi == null)
                         return ResponseCallTool.Error(Error.TestRunnerNotAvailable());
 
-                    // Check if tests are already running
-                    lock (_testLock)
-                    {
-                        if (_isTestRunning)
-                        {
-                            return ResponseCallTool
-                                .Error("Test execution is already in progress. Please wait for the current test run to complete.")
-                                .SetRequestID(requestId);
-                        }
-                        _isTestRunning = true;
-                    }
                     _resultCollector.TestCallRequestID.Value = requestId;
                     // Create filter parameters
                     var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
@@ -98,14 +84,6 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     Debug.LogException(ex);
                     Debug.LogError($"[TestRunner] ------------------------------------- Exception {testMode} tests.");
                     return ResponseCallTool.Error(Error.TestExecutionFailed(ex.Message));
-                }
-                finally
-                {
-                    // Always release the lock when done
-                    lock (_testLock)
-                    {
-                        _isTestRunning = false;
-                    }
                 }
             });
         }
