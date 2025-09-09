@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Extensions.Unity.PlayerPrefsEx;
@@ -58,11 +59,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 throw new InvalidOperationException($"Only one instance of {nameof(TestResultCollector)} is allowed. Current count: {counter}");
         }
 
-        public TestResultCollector(TestMode testMode) : this()
-        {
-            _testMode = testMode;
-        }
-
         public void RunStarted(ITestAdaptor testsToRun)
         {
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
@@ -105,6 +101,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 Debug.Log($"[{nameof(TestResultCollector)}] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
             }
 
+            //if (!McpPlugin.HasInstance)
             McpPluginUnity.BuildAndStart(McpPluginUnity.KeepConnected);
 
             var requestId = TestCallRequestID.Value;

@@ -9,7 +9,6 @@
 */
 
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Model;

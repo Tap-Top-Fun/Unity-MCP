@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         )]
         [Description(@"Execute Unity tests and return detailed results. Supports filtering by test mode, assembly, namespace, class, and method.
 Be default recommended to use 'EditMode' for faster iteration during development.")]
-        public static ResponseCallTool Run
+        public static async Task<ResponseCallTool> Run
         (
             [Description("Test mode to run. Options: '" + nameof(TestMode.EditMode) + "', '" + nameof(TestMode.PlayMode) + "'. Default: '" + nameof(TestMode.EditMode) + "'")]
             TestMode testMode = TestMode.EditMode,
@@ -54,7 +54,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
 
             Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests.");
 
-            return MainThread.Instance.Run(() =>
+            return await MainThread.Instance.RunAsync(async () =>
             {
                 try
                 {
@@ -75,7 +75,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                         Debug.Log($"[TestRunner] Running {testMode} tests with filters: {filterParams}");
 
                     // Validate specific test mode filter
-                    var validation = ValidateTestFilters(TestRunnerApi, testMode, filterParams).Result;
+                    var validation = await ValidateTestFilters(TestRunnerApi, testMode, filterParams);
                     Debug.Log($"[TestRunner] ------------------------------------- Validation completed: {validation}.");
                     if (validation != null)
                         return ResponseCallTool.Error(validation).SetRequestID(requestId);
@@ -83,7 +83,11 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     Debug.Log($"[TestRunner] ------------------------------------- Running {testMode} tests.");
 
                     var filter = CreateTestFilter(testMode, filterParams);
-                    TestRunnerApi.Execute(new ExecutionSettings(filter));
+
+                    // Delay test running, first need to return response to caller
+                    MainThread.Instance.Run(() => TestRunnerApi.Execute(new ExecutionSettings(filter)));
+
+                    // TestRunnerApi.Execute(new ExecutionSettings(filter));
 
                     return ResponseCallTool.Processing().SetRequestID(requestId);
                 }
@@ -93,7 +97,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     Debug.LogError($"[TestRunner] ------------------------------------- Exception {testMode} tests.");
                     return ResponseCallTool.Error(Error.TestExecutionFailed(ex.Message));
                 }
-            });
+            }).Unwrap();
         }
 
         static Filter CreateTestFilter(TestMode testMode, TestFilterParameters filterParams)

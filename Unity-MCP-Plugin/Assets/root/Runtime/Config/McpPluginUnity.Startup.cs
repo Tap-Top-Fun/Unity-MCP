@@ -29,15 +29,15 @@ namespace com.IvanMurzak.Unity.MCP
     public partial class McpPluginUnity
     {
         static volatile object mutex = new();
-        static volatile bool IsInitializationStarted = false;
+        static volatile bool isInitializationStarted = false;
 
         public static async void BuildAndStart(bool openConnection = true)
         {
             lock (mutex)
             {
-                if (IsInitializationStarted)
+                if (isInitializationStarted)
                     return;
-                IsInitializationStarted = true;
+                isInitializationStarted = true;
             }
             try
             {
@@ -52,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP
             {
                 lock (mutex)
                 {
-                    IsInitializationStarted = false;
+                    isInitializationStarted = false;
                 }
             }
         }

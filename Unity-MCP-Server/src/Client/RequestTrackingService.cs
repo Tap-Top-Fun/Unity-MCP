@@ -20,18 +20,18 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public interface IRequestTrackingService
     {
-        Task<IResponseData<TResponse>> TrackRequestAsync<TResponse>(
+        Task<IResponseData<ResponseCallTool>> TrackRequestAsync(
             string requestId,
-            Func<Task<IResponseData<TResponse>>> executeRequest,
-            int timeoutMs,
+            Func<Task<IResponseData<ResponseCallTool>>> executeRequest,
+            TimeSpan timeout,
             CancellationToken cancellationToken = default);
-        void CompleteRequest(IResponseData response);
+        void CompleteRequest(IResponseData<ResponseCallTool> response);
     }
 
     public class RequestTrackingService : IRequestTrackingService, IDisposable
     {
         readonly ILogger<RequestTrackingService> _logger;
-        readonly ConcurrentDictionary<string, PendingRequest> _pendingRequests = new();
+        readonly ConcurrentDictionary<string, PendingRequest<ResponseCallTool>> _pendingRequests = new();
         readonly CompositeDisposable _disposables = new();
 
         public RequestTrackingService(ILogger<RequestTrackingService> logger)
@@ -40,67 +40,69 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _logger.LogTrace("RequestTrackingService initialized");
         }
 
-        public async Task<IResponseData<TResponse>> TrackRequestAsync<TResponse>(
+        public async Task<IResponseData<ResponseCallTool>> TrackRequestAsync(
             string requestId,
-            Func<Task<IResponseData<TResponse>>> executeRequest,
-            int timeoutMs,
+            Func<Task<IResponseData<ResponseCallTool>>> executeRequest,
+            TimeSpan timeout,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(requestId))
                 throw new ArgumentException("RequestId cannot be null or empty", nameof(requestId));
 
-            _logger.LogTrace("Tracking request: {RequestId} with timeout: {TimeoutMs}ms", requestId, timeoutMs);
+            _logger.LogTrace("Tracking request: {RequestId} with timeout: {timeout}", requestId, timeout);
 
-            var pendingRequest = new PendingRequest(requestId, timeoutMs);
+            var pendingRequest = new PendingRequest<ResponseCallTool>(requestId, timeout);
             _pendingRequests[requestId] = pendingRequest;
 
             try
             {
                 var initialResponse = await executeRequest();
-
                 if (initialResponse.Status != ResponseStatus.Processing)
                 {
                     _logger.LogTrace("Request {RequestId} completed immediately", requestId);
-                    _pendingRequests.TryRemove(requestId, out _);
                     return initialResponse;
                 }
 
-                _logger.LogTrace("Request {RequestId} failed without domain reload: {Message}", requestId, initialResponse.Message);
-                _pendingRequests.TryRemove(requestId, out _);
-                return initialResponse;
+                _logger.LogTrace("Request {RequestId} processing: {Message}", requestId, initialResponse.Message);
+
+                var finalResult = await pendingRequest.WaitForCompletion(cancellationToken);
+                return finalResult;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error executing request {RequestId}", requestId);
-                _pendingRequests.TryRemove(requestId, out _);
                 throw;
+            }
+            finally
+            {
+                _pendingRequests.TryRemove(requestId, out _);
             }
         }
 
-        public void CompleteRequest(IResponseData response)
+        public void CompleteRequest(IResponseData<ResponseCallTool> response)
         {
-            if (string.IsNullOrEmpty(response.RequestID))
+            if (string.IsNullOrEmpty(response?.RequestID))
             {
-                _logger.LogWarning("Attempted to complete request with null or empty RequestId");
+                _logger.LogError("Attempted to complete request with null or empty RequestID");
                 return;
             }
 
             if (_pendingRequests.TryRemove(response.RequestID, out var pendingRequest))
             {
-                _logger.LogTrace("Completing tracked request: {RequestId}", response.RequestID);
-                if (pendingRequest is PendingRequest typedPendingRequest)
+                _logger.LogTrace("Completing tracked request: {RequestID}", response.RequestID);
+                if (pendingRequest is PendingRequest<ResponseCallTool> typedPendingRequest)
                 {
                     typedPendingRequest.Complete(response);
                 }
                 else
                 {
-                    _logger.LogWarning("Type mismatch when completing request {RequestId}. Expected {ExpectedType}, got {ActualType}",
+                    _logger.LogWarning("Type mismatch when completing request {RequestID}. Expected {ExpectedType}, got {ActualType}",
                         response.RequestID, nameof(IResponseData), pendingRequest.GetType().Name);
                 }
             }
             else
             {
-                _logger.LogWarning("Attempted to complete request {RequestId} that is not being tracked", response.RequestID);
+                _logger.LogWarning("Attempted to complete request {RequestID} that is not being tracked", response.RequestID);
             }
         }
 
@@ -125,19 +127,19 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _disposables.Dispose();
         }
 
-        class PendingRequest : IDisposable
+        class PendingRequest<TResponse> : IDisposable
         {
             public string RequestId { get; }
             public bool IsCompleted { get; protected set; }
             protected readonly CancellationTokenSource TimeoutCts;
 
-            readonly TaskCompletionSource<IResponseData> _completionSource = new();
+            readonly TaskCompletionSource<IResponseData<TResponse>> _completionSource = new();
 
-            public PendingRequest(string requestId, int timeoutMs)
+            public PendingRequest(string requestId, TimeSpan timeout)
             {
 
                 RequestId = requestId;
-                TimeoutCts = new CancellationTokenSource(timeoutMs);
+                TimeoutCts = new CancellationTokenSource(timeout);
                 IsCompleted = false;
 
                 TimeoutCts.Token.Register(() =>
@@ -146,12 +148,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     {
                         IsCompleted = true;
                         _completionSource.TrySetResult(
-                            ResponseData.Error(RequestId, $"Request {RequestId} timed out after {timeoutMs}ms"));
+                            ResponseData<TResponse>.Error(RequestId, $"Request {RequestId} timed out after {timeout}"));
                     }
                 });
             }
 
-            public void Complete(IResponseData response)
+            public void Complete(IResponseData<TResponse> response)
             {
                 if (!IsCompleted)
                 {
@@ -161,23 +163,22 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
             }
 
-            public async Task<IResponseCallTool> WaitForCompletion(CancellationToken cancellationToken = default)
+            public async Task<IResponseData<TResponse>> WaitForCompletion(CancellationToken cancellationToken = default)
             {
-
                 using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(TimeoutCts.Token, cancellationToken);
 
                 try
                 {
                     var response = await _completionSource.Task.WaitAsync(linkedCts.Token);
-                    return (IResponseCallTool)(object)response;
+                    return response;
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
-                    return ResponseCallTool.Error("Request was canceled").SetRequestID(RequestId);
+                    return ResponseData<TResponse>.Error("Request was canceled").SetRequestID(RequestId);
                 }
                 catch (OperationCanceledException) when (TimeoutCts.Token.IsCancellationRequested)
                 {
-                    return ResponseCallTool.Error("Request timed out").SetRequestID(RequestId);
+                    return ResponseData<TResponse>.Error("Request timed out").SetRequestID(RequestId);
                 }
             }
 

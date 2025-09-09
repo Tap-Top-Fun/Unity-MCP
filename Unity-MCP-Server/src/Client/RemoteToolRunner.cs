@@ -55,7 +55,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                     return response;
                 },
-                ConnectionConfig.TimeoutMs,
+                TimeSpan.FromMinutes(5),
                 linkedCts.Token);
 
             return task;
