@@ -118,7 +118,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             return _connectionManager.InvokeAsync<string, ResponseData>(Consts.RPC.Server.OnListResourcesUpdated, string.Empty, cancellationToken);
         }
 
-        public Task<ResponseData> NotifyToolRequestCompleted(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
+        public Task<ResponseData> NotifyToolRequestCompleted(ResponseCallTool response, CancellationToken cancellationToken = default)
         {
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -128,7 +128,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     System.Text.Json.JsonSerializer.Serialize(response, JsonOptions.Pretty)
                 );
             }
-            return _connectionManager.InvokeAsync<IResponseData<ResponseCallTool>, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, response, cancellationToken);
+            return _connectionManager.InvokeAsync<ResponseCallTool, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, response, cancellationToken);
         }
 
         public void Dispose()

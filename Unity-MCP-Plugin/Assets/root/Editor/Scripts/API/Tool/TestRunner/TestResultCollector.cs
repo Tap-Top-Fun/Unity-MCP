@@ -105,8 +105,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             TestCallRequestID.Value = string.Empty;
             if (string.IsNullOrEmpty(requestId) == false)
             {
-                var response = ResponseCallTool.Success(FormatTestResults());
-                McpPluginUnity.NotifyToolRequestCompleted(response.Pack(requestId));
+                var response = ResponseCallTool.Success(FormatTestResults()).SetRequestID(requestId);
+                McpPluginUnity.NotifyToolRequestCompleted(response);
             }
 
             // _completionSource.TrySetResult(true);

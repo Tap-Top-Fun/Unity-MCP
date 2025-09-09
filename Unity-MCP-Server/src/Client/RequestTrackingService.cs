@@ -20,18 +20,18 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public interface IRequestTrackingService
     {
-        Task<IResponseData<ResponseCallTool>> TrackRequestAsync(
+        Task<ResponseCallTool> TrackRequestAsync(
             string requestId,
-            Func<Task<IResponseData<ResponseCallTool>>> executeRequest,
+            Func<Task<ResponseCallTool>> executeRequest,
             TimeSpan timeout,
             CancellationToken cancellationToken = default);
-        void CompleteRequest(IResponseData<ResponseCallTool> response);
+        void CompleteRequest(ResponseCallTool response);
     }
 
     public class RequestTrackingService : IRequestTrackingService, IDisposable
     {
         readonly ILogger<RequestTrackingService> _logger;
-        readonly ConcurrentDictionary<string, PendingRequest<ResponseCallTool>> _pendingRequests = new();
+        readonly ConcurrentDictionary<string, PendingRequest> _pendingRequests = new();
         readonly CompositeDisposable _disposables = new();
 
         public RequestTrackingService(ILogger<RequestTrackingService> logger)
@@ -40,9 +40,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _logger.LogTrace("RequestTrackingService initialized");
         }
 
-        public async Task<IResponseData<ResponseCallTool>> TrackRequestAsync(
+        public async Task<ResponseCallTool> TrackRequestAsync(
             string requestId,
-            Func<Task<IResponseData<ResponseCallTool>>> executeRequest,
+            Func<Task<ResponseCallTool>> executeRequest,
             TimeSpan timeout,
             CancellationToken cancellationToken = default)
         {
@@ -51,7 +51,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             _logger.LogTrace("Tracking request: {RequestId} with timeout: {timeout}", requestId, timeout);
 
-            var pendingRequest = new PendingRequest<ResponseCallTool>(requestId, timeout);
+            var pendingRequest = new PendingRequest(requestId, timeout);
             _pendingRequests[requestId] = pendingRequest;
 
             try
@@ -63,7 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     return initialResponse;
                 }
 
-                _logger.LogTrace("Request {RequestId} processing: {Message}", requestId, initialResponse.Message);
+                _logger.LogTrace("Request {RequestId} processing: {Message}", requestId, initialResponse);
 
                 var finalResult = await pendingRequest.WaitForCompletion(cancellationToken);
                 return finalResult;
@@ -79,7 +79,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             }
         }
 
-        public void CompleteRequest(IResponseData<ResponseCallTool> response)
+        public void CompleteRequest(ResponseCallTool response)
         {
             if (string.IsNullOrEmpty(response?.RequestID))
             {
@@ -90,7 +90,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (_pendingRequests.TryRemove(response.RequestID, out var pendingRequest))
             {
                 _logger.LogTrace("Completing tracked request: {RequestID}", response.RequestID);
-                if (pendingRequest is PendingRequest<ResponseCallTool> typedPendingRequest)
+                if (pendingRequest is PendingRequest typedPendingRequest)
                 {
                     typedPendingRequest.Complete(response);
                 }
@@ -127,13 +127,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _disposables.Dispose();
         }
 
-        class PendingRequest<TResponse> : IDisposable
+        class PendingRequest : IDisposable
         {
             public string RequestId { get; }
             public bool IsCompleted { get; protected set; }
             protected readonly CancellationTokenSource TimeoutCts;
 
-            readonly TaskCompletionSource<IResponseData<TResponse>> _completionSource = new();
+            readonly TaskCompletionSource<ResponseCallTool> _completionSource = new();
 
             public PendingRequest(string requestId, TimeSpan timeout)
             {
@@ -148,12 +148,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     {
                         IsCompleted = true;
                         _completionSource.TrySetResult(
-                            ResponseData<TResponse>.Error(RequestId, $"Request {RequestId} timed out after {timeout}"));
+                            ResponseCallTool.Error($"Request {RequestId} timed out after {timeout}").SetRequestID(RequestId));
                     }
                 });
             }
 
-            public void Complete(IResponseData<TResponse> response)
+            public void Complete(ResponseCallTool response)
             {
                 if (!IsCompleted)
                 {
@@ -163,7 +163,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
             }
 
-            public async Task<IResponseData<TResponse>> WaitForCompletion(CancellationToken cancellationToken = default)
+            public async Task<ResponseCallTool> WaitForCompletion(CancellationToken cancellationToken = default)
             {
                 using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(TimeoutCts.Token, cancellationToken);
 
@@ -174,11 +174,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
-                    return ResponseData<TResponse>.Error("Request was canceled").SetRequestID(RequestId);
+                    return ResponseCallTool.Error("Request was canceled").SetRequestID(RequestId);
                 }
                 catch (OperationCanceledException) when (TimeoutCts.Token.IsCancellationRequested)
                 {
-                    return ResponseData<TResponse>.Error("Request timed out").SetRequestID(RequestId);
+                    return ResponseCallTool.Error("Request timed out").SetRequestID(RequestId);
                 }
             }
 

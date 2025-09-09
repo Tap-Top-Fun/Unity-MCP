@@ -42,7 +42,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunResourceContent,
-                requestData: requestData,
+                request: requestData,
                 cancellationToken: cancellationToken);
         }
 
@@ -52,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunListResources,
-                requestData: requestData,
+                request: requestData,
                 cancellationToken: cancellationToken);
         }
 
@@ -62,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunListResourceTemplates,
-                requestData: requestData,
+                request: requestData,
                 cancellationToken: cancellationToken);
         }
 

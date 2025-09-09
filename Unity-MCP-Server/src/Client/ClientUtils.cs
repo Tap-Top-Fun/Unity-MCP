@@ -97,23 +97,23 @@ namespace com.IvanMurzak.Unity.MCP.Server
             ILogger logger,
             IHubContext<THub> hubContext,
             string methodName,
-            TRequest requestData,
+            TRequest request,
             CancellationToken cancellationToken = default)
             where TRequest : IRequestID
             where THub : Hub
         {
             if (hubContext == null)
-                return ResponseData<TResponse>.Error(requestData.RequestID, $"'{nameof(hubContext)}' is null.").Log(logger);
+                return ResponseData<TResponse>.Error(request.RequestID, $"'{nameof(hubContext)}' is null.").Log(logger);
 
             if (string.IsNullOrEmpty(methodName))
-                return ResponseData<TResponse>.Error(requestData.RequestID, $"'{nameof(methodName)}' is null.").Log(logger);
+                return ResponseData<TResponse>.Error(request.RequestID, $"'{nameof(methodName)}' is null.").Log(logger);
 
             try
             {
                 if (logger.IsEnabled(LogLevel.Trace))
                 {
                     var allConnections = string.Join(", ", AllConnections);
-                    logger.LogTrace("Invoke '{0}': {1}\nAvailable connections: {2}", methodName, requestData.ToString(), allConnections);
+                    logger.LogTrace("Invoke '{0}': {1}\nAvailable connections: {2}", methodName, request.ToString(), allConnections);
                 }
 
                 var retryCount = 0;
@@ -136,9 +136,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     if (logger.IsEnabled(LogLevel.Trace))
                     {
                         var allConnections = string.Join(", ", AllConnections);
-                        logger.LogTrace("Invoke '{0}', ConnectionId ='{1}'. RequestData:\n{2}\n{3}", methodName, connectionId, requestData, allConnections);
+                        logger.LogTrace("Invoke '{0}', ConnectionId ='{1}'. RequestData:\n{2}\n{3}", methodName, connectionId, request, allConnections);
                     }
-                    var invokeTask = client.InvokeAsync<ResponseData<TResponse>>(methodName, requestData, cancellationToken);
+                    var invokeTask = client.InvokeAsync<ResponseData<TResponse>>(methodName, request, cancellationToken);
                     var completed = await invokeTask.WaitWithTimeout(/*ConnectionConfig.TimeoutMs*/ 2000, cancellationToken);
                     if (completed)
                     {
@@ -146,7 +146,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         {
                             var result = await invokeTask;
                             if (result == null)
-                                return ResponseData<TResponse>.Error(requestData.RequestID, $"Invoke '{requestData}' returned null result.")
+                                return ResponseData<TResponse>.Error(request.RequestID, $"Invoke '{request}' returned null result.")
                                     .Log(logger);
 
                             LastSuccessfulClients[typeof(RemoteApp)] = connectionId!;
@@ -154,7 +154,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         }
                         catch (Exception ex)
                         {
-                            logger.LogError(ex, $"Error invoking '{requestData}' on client '{connectionId}': {ex.Message}");
+                            logger.LogError(ex, $"Error invoking '{request}' on client '{connectionId}': {ex.Message}");
                             // RemoveCurrentClient(client);
                             await Task.Delay(50, cancellationToken); // Wait before retrying
                             continue;
@@ -167,12 +167,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     await Task.Delay(retryDelayMs, cancellationToken); // Wait before retrying
                     // Restart the loop to try again with a new client
                 }
-                return ResponseData<TResponse>.Error(requestData.RequestID, $"Failed to invoke '{requestData}' after {retryCount} retries.")
+                return ResponseData<TResponse>.Error(request.RequestID, $"Failed to invoke '{request}' after {retryCount} retries.")
                     .Log(logger);
             }
             catch (Exception ex)
             {
-                return ResponseData<TResponse>.Error(requestData.RequestID, $"Failed to invoke '{requestData}'. Exception: {ex}")
+                return ResponseData<TResponse>.Error(request.RequestID, $"Failed to invoke '{request}'. Exception: {ex}")
                     .Log(logger, ex);
             }
         }

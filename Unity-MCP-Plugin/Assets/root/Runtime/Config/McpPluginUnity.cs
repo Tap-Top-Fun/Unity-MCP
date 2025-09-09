@@ -112,7 +112,7 @@ namespace com.IvanMurzak.Unity.MCP
             .Select(x => x == HubConnectionState.Connected)
             .ToReadOnlyReactiveProperty(false);
 
-        public static async Task NotifyToolRequestCompleted(IResponseData<ResponseCallTool> response, CancellationToken cancellationToken = default)
+        public static async Task NotifyToolRequestCompleted(ResponseCallTool response, CancellationToken cancellationToken = default)
         {
             // wait when connection will be established
             while (McpPlugin.Instance?.ConnectionState.CurrentValue != HubConnectionState.Connected)
