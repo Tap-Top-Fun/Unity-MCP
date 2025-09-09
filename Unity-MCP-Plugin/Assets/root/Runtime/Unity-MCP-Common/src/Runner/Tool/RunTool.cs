@@ -63,7 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             if (paramInfo.GetCustomAttribute<RequestIDAttribute>() != null)
             {
-                _logger.LogInformation($"Injecting RequestID parameter: {RequestID}");
+                _logger?.LogTrace("Injecting RequestID parameter: {RequestID}", RequestID);
                 return RequestID;
             }
             return base.GetParameterValue(reflector, paramInfo, value);
@@ -72,7 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             if (paramInfo.GetCustomAttribute<RequestIDAttribute>() != null)
             {
-                _logger.LogInformation($"Injecting RequestID parameter: {RequestID}");
+                _logger?.LogTrace("Injecting RequestID parameter: {RequestID}", RequestID);
                 return RequestID;
             }
             return base.GetParameterValue(reflector, paramInfo, namedParameters);
