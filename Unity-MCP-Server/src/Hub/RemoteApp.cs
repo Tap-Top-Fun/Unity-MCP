@@ -43,7 +43,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public Task<IResponseData> OnListResourcesUpdated(string data)
         {
             _logger.LogTrace("RemoteApp OnListResourcesUpdated. {0}. Data: {1}", _guid, data);
-            // _onListResourcesUpdated.OnNext(Unit.Default);
             return ResponseData.Success(data, string.Empty).TaskFromResult<IResponseData>();
         }
 

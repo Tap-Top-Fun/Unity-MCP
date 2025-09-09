@@ -51,9 +51,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (toolRunner == null)
                 return new CallToolResult().SetError($"[Error] '{nameof(toolRunner)}' is null");
 
-            // while (RemoteApp.FirstConnectionId == null)
-            //     await Task.Delay(100, cancellationToken);
-
             var requestData = new RequestCallTool(request.Params.Name, request.Params.Arguments);
             if (logger.IsTraceEnabled)
                 logger.Trace("Call remote tool '{0}':\n{1}", request.Params.Name, requestData.ToJsonOrEmptyJsonObject(McpPlugin.Instance?.McpRunner.Reflector));
