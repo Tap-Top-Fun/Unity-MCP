@@ -10,6 +10,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -28,6 +29,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
     public partial class RunTool : MethodWrapper, IRunTool
     {
         public string? Title { get; protected set; }
+
+        protected string? RequestID { get; set; }
 
         /// <summary>
         /// Initializes the Command with the target method information.
@@ -56,13 +59,33 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public RunTool(Reflector reflector, ILogger? logger, object targetInstance, MethodInfo methodInfo) : base(reflector, logger, targetInstance, methodInfo) { }
         public RunTool(Reflector reflector, ILogger? logger, Type classType, MethodInfo methodInfo) : base(reflector, logger, classType, methodInfo) { }
 
+        protected override object? GetParameterValue(Reflector reflector, ParameterInfo paramInfo, object? value)
+        {
+            if (paramInfo.GetCustomAttribute<RequestIDAttribute>() != null)
+            {
+                _logger.LogInformation($"Injecting RequestID parameter: {RequestID}");
+                return RequestID;
+            }
+            return base.GetParameterValue(reflector, paramInfo, value);
+        }
+        protected override object? GetParameterValue(Reflector reflector, ParameterInfo paramInfo, IReadOnlyDictionary<string, object?> namedParameters)
+        {
+            if (paramInfo.GetCustomAttribute<RequestIDAttribute>() != null)
+            {
+                _logger.LogInformation($"Injecting RequestID parameter: {RequestID}");
+                return RequestID;
+            }
+            return base.GetParameterValue(reflector, paramInfo, namedParameters);
+        }
+
         /// <summary>
         /// Executes the target static method with the provided arguments.
         /// </summary>
         /// <param name="parameters">The arguments to pass to the method.</param>
         /// <returns>The result of the method execution, or null if the method is void.</returns>
-        public async Task<ResponseCallTool> Run(CancellationToken cancellationToken = default, params object?[] parameters)
+        public async Task<ResponseCallTool> Run(string requestId, CancellationToken cancellationToken = default, params object?[] parameters)
         {
+            RequestID = requestId;
             try
             {
                 // Invoke the method (static or instance)
@@ -82,8 +105,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// </summary>
         /// <param name="namedParameters">A dictionary mapping parameter names to their values.</param>
         /// <returns>The result of the method execution, or null if the method is void.</returns>
-        public async Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters, CancellationToken cancellationToken = default)
+        public async Task<ResponseCallTool> Run(string requestId, IReadOnlyDictionary<string, JsonElement>? namedParameters, CancellationToken cancellationToken = default)
         {
+            RequestID = requestId;
             try
             {
                 var finalParameters = namedParameters?.ToDictionary(

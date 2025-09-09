@@ -52,7 +52,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
         {
             counter++;
 
-            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+            if (McpPluginUnity.IsLogActive(LogLevel.Trace))
                 Debug.Log($"[{nameof(TestResultCollector)}] Ctor.");
 
             if (counter > 1)

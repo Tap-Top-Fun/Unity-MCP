@@ -25,8 +25,18 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         static volatile TestResultCollector _resultCollector = null!;
         static Tool_TestRunner()
         {
-            _testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
-            _testRunnerApi.RegisterCallbacks(_resultCollector = new TestResultCollector());
+            _testRunnerApi ??= CreateInstance();
+        }
+
+        public static TestRunnerApi TestRunnerApi => _testRunnerApi ??= CreateInstance();
+        public static TestRunnerApi CreateInstance()
+        {
+            if (McpPluginUnity.IsLogActive(MCP.Utils.LogLevel.Trace))
+                Debug.Log($"[{nameof(Tool_TestRunner)}] Ctor.");
+
+            var testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
+            testRunnerApi.RegisterCallbacks(_resultCollector = new TestResultCollector());
+            return testRunnerApi;
         }
 
         public static void Init()

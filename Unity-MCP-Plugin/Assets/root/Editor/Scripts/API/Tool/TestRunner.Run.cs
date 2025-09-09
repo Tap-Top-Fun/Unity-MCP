@@ -48,25 +48,21 @@ Be default recommended to use 'EditMode' for faster iteration during development
             string? testClass = null,
             [Description("Specific fully qualified test method to run (optional). Example: 'MyTestNamespace.FixtureName.TestName'")]
             string? testMethod = null,
-
-            // TODO: it should be removed from JSON schema, and it should be always provided by framework
-            [Description("Original MCP request (internal use - automatically provided by framework)")]
-            RequestCallTool? _originalRequest = null
+            [RequestID]
+            string? requestId = null
         )
         {
-            // McpPlugin.Instance!.RpcRouter!.NotifyToolRequestCompleted
-            var requestId = _originalRequest?.RequestID;
             if (requestId == null || string.IsNullOrWhiteSpace(requestId))
-                throw new ArgumentNullException(nameof(_originalRequest), "Original request with valid RequestID must be provided.");
-
-            // Get Test Runner API (must be on main thread)
-            if (_testRunnerApi == null)
-                return ResponseCallTool.Error(Error.TestRunnerNotAvailable());
+                return ResponseCallTool.Error("Original request with valid RequestID must be provided.");
 
             return await MainThread.Instance.RunAsync(() =>
             {
                 try
                 {
+                    // Get Test Runner API (must be on main thread)
+                    if (TestRunnerApi == null)
+                        return ResponseCallTool.Error(Error.TestRunnerNotAvailable());
+
                     // Check if tests are already running
                     lock (_testLock)
                     {
@@ -86,14 +82,14 @@ Be default recommended to use 'EditMode' for faster iteration during development
                         Debug.Log($"[TestRunner] Running {testMode} tests with filters: {filterParams}");
 
                     // Validate specific test mode filter
-                    var validation = ValidateTestFilters(_testRunnerApi, testMode, filterParams).Result;
+                    var validation = ValidateTestFilters(TestRunnerApi, testMode, filterParams).Result;
                     if (validation != null)
                         return ResponseCallTool.Error(validation).SetRequestID(requestId);
 
                     Debug.Log($"[TestRunner] ------------------------------------- Running {testMode} tests.");
 
                     var filter = CreateTestFilter(testMode, filterParams);
-                    _testRunnerApi.Execute(new ExecutionSettings(filter));
+                    TestRunnerApi.Execute(new ExecutionSettings(filter));
 
                     return ResponseCallTool.Processing().SetRequestID(requestId);
                 }

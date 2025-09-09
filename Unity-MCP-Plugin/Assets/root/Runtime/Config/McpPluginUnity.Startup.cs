@@ -62,7 +62,8 @@ namespace com.IvanMurzak.Unity.MCP
             MainThreadInstaller.Init();
             await McpPlugin.StaticDisposeAsync();
 
-            var mcpPlugin = new McpPluginBuilder()
+            var loggerProvider = new UnityLoggerProvider();
+            var mcpPlugin = new McpPluginBuilder(loggerProvider)
                 .AddMcpPlugin()
                 .WithConfig(config =>
                 {
@@ -74,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP
                 .AddLogging(loggingBuilder =>
                 {
                     loggingBuilder.ClearProviders(); // 👈 Clears the default providers
-                    loggingBuilder.AddProvider(new UnityLoggerProvider());
+                    loggingBuilder.AddProvider(loggerProvider);
                     loggingBuilder.SetMinimumLevel(McpPluginUnity.LogLevel switch
                     {
                         LogLevel.Trace => LogLevelMicrosoft.Trace,
