@@ -12,13 +12,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using com.IvanMurzak.Unity.MCP.Common;
+using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Editor.API.TestRunner;
 using com.IvanMurzak.Unity.MCP.Utils;
-using com.IvanMurzak.Unity.MCP.Common.Model;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 
@@ -127,7 +127,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
         /// <summary>
         /// Creates a regex pattern for namespace filtering that matches Unity's Filter.groupNames behavior.
         /// This ensures our validation logic (CountFilteredTests) matches exactly what Unity's TestRunner will execute.
-        /// Pattern: "^{namespace}\." - matches tests in the specified namespace and its subnamespaces.
+        /// Pattern: "^{namespace}\." - matches tests in the specified namespace and its sub namespaces.
         /// </summary>
         /// <param name="namespaceName">The namespace to filter by</param>
         /// <returns>Regex pattern for Unity's Filter.groupNames field</returns>
@@ -146,7 +146,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
 
         /// <summary>
         /// Escapes special regex characters to ensure literal string matching.
-        /// Used by the shared regex pattern builders to safely handle user input that may contain regex metacharacters.
+        /// Used by the shared regex pattern builders to safely handle user input that may contain regex meta characters.
         /// </summary>
         /// <param name="input">The string to escape</param>
         /// <returns>Regex-safe escaped string</returns>

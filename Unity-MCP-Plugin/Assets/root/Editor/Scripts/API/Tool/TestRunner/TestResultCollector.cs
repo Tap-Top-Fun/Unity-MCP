@@ -65,7 +65,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             var testCount = CountTests(testsToRun);
 
             _results.Clear();
+            _summary.Clear();
             _summary.TotalTests = testCount;
+
+            // Subscribe on log messages
+            Application.logMessageReceived += OnLogMessageReceived;
 
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
                 Debug.Log($"[{nameof(TestResultCollector)}] Run {TestModeAsString} started: {testCount} tests.");
@@ -76,9 +80,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
                 Debug.Log($"[{nameof(TestResultCollector)}] RunFinished.");
 
-            var endTime = DateTime.Now;
-            var duration = endTime - startTime;
-            _summary.Duration = duration;
+            // Unsubscribe from log messages
+            Application.logMessageReceived -= OnLogMessageReceived;
+
+            var duration = DateTime.Now - startTime;
+            _summary.Duration = DateTime.Now - startTime;
+            _summary.TotalTests = CountTests(result.Test);
             if (_summary.FailedTests > 0)
             {
                 _summary.Status = TestRunStatus.Failed;
@@ -106,10 +113,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             if (string.IsNullOrEmpty(requestId) == false)
             {
                 var response = ResponseCallTool.Success(FormatTestResults()).SetRequestID(requestId);
-                McpPluginUnity.NotifyToolRequestCompleted(response);
+                _ = McpPluginUnity.NotifyToolRequestCompleted(response);
             }
-
-            // _completionSource.TrySetResult(true);
         }
 
         public void TestStarted(ITestAdaptor test)
@@ -166,26 +171,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 {
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
                         Debug.Log($"[{nameof(TestResultCollector)}] All tests completed via TestFinished. Final duration: {_summary.Duration:mm\\:ss\\.fff}");
-
-                    // _completionSource.TrySetResult(true);
                 }
             }
         }
 
-        // public async Task WaitForCompletionAsync(CancellationToken cancellationToken)
-        // {
-        //     var tcs = new TaskCompletionSource<bool>();
-        //     using (cancellationToken.Register(() => tcs.TrySetCanceled()))
-        //     {
-        //         var completedTask = await Task.WhenAny(_completionSource.Task, tcs.Task);
-        //         if (completedTask == tcs.Task)
-        //             cancellationToken.ThrowIfCancellationRequested();
+        void OnLogMessageReceived(string condition, string stackTrace, LogType type)
+        {
+            var logEntry = $"[{DateTime.Now:HH:mm:ss:fff}] [{type}] {condition}";
+            if (!string.IsNullOrEmpty(stackTrace))
+                logEntry += $"\n{stackTrace}";
 
-        //         await _completionSource.Task; // Re-await to get the result or exception
-        //     }
-        // }
+            _logs.Add(logEntry);
+        }
 
-        public string FormatTestResults()
+        string FormatTestResults()
         {
             var results = GetResults();
             var summary = GetSummary();
