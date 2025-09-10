@@ -94,7 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 // Handle or log the exception as needed
                 return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Failed to run tool '{data.Name}'. Exception: {ex}")
-                    .Log(_logger, ex);
+                    .Log(_logger, $"RunCallTool[{data.Name}]", ex);
             }
         }
 
@@ -123,7 +123,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 // Handle or log the exception as needed
                 return ResponseData<ResponseListTool[]>.Error(data.RequestID, $"Failed to list tools. Exception: {ex}")
-                    .Log(_logger, ex)
+                    .Log(_logger, "RunListTool", ex)
                     .TaskFromResult();
             }
         }
