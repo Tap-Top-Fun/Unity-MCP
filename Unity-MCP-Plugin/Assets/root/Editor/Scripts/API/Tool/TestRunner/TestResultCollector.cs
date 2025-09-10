@@ -94,7 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
             {
-                Debug.Log($"[{nameof(TestResultCollector)}] Run {TestModeAsString} finished with {CountTests(result.Test)} test results. Result status: {result.TestStatus}");
+                Debug.Log($"[{nameof(TestResultCollector)}] Run {TestModeAsString} finished with {_summary.TotalTests} test results. Result status: {result.TestStatus}");
                 Debug.Log($"[{nameof(TestResultCollector)}] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
             }
 

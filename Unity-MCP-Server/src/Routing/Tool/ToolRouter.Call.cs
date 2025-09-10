@@ -13,12 +13,12 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NLog;
-using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {

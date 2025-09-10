@@ -11,7 +11,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -62,7 +61,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .Where(state => state == HubConnectionState.Reconnecting && _continueToReconnect.CurrentValue)
                 .Subscribe(async state =>
                 {
-                    _logger.LogInformation("---------- CONNECT (ConnectionManager 1)");
+                    _logger.LogInformation("{0} Connection state changed to Reconnecting. Initiating reconnection to: {1}", _guid, Endpoint);
                     await Connect(_disposables.ToCancellationToken());
                 })
                 .AddTo(_disposables);
@@ -70,69 +69,20 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public async Task InvokeAsync<TInput>(string methodName, TInput input, CancellationToken cancellationToken = default)
         {
-            if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
-            {
-                _logger.LogDebug("{0} Connection is not established. Attempting to connect...", _guid);
-
-                // Attempt to connect if the connection is not established
-                await Connect(cancellationToken);
-
-                if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
-                {
-                    _logger.LogError("{0} Can't establish connection with Remote.", _guid);
-                    return;
-                }
-            }
-            if (_hubConnection.CurrentValue == null)
-            {
-                _logger.LogError("{0} HubConnection is null. Can't invoke method {1}.", _guid, methodName);
+            if (!await EnsureConnection(cancellationToken))
                 return;
-            }
 
-            await _hubConnection.CurrentValue.InvokeAsync(methodName, input, cancellationToken).ContinueWith(task =>
-            {
-                if (task.IsCompletedSuccessfully)
-                {
-                    _logger.LogInformation("{0} Completed to invoke method {1}", _guid, methodName);
-                    return;
-                }
-
-                _logger.LogError("{0} Failed to invoke method {1}: {2}", _guid, methodName, task.Exception?.Message);
-            });
+            await ExecuteHubMethodAsync(methodName, hubConnection =>
+                hubConnection.InvokeAsync(methodName, input, cancellationToken));
         }
 
         public async Task<TResult> InvokeAsync<TInput, TResult>(string methodName, TInput input, CancellationToken cancellationToken = default)
         {
-            if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
-            {
-                _logger.LogDebug("{0} Connection is not established. Attempting to connect...", _guid);
-
-                // Attempt to connect if the connection is not established
-                await Connect(cancellationToken);
-
-                if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
-                {
-                    _logger.LogError("{0} Can't establish connection with Remote.", _guid);
-                    return default!;
-                }
-            }
-            if (_hubConnection.CurrentValue == null)
-            {
-                _logger.LogError("{0} HubConnection is null. Can't invoke method {1}.", _guid, methodName);
+            if (!await EnsureConnection(cancellationToken))
                 return default!;
-            }
 
-            return await _hubConnection.CurrentValue.InvokeAsync<TResult>(methodName, input, cancellationToken).ContinueWith(task =>
-            {
-                if (task.IsCompletedSuccessfully)
-                {
-                    _logger.LogInformation("{0} Completed to invoke method {1}", _guid, methodName);
-                    return task.Result;
-                }
-
-                _logger.LogError("{0} Failed to invoke method {1}: {2}", _guid, methodName, task.Exception?.Message);
-                return default!;
-            });
+            return await ExecuteHubMethodAsync(methodName, hubConnection =>
+                hubConnection.InvokeAsync<TResult>(methodName, input, cancellationToken));
         }
 
         public async Task<bool> Connect(CancellationToken cancellationToken = default)
@@ -211,88 +161,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             _logger.LogTrace("{0} InternalConnect", _guid);
 
-            if (_hubConnection.Value == null)
-            {
-                hubConnectionLogger?.Dispose();
-                hubConnectionObservable?.Dispose();
-
-                _logger.LogDebug("{0} Creating new HubConnection instance {1}.", _guid, Endpoint);
-                var hubConnection = await _hubConnectionBuilder.CreateConnectionAsync(Endpoint);
-                if (hubConnection == null)
-                {
-                    _logger.LogError("{0} Can't create connection instance. Something may be wrong with Connection Config {1}.", _guid, Endpoint);
-                    return false;
-                }
-
-                _logger.LogDebug("{0} Created new HubConnection instance {1}.", _guid, Endpoint);
-
-                _hubConnection.Value = hubConnection;
-
-                hubConnectionLogger = new(_logger, hubConnection, guid: _guid);
-
-                hubConnectionObservable = new(hubConnection);
-                hubConnectionObservable.Closed
-                    .Subscribe(_ => connectionTask = null)
-                    .RegisterTo(cancellationToken);
-                hubConnectionObservable.Closed
-                    .Where(_ => _continueToReconnect.CurrentValue)
-                    .Where(_ => !cancellationToken.IsCancellationRequested)
-                    .Subscribe(async _ =>
-                    {
-                        _logger.LogWarning("{0} Connection closed. Attempting to reconnect... {1}.", _guid, Endpoint);
-                        await InternalConnect(cancellationToken);
-                    })
-                    .RegisterTo(cancellationToken);
-            }
+            if (!await CreateHubConnectionIfNeeded(cancellationToken))
+                return false;
 
             await Task.Delay(50, cancellationToken);
 
-            _logger.LogDebug("{0} Connecting to {1}...", _guid, Endpoint);
-            while (_continueToReconnect.CurrentValue && !cancellationToken.IsCancellationRequested)
-            {
-                var connection = _hubConnection.CurrentValue;
-                if (connection == null)
-                {
-                    _logger.LogTrace("{0} Waiting before retry... {1}", _guid, Endpoint);
-                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken); // Wait before retrying
-                    continue;
-                }
-
-                _logger.LogInformation("{0} Starting connection to {1}...", _guid, Endpoint);
-                var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                var task = connection.StartAsync(cts.Token);
-                try
-                {
-                    await Task.WhenAny(task.WaitAsync(TimeSpan.FromSeconds(30), TimeProvider.System, cancellationToken), Task.Delay(TimeSpan.FromSeconds(3), cancellationToken));
-                    if (!task.IsCompletedSuccessfully)
-                    {
-                        if (_continueToReconnect.CurrentValue && !cancellationToken.IsCancellationRequested)
-                        {
-                            _logger.LogTrace("{0} Waiting before retry... {1}", _guid, Endpoint);
-                            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken); // Wait before retrying
-                        }
-                        continue;
-                    }
-                    _logger.LogInformation("{0} Connection started successfully {1}.", _guid, Endpoint);
-                    _connectionState.Value = HubConnectionState.Connected;
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning("{0} Failed to start connection. {1} - {2}\n{3}", _guid, Endpoint, ex.Message, ex.StackTrace);
-                }
-                finally
-                {
-                    cts.Cancel();
-                    cts.Dispose();
-                }
-                if (_continueToReconnect.CurrentValue && !cancellationToken.IsCancellationRequested)
-                {
-                    _logger.LogTrace("{0} Waiting before retry... {1}", _guid, Endpoint);
-                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken); // Wait before retrying
-                }
-            }
-            return false;
+            return await StartConnectionLoop(cancellationToken);
         }
 
         public Task Disconnect(CancellationToken cancellationToken = default)
@@ -377,6 +251,183 @@ namespace com.IvanMurzak.Unity.MCP.Common
             }
 
             _hubConnection.Dispose();
+        }
+
+        // New helper methods for better separation of concerns
+        private async Task<bool> EnsureConnection(CancellationToken cancellationToken)
+        {
+            if (_hubConnection.CurrentValue?.State == HubConnectionState.Connected)
+                return true;
+
+            if (!_continueToReconnect.CurrentValue)
+            {
+                _logger.LogWarning("{0} Connection not available and auto-reconnect disabled for endpoint: {1}", _guid, Endpoint);
+                return false;
+            }
+
+            _logger.LogDebug("{0} Connection is not established. Attempting to connect to: {1}", _guid, Endpoint);
+            await Connect(cancellationToken);
+
+            if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
+            {
+                _logger.LogError("{0} Failed to establish connection to remote endpoint: {1}", _guid, Endpoint);
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task ExecuteHubMethodAsync(string methodName, Func<HubConnection, Task> hubMethod)
+        {
+            if (_hubConnection.CurrentValue == null)
+            {
+                _logger.LogError("{0} HubConnection is null. Cannot invoke method '{1}' on endpoint: {2}", _guid, methodName, Endpoint);
+                return;
+            }
+
+            try
+            {
+                await hubMethod(_hubConnection.CurrentValue);
+                _logger.LogInformation("{0} Successfully invoked method '{1}' on endpoint: {2}", _guid, methodName, Endpoint);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{0} Failed to invoke method '{1}' on endpoint: {2}. Error: {3}", _guid, methodName, Endpoint, ex.Message);
+                throw;
+            }
+        }
+
+        private async Task<TResult> ExecuteHubMethodAsync<TResult>(string methodName, Func<HubConnection, Task<TResult>> hubMethod)
+        {
+            if (_hubConnection.CurrentValue == null)
+            {
+                _logger.LogError("{0} HubConnection is null. Cannot invoke method '{1}' on endpoint: {2}", _guid, methodName, Endpoint);
+                return default!;
+            }
+
+            try
+            {
+                var result = await hubMethod(_hubConnection.CurrentValue);
+                _logger.LogInformation("{0} Successfully invoked method '{1}' on endpoint: {2}", _guid, methodName, Endpoint);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{0} Failed to invoke method '{1}' on endpoint: {2}. Error: {3}", _guid, methodName, Endpoint, ex.Message);
+                return default!;
+            }
+        }
+
+        private async Task<bool> CreateHubConnectionIfNeeded(CancellationToken cancellationToken)
+        {
+            if (_hubConnection.Value != null)
+                return true;
+
+            hubConnectionLogger?.Dispose();
+            hubConnectionObservable?.Dispose();
+
+            _logger.LogDebug("{0} Creating new HubConnection instance for endpoint: {1}", _guid, Endpoint);
+
+            var hubConnection = await _hubConnectionBuilder.CreateConnectionAsync(Endpoint);
+            if (hubConnection == null)
+            {
+                _logger.LogError("{0} Failed to create HubConnection instance. Check connection configuration for endpoint: {1}", _guid, Endpoint);
+                return false;
+            }
+
+            _logger.LogDebug("{0} Successfully created HubConnection instance for endpoint: {1}", _guid, Endpoint);
+            _hubConnection.Value = hubConnection;
+
+            SetupHubConnectionLogging(hubConnection);
+            SetupHubConnectionObservables(hubConnection, cancellationToken);
+
+            return true;
+        }
+
+        private void SetupHubConnectionLogging(HubConnection hubConnection)
+        {
+            hubConnectionLogger = new(_logger, hubConnection, guid: _guid);
+        }
+
+        private void SetupHubConnectionObservables(HubConnection hubConnection, CancellationToken cancellationToken)
+        {
+            hubConnectionObservable = new(hubConnection);
+
+            hubConnectionObservable.Closed
+                .Subscribe(_ => connectionTask = null)
+                .RegisterTo(cancellationToken);
+
+            hubConnectionObservable.Closed
+                .Where(_ => _continueToReconnect.CurrentValue)
+                .Where(_ => !cancellationToken.IsCancellationRequested)
+                .Subscribe(async _ =>
+                {
+                    _logger.LogWarning("{0} Connection closed unexpectedly. Attempting to reconnect to: {1}", _guid, Endpoint);
+                    await InternalConnect(cancellationToken);
+                })
+                .RegisterTo(cancellationToken);
+        }
+
+        private async Task<bool> StartConnectionLoop(CancellationToken cancellationToken)
+        {
+            _logger.LogDebug("{0} Starting connection loop for endpoint: {1}", _guid, Endpoint);
+
+            while (_continueToReconnect.CurrentValue && !cancellationToken.IsCancellationRequested)
+            {
+                if (await AttemptConnection(cancellationToken))
+                    return true;
+
+                await WaitBeforeRetry(cancellationToken);
+            }
+
+            _logger.LogWarning("{0} Connection loop terminated for endpoint: {1}", _guid, Endpoint);
+            return false;
+        }
+
+        private async Task<bool> AttemptConnection(CancellationToken cancellationToken)
+        {
+            var connection = _hubConnection.CurrentValue;
+            if (connection == null)
+                return false;
+
+            _logger.LogInformation("{0} Starting connection attempt to: {1}", _guid, Endpoint);
+
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var connectionTask = connection.StartAsync(cts.Token);
+
+            try
+            {
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+                var completedTask = await Task.WhenAny(connectionTask, timeoutTask);
+
+                if (completedTask == timeoutTask)
+                {
+                    _logger.LogWarning("{0} Connection attempt timed out after 30 seconds for endpoint: {1}", _guid, Endpoint);
+                    return false;
+                }
+
+                if (connectionTask.IsCompletedSuccessfully)
+                {
+                    _logger.LogInformation("{0} Connection established successfully to: {1}", _guid, Endpoint);
+                    _connectionState.Value = HubConnectionState.Connected;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "{0} Connection attempt failed for endpoint: {1}. Error: {2}", _guid, Endpoint, ex.Message);
+            }
+
+            return false;
+        }
+
+        private async Task WaitBeforeRetry(CancellationToken cancellationToken)
+        {
+            if (_continueToReconnect.CurrentValue && !cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogTrace("{0} Waiting 5 seconds before retry for endpoint: {1}", _guid, Endpoint);
+                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+            }
         }
 
         ~ConnectionManager() => Dispose();

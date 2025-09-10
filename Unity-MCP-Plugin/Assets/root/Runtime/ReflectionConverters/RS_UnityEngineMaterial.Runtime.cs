@@ -7,13 +7,13 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 #if !UNITY_EDITOR
 using System;
 using System.Reflection;
 using System.Text;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.Unity.MCP.Common.Model;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
 using UnityEngine;

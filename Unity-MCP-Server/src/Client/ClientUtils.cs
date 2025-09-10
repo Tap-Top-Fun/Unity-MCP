@@ -173,7 +173,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             catch (Exception ex)
             {
                 return ResponseData<TResponse>.Error(request.RequestID, $"Failed to invoke '{request}'. Exception: {ex}")
-                    .Log(logger, ex);
+                    .Log(logger, ex: ex);
             }
         }
     }

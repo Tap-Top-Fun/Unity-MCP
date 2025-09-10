@@ -37,6 +37,20 @@ namespace com.IvanMurzak.Unity.MCP.Common.Model
             return this;
         }
 
+        public string? GetMessage()
+        {
+            if (Content == null || Content.Count == 0)
+                return null;
+
+            foreach (var item in Content)
+            {
+                if (item.Type == "text" && !string.IsNullOrEmpty(item.Text))
+                    return item.Text;
+            }
+
+            return null;
+        }
+
         public static ResponseCallTool Error(Exception exception)
             => Error($"[Error] {exception?.Message}\n{exception?.StackTrace}");
 
