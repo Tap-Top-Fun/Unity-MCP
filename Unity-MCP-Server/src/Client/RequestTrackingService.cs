@@ -139,7 +139,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             public PendingRequest(string requestId, TimeSpan timeout)
             {
-
                 RequestId = requestId;
                 TimeoutCts = new CancellationTokenSource(timeout);
                 IsCompleted = false;

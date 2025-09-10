@@ -52,21 +52,13 @@ Be default recommended to use 'EditMode' for faster iteration during development
             if (requestId == null || string.IsNullOrWhiteSpace(requestId))
                 return ResponseCallTool.Error("Original request with valid RequestID must be provided.");
 
-            Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests.");
-
             return await MainThread.Instance.RunAsync(async () =>
             {
+                if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                    Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests.");
                 try
                 {
-                    Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests 2.");
-                    // Get Test Runner API (must be on main thread)
-                    // if (TestRunnerApi == null)
-                    // if (_testRunnerApi == null)
-                    //     return ResponseCallTool.Error("[Error] Unity Test Runner API is not available");
-
-                    Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests 3.");
                     TestResultCollector.TestCallRequestID.Value = requestId;
-                    Debug.Log($"[TestRunner] ------------------------------------- Preparing to run {testMode} tests 4.");
 
                     // Create filter parameters
                     var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
@@ -76,25 +68,24 @@ Be default recommended to use 'EditMode' for faster iteration during development
 
                     // Validate specific test mode filter
                     var validation = await ValidateTestFilters(TestRunnerApi, testMode, filterParams);
-                    Debug.Log($"[TestRunner] ------------------------------------- Validation completed: {validation}.");
                     if (validation != null)
                         return ResponseCallTool.Error(validation).SetRequestID(requestId);
 
-                    Debug.Log($"[TestRunner] ------------------------------------- Running {testMode} tests.");
 
                     var filter = CreateTestFilter(testMode, filterParams);
 
                     // Delay test running, first need to return response to caller
                     MainThread.Instance.Run(() => TestRunnerApi.Execute(new ExecutionSettings(filter)));
 
-                    // TestRunnerApi.Execute(new ExecutionSettings(filter));
-
                     return ResponseCallTool.Processing().SetRequestID(requestId);
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
-                    Debug.LogError($"[TestRunner] ------------------------------------- Exception {testMode} tests.");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Error))
+                    {
+                        Debug.LogException(ex);
+                        Debug.LogError($"[TestRunner] ------------------------------------- Exception {testMode} tests.");
+                    }
                     return ResponseCallTool.Error(Error.TestExecutionFailed(ex.Message));
                 }
             }).Unwrap();

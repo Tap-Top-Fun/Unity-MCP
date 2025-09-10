@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
     public class TestResultCollector : ICallbacks
     {
         static int counter = 0;
-        // readonly TaskCompletionSource<bool> _completionSource = new();
+
         readonly List<TestResultData> _results = new();
         readonly TestSummaryData _summary = new();
         readonly List<string> _logs = new();
@@ -47,13 +47,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
         public TestResultCollector()
         {
-            counter++;
+            int newCount = System.Threading.Interlocked.Increment(ref counter);
 
             if (McpPluginUnity.IsLogActive(LogLevel.Trace))
                 Debug.Log($"[{nameof(TestResultCollector)}] Ctor.");
 
-            if (counter > 1)
-                throw new InvalidOperationException($"Only one instance of {nameof(TestResultCollector)} is allowed. Current count: {counter}");
+            if (newCount > 1)
+                throw new InvalidOperationException($"Only one instance of {nameof(TestResultCollector)} is allowed. Current count: {newCount}");
         }
 
         public void RunStarted(ITestAdaptor testsToRun)
