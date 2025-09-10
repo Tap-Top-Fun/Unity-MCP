@@ -47,7 +47,7 @@ jobs:
       testMode: 'editmode'
     secrets: inherit
 
-  test-unity-6000-0-46f1-editmode:
+  test-unity-6000-2-3f1-editmode:
     needs: build-and-zip-mcp-server
     uses: ./.github/workflows/test_unity_plugin.yml
     with:
@@ -76,7 +76,7 @@ jobs:
       testMode: 'playmode'
     secrets: inherit
 
-  test-unity-6000-0-46f1-playmode:
+  test-unity-6000-2-3f1-playmode:
     needs: build-and-zip-mcp-server
     uses: ./.github/workflows/test_unity_plugin.yml
     with:
@@ -105,7 +105,7 @@ jobs:
       testMode: 'standalone'
     secrets: inherit
 
-  test-unity-6000-0-46f1-standalone:
+  test-unity-6000-2-3f1-standalone:
     needs: build-and-zip-mcp-server
     uses: ./.github/workflows/test_unity_plugin.yml
     with:
