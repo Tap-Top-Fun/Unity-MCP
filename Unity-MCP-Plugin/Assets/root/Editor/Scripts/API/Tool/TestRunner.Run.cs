@@ -71,7 +71,6 @@ Be default recommended to use 'EditMode' for faster iteration during development
                     if (validation != null)
                         return ResponseCallTool.Error(validation).SetRequestID(requestId);
 
-
                     var filter = CreateTestFilter(testMode, filterParams);
 
                     // Delay test running, first need to return response to caller
