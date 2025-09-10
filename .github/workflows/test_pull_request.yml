@@ -52,7 +52,7 @@ jobs:
     uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
-      unityVersion: '6000.0.46f1'
+      unityVersion: '6000.2.3f1'
       testMode: 'editmode'
     secrets: inherit
 
@@ -81,7 +81,7 @@ jobs:
     uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
-      unityVersion: '6000.0.46f1'
+      unityVersion: '6000.2.3f1'
       testMode: 'playmode'
     secrets: inherit
 
@@ -110,7 +110,7 @@ jobs:
     uses: ./.github/workflows/test_unity_plugin.yml
     with:
       projectPath: './Unity-MCP-Plugin'
-      unityVersion: '6000.0.46f1'
+      unityVersion: '6000.2.3f1'
       testMode: 'standalone'
     secrets: inherit
 
