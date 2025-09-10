@@ -159,7 +159,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 if (!IsCompleted)
                 {
                     IsCompleted = true;
-                    _completionSource.TrySetResult(response);
+                    _completionSource.TrySetResult(response.SetRequestID(RequestId));
                     TimeoutCts.Cancel();
                 }
             }
