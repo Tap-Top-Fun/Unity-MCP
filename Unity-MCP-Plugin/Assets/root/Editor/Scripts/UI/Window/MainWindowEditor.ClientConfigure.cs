@@ -21,7 +21,7 @@ using UnityEngine.UIElements;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
-    using Consts = com.IvanMurzak.Unity.MCP.Common.Consts;
+    using Consts = Common.Consts;
 
     public partial class MainWindowEditor : EditorWindow
     {
@@ -116,7 +116,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             });
         }
 
-        bool IsMcpClientConfigured(string configPath, string bodyName = "mcpServers")
+        bool IsMcpClientConfigured(string configPath, string bodyPath = "mcpServers")
         {
             if (string.IsNullOrEmpty(configPath) || !File.Exists(configPath))
                 return false;
@@ -132,7 +132,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 if (rootObj == null)
                     return false;
 
-                var mcpServers = rootObj[bodyName]?.AsObject();
+                var pathSegments = bodyPath.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+                var mcpServers = rootObj[bodyPath]?.AsObject();
                 if (mcpServers == null)
                     return false;
 
