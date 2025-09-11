@@ -8,40 +8,34 @@
 └──────────────────────────────────────────────────────────────────┘
 */
 
+using Extensions.Unity.PlayerPrefsEx;
 using UnityEditor;
-using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
     [InitializeOnLoad]
     static class MainWindowInitializer
     {
-        const string PrefKey = "Unity-MCP.MainWindow.Initialized";
-
-        static bool isInitialized
-        {
-            get => PlayerPrefs.GetInt(PrefKey, 0) == 1;
-            set => PlayerPrefs.SetInt(PrefKey, value ? 1 : 0);
-        }
+        static PlayerPrefsBool isInitialized = new PlayerPrefsBool("Unity-MCP.MainWindow.Initialized");
 
         static MainWindowInitializer()
         {
-            if (isInitialized)
+            if (isInitialized.Value)
                 return;
 
-            EditorApplication.delayCall += PerformInitialization;
+            EditorApplication.update += PerformInitialization;
         }
 
         static void PerformInitialization()
         {
-            if (isInitialized)
+            if (isInitialized.Value)
                 return;
 
             // Perform initialization
             McpPluginUnity.Init();
             MainWindowEditor.ShowWindow();
 
-            isInitialized = true;
+            isInitialized.Value = true;
         }
     }
 }

@@ -10,9 +10,11 @@
 #nullable enable
 using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Model;
+using com.IvanMurzak.Unity.MCP.Editor.Utils;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -24,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             "Script_Delete",
             Title = "Delete Script content"
         )]
-        [Description("Delete the script file. Does AssetDatabase.Refresh() at the end.")]
+        [Description("Delete the script file. Does AssetDatabase.Refresh() and waits for Unity compilation to complete before reporting results.")]
         public static ResponseCallTool Delete
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
@@ -49,17 +51,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (File.Exists(filePath + ".meta"))
                 File.Delete(filePath + ".meta");
 
-            MainThread.Instance.RunAsync(() =>
+            MainThread.Instance.RunAsync(async () =>
             {
+                await Task.Yield();
+                // Schedule notification to be sent after compilation completes (survives domain reload)
+                ScriptUtils.SchedulePostCompilationNotification(requestId, filePath, "Script deletion");
+
                 AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-
-                var message = $"[Success] Script deleted: {filePath}";
-                var response = ResponseCallTool.Success(message).SetRequestID(requestId);
-
-                _ = McpPluginUnity.NotifyToolRequestCompleted(response);
             });
 
-            return ResponseCallTool.Processing("Script deleted. Refreshing AssetDatabase...").SetRequestID(requestId);
+            return ResponseCallTool.Processing("Script deleted. Refreshing AssetDatabase and waiting for compilation to complete...").SetRequestID(requestId);
         }
     }
 }
