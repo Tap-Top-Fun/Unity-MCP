@@ -49,15 +49,23 @@ namespace com.IvanMurzak.Unity.MCP.Common
                         nameof(IRpcRouter.NotifyAboutUpdatedTools),
                         state);
 
+
+                    var cancellationToken = _disposables.ToCancellationToken();
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+
                     // Perform version handshake first
-                    var handshakeResponse = await _rpcRouter.PerformVersionHandshake(_disposables.ToCancellationToken());
+                    var handshakeResponse = await _rpcRouter.PerformVersionHandshake(cancellationToken);
                     if (handshakeResponse != null && !handshakeResponse.Compatible)
                     {
                         LogVersionMismatchError(handshakeResponse);
                         // Still proceed with tool notification for now, but user will see the error
                     }
 
-                    await _rpcRouter.NotifyAboutUpdatedTools(_disposables.ToCancellationToken());
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+
+                    await _rpcRouter.NotifyAboutUpdatedTools(cancellationToken);
                 }).AddTo(_disposables);
 
             if (HasInstance)
@@ -84,7 +92,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         private void LogVersionMismatchError(VersionHandshakeResponse handshakeResponse)
         {
             var errorMessage = $"[Unity-MCP] API VERSION MISMATCH: {handshakeResponse.Message}";
-            
+
             // Log using ILogger which will be connected to Unity's logging system from the outside
             _logger.LogError(errorMessage);
         }
