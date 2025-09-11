@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NLog;
-using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -42,7 +42,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (response == null)
                 return new ListToolsResult().SetError($"[Error] '{nameof(response)}' is null");
 
-            if (response.IsError)
+            if (response.Status == ResponseStatus.Error)
                 return new ListToolsResult().SetError(response.Message ?? "[Error] Got an error during reading resources");
 
             if (response.Value == null)

@@ -58,22 +58,24 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 builder.Logging.ClearProviders();
                 builder.Logging.AddNLog();
 
-                // Setup SignalR ---------------------------------------------------------------
+                var reflector = new Reflector();
 
+                // Setup SignalR ---------------------------------------------------------------
                 builder.Services.AddSignalR(configure =>
                 {
-                    configure.EnableDetailedErrors = true;
+                    configure.EnableDetailedErrors = false;
                     configure.MaximumReceiveMessageSize = 1024 * 1024 * 256; // 256 MB
-                    configure.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
-                    configure.KeepAliveInterval = TimeSpan.FromSeconds(10);
-                    configure.HandshakeTimeout = TimeSpan.FromSeconds(15);
-                });
+                    configure.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
+                    configure.KeepAliveInterval = TimeSpan.FromSeconds(30);
+                    configure.HandshakeTimeout = TimeSpan.FromMinutes(2);
+                })
+                .AddJsonProtocol(options => RpcJsonConfiguration.ConfigureJsonSerializer(reflector, options));
 
                 // Setup MCP Plugin ---------------------------------------------------------------
-                builder.Services.AddMcpPlugin(loggerProvider: new NLogLoggerProvider(), configure =>
+                builder.Services.WithAppFeatures(loggerProvider: new NLogLoggerProvider(), configure =>
                 {
                     configure.WithServerFeatures(dataArguments);
-                }).Build(new Reflector());
+                }).Build(reflector);
 
                 // Setup MCP Server ---------------------------------------------------------------
 
@@ -204,7 +206,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         try
                         {
                             await next.Invoke();
-                            logger.Debug($"Response: {context.Response.StatusCode}");
+                            logger.Debug($"Response: {context.Response.StatusCode} ({context.Request.Method} {context.Request.Path})");
                         }
                         catch (OperationCanceledException)
                         {

@@ -7,12 +7,13 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+#nullable enable
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
@@ -28,6 +29,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// </summary>
         /// <param name="namedParameters">A dictionary mapping parameter names to their values.</param>
         /// <returns>The result of the method execution, or null if the method is void.</returns>
-        Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters, CancellationToken cancellationToken = default);
+        Task<ResponseCallTool> Run(string requestId, IReadOnlyDictionary<string, JsonElement>? namedParameters, CancellationToken cancellationToken = default);
     }
 }

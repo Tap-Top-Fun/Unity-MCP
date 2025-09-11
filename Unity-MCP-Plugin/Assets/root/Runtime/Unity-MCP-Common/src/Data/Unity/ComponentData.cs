@@ -9,8 +9,9 @@
 */
 #nullable enable
 using System.Collections.Generic;
+using com.IvanMurzak.ReflectorNet.Model;
 
-namespace com.IvanMurzak.ReflectorNet.Model.Unity
+namespace com.IvanMurzak.Unity.MCP.Common.Model.Unity
 {
     [System.Serializable]
     public class ComponentData : ComponentDataLight

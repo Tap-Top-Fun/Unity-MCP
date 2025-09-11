@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using ModelContextProtocol.Protocol;
 
 namespace com.IvanMurzak.Unity.MCP.Server
@@ -63,7 +64,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public static CallToolResult ToCallToolResult(this IResponseCallTool response) => new CallToolResult()
         {
-            IsError = response.IsError,
+            IsError = response.Status == ResponseStatus.Error,
             Content = response.Content
                 .Select(x => x.ToTextContent())
                 .ToList()

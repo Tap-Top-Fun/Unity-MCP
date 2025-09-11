@@ -11,11 +11,11 @@
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/bin/Debug/net9.0/unity-mcp-server.exe",
             "args": [
-                "--unity-port",
-                "123",
-                "--unity-timeout",
-                "15000",
-                "--transport",
+                "--port",
+                "8080",
+                "--plugin-timeout",
+                "30000",
+                "--client-transport",
                 "http"
             ]
         },

@@ -13,8 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {

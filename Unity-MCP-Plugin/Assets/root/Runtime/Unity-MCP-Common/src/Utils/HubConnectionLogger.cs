@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 {
                     _logger.LogTrace("{0} HubConnectionLogger HubConnection OnClosed. Exception: {1}", _guid, ex?.Message);
                     if (ex != null)
-                        _logger.LogError("{0} HubConnectionLogger Error in Closed event subscription: {1}", _guid, ex.Message);
+                        _logger.LogError(ex, "{0} HubConnectionLogger Error in Closed event subscription: {1}", _guid, ex.Message);
                 })
                 .AddTo(_disposables);
 
@@ -43,7 +43,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 {
                     _logger.LogTrace("{0} HubConnectionLogger HubConnection OnReconnecting.", _guid);
                     if (ex != null)
-                        _logger.LogError("{0} HubConnectionLogger Error during reconnecting: {1}", _guid, ex.Message);
+                        _logger.LogError(ex, "{0} HubConnectionLogger Error during reconnecting: {1}", _guid, ex.Message);
                 })
                 .AddTo(_disposables);
 

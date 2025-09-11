@@ -7,9 +7,8 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -17,14 +16,14 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -50,7 +49,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             Reflector reflector,
             object? obj,
             Type type,
-            string name = null,
+            string? name = null,
             bool recursive = true,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             int depth = 0,
@@ -96,13 +95,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         public override bool TryPopulate(
             Reflector reflector,
-            ref object obj,
+            ref object? obj,
             SerializedMember data,
-            Type fallbackType = null,
+            Type? fallbackType = null,
             int depth = 0,
-            StringBuilder stringBuilder = null,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            ILogger logger = null)
+            ILogger? logger = null)
         {
             // Trying to fix JSON value body, if critical property is missed or detected return false
             if (!FixJsonValueBody(
@@ -122,13 +121,13 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected virtual bool FixJsonValueBody(
             Reflector reflector,
-            ref object obj,
+            ref object? obj,
             SerializedMember data,
-            Type fallbackType = null,
+            Type? fallbackType = null,
             int depth = 0,
-            StringBuilder stringBuilder = null,
+            StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            ILogger logger = null)
+            ILogger? logger = null)
         {
             if (data?.valueJsonElement == null)
                 return true;
@@ -144,7 +143,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             if (!isRestricted)
                 return true;
 
-            var node = JsonNode.Parse(data.valueJsonElement.Value.GetRawText()).AsObject();
+            var node = JsonNode.Parse(data.valueJsonElement.Value.GetRawText())?.AsObject();
+            if (node == null)
+                return true;
 
             foreach (var knownField in GetKnownSerializableFields(reflector, obj))
             {
@@ -238,7 +239,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 
         protected override bool SetValue(
             Reflector reflector,
-            ref object obj,
+            ref object? obj,
             Type type,
             JsonElement? value,
             int depth = 0,

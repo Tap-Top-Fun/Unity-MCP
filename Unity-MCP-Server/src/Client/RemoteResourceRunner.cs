@@ -16,6 +16,7 @@ using com.IvanMurzak.ReflectorNet.Model;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using R3;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -23,63 +24,47 @@ namespace com.IvanMurzak.Unity.MCP.Server
     {
         readonly ILogger _logger;
         readonly IHubContext<RemoteApp> _remoteAppContext;
+        readonly IRequestTrackingService _requestTrackingService;
         readonly CancellationTokenSource cts = new();
         readonly CompositeDisposable _disposables = new();
 
-        public RemoteResourceRunner(ILogger<RemoteResourceRunner> logger, IHubContext<RemoteApp> remoteAppContext)
+        public RemoteResourceRunner(ILogger<RemoteResourceRunner> logger, IHubContext<RemoteApp> remoteAppContext, IRequestTrackingService requestTrackingService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("Ctor.");
             _remoteAppContext = remoteAppContext ?? throw new ArgumentNullException(nameof(remoteAppContext));
+            _requestTrackingService = requestTrackingService ?? throw new ArgumentNullException(nameof(requestTrackingService));
         }
 
         public Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, CancellationToken cancellationToken = default)
-            => ClientUtils.InvokeAsync<IRequestResourceContent, ResponseResourceContent[], RemoteApp>(
+        {
+            return ClientUtils.InvokeAsync<IRequestResourceContent, ResponseResourceContent[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunResourceContent,
-                requestData: requestData,
-                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
-                .ContinueWith(task =>
-            {
-                var response = task.Result;
-                if (response.IsError)
-                    return ResponseData<ResponseResourceContent[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
-
-                return response;
-            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+                request: requestData,
+                cancellationToken: cancellationToken);
+        }
 
         public Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, CancellationToken cancellationToken = default)
-            => ClientUtils.InvokeAsync<IRequestListResources, ResponseListResource[], RemoteApp>(
+        {
+            return ClientUtils.InvokeAsync<IRequestListResources, ResponseListResource[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunListResources,
-                requestData: requestData,
-                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
-                .ContinueWith(task =>
-            {
-                var response = task.Result;
-                if (response.IsError)
-                    return ResponseData<ResponseListResource[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
-
-                return response;
-            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+                request: requestData,
+                cancellationToken: cancellationToken);
+        }
 
         public Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, CancellationToken cancellationToken = default)
-            => ClientUtils.InvokeAsync<IRequestListResourceTemplates, ResponseResourceTemplate[], RemoteApp>(
+        {
+            return ClientUtils.InvokeAsync<IRequestListResourceTemplates, ResponseResourceTemplate[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunListResourceTemplates,
-                requestData: requestData,
-                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
-                .ContinueWith(task =>
-            {
-                var response = task.Result;
-                if (response.IsError)
-                    return ResponseData<ResponseResourceTemplate[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
-
-                return response;
-            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+                request: requestData,
+                cancellationToken: cancellationToken);
+        }
 
         public void Dispose()
         {

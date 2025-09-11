@@ -7,7 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
@@ -20,5 +20,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
         public int FailedTests { get; set; }
         public int SkippedTests { get; set; }
         public TimeSpan Duration { get; set; }
+
+        public void Clear()
+        {
+            Status = TestRunStatus.Unknown;
+            TotalTests = 0;
+            PassedTests = 0;
+            FailedTests = 0;
+            SkippedTests = 0;
+            Duration = TimeSpan.Zero;
+        }
     }
 }

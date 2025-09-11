@@ -13,12 +13,12 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NLog;
-using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -40,7 +40,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             var mcpServerService = McpServerService.Instance;
             if (mcpServerService == null)
-                return new CallToolResult().SetError($"[Error] '{nameof(mcpServerService)}' is null");
+                return new CallToolResult().SetError($"[Error] '{nameof(mcpServerService)}' instance is null");
 
             var toolRunner = mcpServerService.McpRunner.HasTool(request.Params.Name)
                 ? mcpServerService.McpRunner
@@ -50,9 +50,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             if (toolRunner == null)
                 return new CallToolResult().SetError($"[Error] '{nameof(toolRunner)}' is null");
-
-            // while (RemoteApp.FirstConnectionId == null)
-            //     await Task.Delay(100, cancellationToken);
 
             var requestData = new RequestCallTool(request.Params.Name, request.Params.Arguments);
             if (logger.IsTraceEnabled)
@@ -65,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (logger.IsTraceEnabled)
                 logger.Trace("Call tool response:\n{0}", response.ToJsonOrEmptyJsonObject(McpPlugin.Instance?.McpRunner.Reflector));
 
-            if (response.IsError)
+            if (response.Status == ResponseStatus.Error)
                 return new CallToolResult().SetError(response.Message ?? "[Error] Got an error during running tool");
 
             if (response.Value == null)

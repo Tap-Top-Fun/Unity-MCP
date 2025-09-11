@@ -1,7 +1,20 @@
+# configurations
 .vscode
+.claude
+
+# dotnet build
 bin
 obj
+Server.sln
+
+# dotnet publish
 publish
+nupkg
+
+# documentation
+*.md
+
+# other
+smithery.yaml
 build-all.ps1
 build-all.sh
-Server.sln

@@ -7,14 +7,14 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
+using Extensions.Unity.PlayerPrefsEx;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 
@@ -22,41 +22,70 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 {
     public class TestResultCollector : ICallbacks
     {
-        private readonly List<TestResultData> _results = new();
-        private readonly List<string> _logs = new();
-        private readonly TaskCompletionSource<bool> _completionSource = new();
-        private readonly TestSummaryData _summary = new();
-        private DateTime _startTime;
-        private readonly TestMode _testMode;
-        private readonly int _runNumber;
+        static int counter = 0;
+
+        readonly List<TestResultData> _results = new();
+        readonly TestSummaryData _summary = new();
+        readonly List<string> _logs = new();
+        readonly TestMode _testMode;
+
+        DateTime startTime;
 
         public List<TestResultData> GetResults() => _results;
         public TestSummaryData GetSummary() => _summary;
         public List<string> GetLogs() => _logs;
         public TestMode GetTestMode() => _testMode;
 
-        public TestResultCollector(TestMode testMode, int runNumber = 1)
+        public string TestModeAsString => _testMode switch
         {
-            _testMode = testMode;
-            _runNumber = runNumber;
+            TestMode.EditMode => "EditMode",
+            TestMode.PlayMode => "PlayMode",
+            _ => "Unknown"
+        };
+
+        public static PlayerPrefsString TestCallRequestID = new PlayerPrefsString("Unity_MCP_TestRunner_TestCallRequestID");
+
+        public TestResultCollector()
+        {
+            int newCount = System.Threading.Interlocked.Increment(ref counter);
+
+            if (McpPluginUnity.IsLogActive(LogLevel.Trace))
+                Debug.Log($"[{nameof(TestResultCollector)}] Ctor.");
+
+            if (newCount > 1)
+                throw new InvalidOperationException($"Only one instance of {nameof(TestResultCollector)} is allowed. Current count: {newCount}");
         }
 
         public void RunStarted(ITestAdaptor testsToRun)
         {
-            _startTime = DateTime.Now;
+            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                Debug.Log($"[{nameof(TestResultCollector)}] RunStarted.");
+
+            startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
 
+            _results.Clear();
+            _summary.Clear();
             _summary.TotalTests = testCount;
 
+            // Subscribe on log messages
+            Application.logMessageReceived += OnLogMessageReceived;
+
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) started: {testCount} tests.");
+                Debug.Log($"[{nameof(TestResultCollector)}] Run {TestModeAsString} started: {testCount} tests.");
         }
 
         public void RunFinished(ITestResultAdaptor result)
         {
-            var endTime = DateTime.Now;
-            var duration = endTime - _startTime;
-            _summary.Duration = duration;
+            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                Debug.Log($"[{nameof(TestResultCollector)}] RunFinished.");
+
+            // Unsubscribe from log messages
+            Application.logMessageReceived -= OnLogMessageReceived;
+
+            var duration = DateTime.Now - startTime;
+            _summary.Duration = DateTime.Now - startTime;
+            _summary.TotalTests = CountTests(result.Test);
             if (_summary.FailedTests > 0)
             {
                 _summary.Status = TestRunStatus.Failed;
@@ -72,11 +101,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
             {
-                Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) finished with {CountTests(result.Test)} test results. Result status: {result.TestStatus}");
-                Debug.Log($"[TestRunner] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
+                Debug.Log($"[{nameof(TestResultCollector)}] Run {TestModeAsString} finished with {_summary.TotalTests} test results. Result status: {result.TestStatus}");
+                Debug.Log($"[{nameof(TestResultCollector)}] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
             }
 
-            _completionSource.TrySetResult(true);
+            //if (!McpPlugin.HasInstance)
+            McpPluginUnity.BuildAndStart(McpPluginUnity.KeepConnected && !Startup.IsCi());
+
+            var requestId = TestCallRequestID.Value;
+            TestCallRequestID.Value = string.Empty;
+            if (string.IsNullOrEmpty(requestId) == false)
+            {
+                var response = ResponseCallTool.Success(FormatTestResults()).SetRequestID(requestId);
+                _ = McpPluginUnity.NotifyToolRequestCompleted(response);
+            }
         }
 
         public void TestStarted(ITestAdaptor test)
@@ -109,7 +147,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 };
 
                 if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                    Debug.Log($"[TestRunner] {statusEmoji} Test finished: {result.Test.FullName} - {result.TestStatus} ({_results.Count}/{_summary.TotalTests})");
+                    Debug.Log($"[{nameof(TestResultCollector)}] {statusEmoji} Test finished ({_results.Count}/{_summary.TotalTests}): {result.Test.FullName} - {result.TestStatus}");
 
                 // Update summary counts
                 switch (result.TestStatus)
@@ -126,33 +164,27 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 }
 
                 // Update duration as tests complete
-                _summary.Duration = DateTime.Now - _startTime;
+                _summary.Duration = DateTime.Now - startTime;
 
                 // Check if all tests are complete
                 if (_results.Count >= _summary.TotalTests)
                 {
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
-                        Debug.Log($"[TestRunner] All tests completed via TestFinished. Final duration: {_summary.Duration:mm\\:ss\\.fff}");
-
-                    _completionSource.TrySetResult(true);
+                        Debug.Log($"[{nameof(TestResultCollector)}] All tests completed via TestFinished. Final duration: {_summary.Duration:mm\\:ss\\.fff}");
                 }
             }
         }
 
-        public async Task WaitForCompletionAsync(CancellationToken cancellationToken)
+        void OnLogMessageReceived(string condition, string stackTrace, LogType type)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => tcs.TrySetCanceled()))
-            {
-                var completedTask = await Task.WhenAny(_completionSource.Task, tcs.Task);
-                if (completedTask == tcs.Task)
-                    cancellationToken.ThrowIfCancellationRequested();
+            var logEntry = $"[{DateTime.Now:HH:mm:ss:fff}] [{type}] {condition}";
+            if (!string.IsNullOrEmpty(stackTrace))
+                logEntry += $"\n{stackTrace}";
 
-                await _completionSource.Task; // Re-await to get the result or exception
-            }
+            _logs.Add(logEntry);
         }
 
-        public string FormatTestResults()
+        string FormatTestResults()
         {
             var results = GetResults();
             var summary = GetSummary();

@@ -10,14 +10,15 @@
 
 using System;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
     public interface IRemoteApp : IToolResponseReceiver, IResourceResponseReceiver, IDisposable
     {
-        Task<IResponseData<string>> OnListToolsUpdated(string data);
-        Task<IResponseData<string>> OnListResourcesUpdated(string data);
+        Task<IResponseData> OnListToolsUpdated(string data);
+        Task<IResponseData> OnListResourcesUpdated(string data);
+        Task<IResponseData> OnToolRequestCompleted(ToolRequestCompletedData data);
     }
 
     public interface IToolResponseReceiver

@@ -135,6 +135,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "extensions.unity.playerprefsex": {
+      "version": "2.0.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "org.nuget.microsoft.aspnetcore.connections.abstractions": {
       "version": "9.0.7",
       "depth": 2,

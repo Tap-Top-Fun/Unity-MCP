@@ -7,16 +7,56 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System.Collections.Generic;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Editor.API.TestRunner;
+using UnityEditor;
+using UnityEditor.TestTools.TestRunner.Api;
+using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
     [McpPluginToolType]
-    public partial class Tool_TestRunner
+    [InitializeOnLoad]
+    public static partial class Tool_TestRunner
     {
+        static readonly object _lock = new();
+        static volatile TestRunnerApi? _testRunnerApi = null!;
+        static volatile TestResultCollector? _resultCollector = null!;
+        static Tool_TestRunner()
+        {
+            _testRunnerApi ??= CreateInstance();
+        }
+
+        public static TestRunnerApi TestRunnerApi
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (_testRunnerApi == null)
+                        _testRunnerApi = CreateInstance();
+                    return _testRunnerApi;
+                }
+            }
+        }
+        public static TestRunnerApi CreateInstance()
+        {
+            // if (McpPluginUnity.IsLogActive(MCP.Utils.LogLevel.Trace))
+            //     Debug.Log($"[{nameof(TestRunnerApi)}] Ctor.");
+
+            _resultCollector ??= new TestResultCollector();
+            var testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
+            testRunnerApi.RegisterCallbacks(_resultCollector);
+            return testRunnerApi;
+        }
+
+        public static void Init()
+        {
+            // none
+        }
+
         private static class Error
         {
             public static string InvalidTestMode(string testMode)
@@ -27,9 +67,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             public static string TestTimeout(int timeoutMs)
                 => $"[Error] Test execution timed out after {timeoutMs} ms";
-
-            public static string TestRunnerNotAvailable()
-                => $"[Error] Unity Test Runner API is not available";
 
             public static string NoTestsFound(TestFilterParameters filterParams)
             {

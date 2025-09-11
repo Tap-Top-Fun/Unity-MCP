@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.IvanMurzak.ReflectorNet.Model
+namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
     public class RequestNotification : IRequestNotification
     {

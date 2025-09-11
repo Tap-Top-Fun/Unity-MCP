@@ -8,8 +8,8 @@
 └──────────────────────────────────────────────────────────────────┘
 */
 using System.Collections;
-using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;

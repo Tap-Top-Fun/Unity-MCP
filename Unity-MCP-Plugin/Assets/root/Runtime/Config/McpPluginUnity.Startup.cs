@@ -8,6 +8,7 @@
 └──────────────────────────────────────────────────────────────────┘
 */
 using System;
+using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Convertor;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -21,19 +22,49 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP
 {
-    using LogLevelMicrosoft = Microsoft.Extensions.Logging.LogLevel;
-    using LogLevel = Utils.LogLevel;
     using Consts = Common.Consts;
+    using LogLevel = Utils.LogLevel;
+    using LogLevelMicrosoft = Microsoft.Extensions.Logging.LogLevel;
 
     public partial class McpPluginUnity
     {
-        public static void BuildAndStart(bool openConnection = true)
-        {
-            McpPlugin.StaticDisposeAsync();
-            MainThreadInstaller.Init();
+        static volatile object buildAndStartMutex = new();
+        static volatile bool isInitializationStarted = false;
 
-            var mcpPlugin = new McpPluginBuilder()
-                .WithAppFeatures()
+        public static async void BuildAndStart(bool openConnection = true)
+        {
+            lock (buildAndStartMutex)
+            {
+                if (isInitializationStarted)
+                    return;
+                isInitializationStarted = true;
+            }
+            try
+            {
+                await BuildAndStartInternal(openConnection);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                Debug.LogError($"{Consts.Log.Tag} Error during MCP plugin initialization: {ex}");
+            }
+            finally
+            {
+                lock (buildAndStartMutex)
+                {
+                    isInitializationStarted = false;
+                }
+            }
+        }
+
+        static async Task BuildAndStartInternal(bool openConnection)
+        {
+            MainThreadInstaller.Init();
+            await McpPlugin.StaticDisposeAsync();
+
+            var loggerProvider = new UnityLoggerProvider();
+            var mcpPlugin = new McpPluginBuilder(loggerProvider)
+                .AddMcpPlugin()
                 .WithConfig(config =>
                 {
                     if (McpPluginUnity.LogLevel.IsActive(LogLevel.Info))
@@ -44,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP
                 .AddLogging(loggingBuilder =>
                 {
                     loggingBuilder.ClearProviders(); // 👈 Clears the default providers
-                    loggingBuilder.AddProvider(new UnityLoggerProvider());
+                    loggingBuilder.AddProvider(loggerProvider);
                     loggingBuilder.SetMinimumLevel(McpPluginUnity.LogLevel switch
                     {
                         LogLevel.Trace => LogLevelMicrosoft.Trace,
@@ -71,7 +102,7 @@ namespace com.IvanMurzak.Unity.MCP
                     var message = "<b><color=yellow>Connecting</color></b>";
                     Debug.Log($"{Consts.Log.Tag} {message} <color=orange>ಠ‿ಠ</color>");
                 }
-                mcpPlugin.Connect();
+                await mcpPlugin.Connect();
             }
         }
 

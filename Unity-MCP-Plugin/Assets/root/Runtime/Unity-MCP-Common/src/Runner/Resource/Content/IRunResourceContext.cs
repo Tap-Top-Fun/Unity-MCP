@@ -9,7 +9,7 @@
 */
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {

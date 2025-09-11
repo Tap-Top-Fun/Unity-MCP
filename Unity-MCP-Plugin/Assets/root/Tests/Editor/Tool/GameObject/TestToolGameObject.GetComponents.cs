@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -63,7 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
 
             var result = new Tool_GameObject().Find(
-                gameObjectRef: new ReflectorNet.Model.Unity.GameObjectRef
+                gameObjectRef: new Common.Model.Unity.GameObjectRef
                 {
                     InstanceID = child.GetInstanceID()
                 },

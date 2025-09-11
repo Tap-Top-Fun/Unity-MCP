@@ -10,7 +10,7 @@
 #nullable enable
 using System;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Common;
 using NUnit.Framework;
 using UnityEngine;
@@ -29,13 +29,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests.Utils
                 var jsonResult = result.ToJson(reflector);
                 Debug.Log($"Tool execution result:\n{jsonResult}");
 
-                Assert.IsFalse(result.IsError);
+                Assert.IsFalse(result.Status == ResponseStatus.Error, $"Tool call failed with error status: {result.Message}");
 
                 Assert.IsNotNull(result.Message);
                 Assert.IsFalse(result.Message!.Contains("[Error]"), $"Tool call failed with error: {result.Message}");
 
                 Assert.IsNotNull(result.Value);
-                Assert.IsFalse(result.Value!.IsError, $"Tool call failed");
+                Assert.IsFalse(result.Value!.Status == ResponseStatus.Error, $"Tool call failed");
 
                 Assert.IsFalse(jsonResult.Contains("[Error]"), $"Tool call failed with error in JSON: {jsonResult}");
                 Assert.IsFalse(jsonResult.Contains("[Warning]"), $"Tool call contains warnings in JSON: {jsonResult}");

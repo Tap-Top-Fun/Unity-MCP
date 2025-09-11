@@ -81,5 +81,20 @@
         "signalr",
         "uielements",
         "unitypackage"
-    ]
+    ],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+        "source.fixAll": "explicit"
+    },
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+    "omnisharp.enableEditorConfigSupport": true,
+    "[csharp]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll": "explicit"
+        }
+    },
+    "dotnet.formatting.organizeImportsOnFormat": true
 }

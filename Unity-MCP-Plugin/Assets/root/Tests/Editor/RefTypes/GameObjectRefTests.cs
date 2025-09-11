@@ -9,7 +9,7 @@
 */
 #nullable enable
 using System.Linq;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using NUnit.Framework;
 

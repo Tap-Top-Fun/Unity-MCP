@@ -9,7 +9,7 @@
 */
 using System.Text.Json;
 
-namespace com.IvanMurzak.ReflectorNet.Model
+namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
     public class ResponseListTool : IResponseListTool
     {

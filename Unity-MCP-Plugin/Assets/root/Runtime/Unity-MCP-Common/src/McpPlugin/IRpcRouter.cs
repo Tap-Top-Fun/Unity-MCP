@@ -9,7 +9,7 @@
 */
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.AspNetCore.SignalR.Client;
 using R3;
 
@@ -22,7 +22,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
         Task<bool> Connect(CancellationToken cancellationToken = default);
         Task Disconnect(CancellationToken cancellationToken = default);
 
-        Task<ResponseData<string>> NotifyAboutUpdatedTools(CancellationToken cancellationToken = default);
-        Task<ResponseData<string>> NotifyAboutUpdatedResources(CancellationToken cancellationToken = default);
+        Task<ResponseData> NotifyAboutUpdatedTools(CancellationToken cancellationToken = default);
+        Task<ResponseData> NotifyAboutUpdatedResources(CancellationToken cancellationToken = default);
+        Task<ResponseData> NotifyToolRequestCompleted(ResponseCallTool response, CancellationToken cancellationToken = default);
     }
 }

@@ -44,3 +44,6 @@ artifacts/
 publish/
 packages/
 nupkg/
+
+# Claude Code settings
+.claude/

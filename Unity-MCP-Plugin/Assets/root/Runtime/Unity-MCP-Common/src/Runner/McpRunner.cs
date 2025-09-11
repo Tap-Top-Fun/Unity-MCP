@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
@@ -34,7 +35,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public McpRunner(ILogger<McpRunner> logger, Reflector reflector, ToolRunnerCollection tools, ResourceRunnerCollection resources)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogTrace("Ctor. {guid}", Guid.NewGuid());
+            _logger.LogTrace("Ctor");
             _reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
             _tools = tools ?? throw new ArgumentNullException(nameof(tools));
             _resources = resources ?? throw new ArgumentNullException(nameof(resources));
@@ -80,18 +81,20 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     _logger.LogInformation(message);
                 }
 
-                var result = await runner.Run(data.Arguments, cancellationToken);
+                var result = await runner.Run(data.RequestID, data.Arguments, cancellationToken);
                 if (result == null)
                     return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Tool '{data.Name}' returned null result.")
                         .Log(_logger);
 
-                return result.Log(_logger).Pack(data.RequestID);
+                result.Log(_logger);
+
+                return result.Pack(data.RequestID);
             }
             catch (Exception ex)
             {
                 // Handle or log the exception as needed
                 return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Failed to run tool '{data.Name}'. Exception: {ex}")
-                    .Log(_logger, ex);
+                    .Log(_logger, $"RunCallTool[{data.Name}]", ex);
             }
         }
 
@@ -109,6 +112,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                         InputSchema = kvp.Value.InputSchema.ToJsonElement() ?? EmptyInputSchema,
                     })
                     .ToArray();
+                _logger.LogDebug("{0} Tools listed.", result.Length);
 
                 return result
                     .Log(_logger)
@@ -119,7 +123,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 // Handle or log the exception as needed
                 return ResponseData<ResponseListTool[]>.Error(data.RequestID, $"Failed to list tools. Exception: {ex}")
-                    .Log(_logger, ex)
+                    .Log(_logger, "RunListTool", ex)
                     .TaskFromResult();
             }
         }

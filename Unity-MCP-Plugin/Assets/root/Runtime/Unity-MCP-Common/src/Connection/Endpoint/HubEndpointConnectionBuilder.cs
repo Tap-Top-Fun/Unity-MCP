@@ -32,22 +32,15 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public Task<HubConnection> CreateConnectionAsync(string endpoint)
         {
+            _logger.LogInformation($"Creating HubConnection to {endpoint}");
+
             var connectionConfig = _serviceProvider.GetRequiredService<IOptions<ConnectionConfig>>().Value;
             var hubConnection = new HubConnectionBuilder()
                 .WithUrl(connectionConfig.Endpoint + endpoint)
                 .WithAutomaticReconnect(new FixedRetryPolicy(TimeSpan.FromSeconds(1)))
-                .WithServerTimeout(TimeSpan.FromSeconds(30))
-                .AddJsonProtocol(options =>
-                {
-                    var jsonSerializerOptions = _reflector.JsonSerializer.JsonSerializerOptions;
-
-                    options.PayloadSerializerOptions.DefaultIgnoreCondition = jsonSerializerOptions.DefaultIgnoreCondition;
-                    options.PayloadSerializerOptions.PropertyNamingPolicy = jsonSerializerOptions.PropertyNamingPolicy;
-                    options.PayloadSerializerOptions.WriteIndented = jsonSerializerOptions.WriteIndented;
-
-                    foreach (var converter in jsonSerializerOptions.Converters)
-                        options.PayloadSerializerOptions.Converters.Add(converter);
-                })
+                .WithKeepAliveInterval(TimeSpan.FromSeconds(30))
+                .WithServerTimeout(TimeSpan.FromMinutes(5))
+                .AddJsonProtocol(options => RpcJsonConfiguration.ConfigureJsonSerializer(_reflector, options))
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();

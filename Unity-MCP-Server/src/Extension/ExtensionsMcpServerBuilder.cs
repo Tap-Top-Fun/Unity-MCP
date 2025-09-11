@@ -22,6 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 builder.Services.AddHostedService<McpServerService>();
 
             builder.Services.AddSingleton<EventAppToolsChange>();
+            builder.Services.AddSingleton<IRequestTrackingService, RequestTrackingService>();
             builder.Services.AddSingleton<IToolRunner, RemoteToolRunner>();
             builder.Services.AddSingleton<IResourceRunner, RemoteResourceRunner>();
 

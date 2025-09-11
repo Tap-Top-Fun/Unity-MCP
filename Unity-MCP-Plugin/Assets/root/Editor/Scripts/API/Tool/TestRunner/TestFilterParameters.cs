@@ -7,7 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System.Collections.Generic;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
@@ -27,8 +27,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             TestMethod = testMethod;
         }
 
-        public bool HasAnyFilter => !string.IsNullOrEmpty(TestAssembly) || !string.IsNullOrEmpty(TestNamespace) ||
-                                   !string.IsNullOrEmpty(TestClass) || !string.IsNullOrEmpty(TestMethod);
+        public bool HasAnyFilter =>
+            !string.IsNullOrEmpty(TestAssembly) ||
+            !string.IsNullOrEmpty(TestNamespace) ||
+            !string.IsNullOrEmpty(TestClass) ||
+            !string.IsNullOrEmpty(TestMethod);
 
         public override string ToString()
         {

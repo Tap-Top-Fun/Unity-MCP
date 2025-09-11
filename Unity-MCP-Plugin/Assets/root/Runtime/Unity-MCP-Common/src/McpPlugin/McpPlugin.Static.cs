@@ -17,7 +17,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public partial class McpPlugin : IMcpPlugin
     {
-        // readonly static CompositeDisposable _disposables = new();
         readonly static ReactiveProperty<McpPlugin?> _instance = new(null);
 
         public static bool HasInstance => _instance.CurrentValue != null;
@@ -32,13 +31,18 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 if (instance == null)
                     return;
+                if (func == null)
+                {
+                    instance._logger.LogWarning($"[{nameof(McpPlugin)}] DoOnce() called with null func");
+                    return;
+                }
                 try
                 {
                     func(instance);
                 }
                 catch (Exception e)
                 {
-                    instance?._logger.LogError(e, "[McpPlugin] Error in DoOnce()");
+                    instance._logger.LogError(e, $"[{nameof(McpPlugin)}] Error in DoOnce()");
                 }
             });
 
@@ -50,13 +54,18 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 if (instance == null)
                     return;
+                if (func == null)
+                {
+                    instance._logger.LogWarning($"[{nameof(McpPlugin)}] DoAlways() called with null func");
+                    return;
+                }
                 try
                 {
                     func(instance);
                 }
                 catch (Exception e)
                 {
-                    instance?._logger.LogError(e, "[McpPlugin] Error in DoAlways()");
+                    instance._logger.LogError(e, $"[{nameof(McpPlugin)}] Error in DoAlways()");
                 }
             });
 

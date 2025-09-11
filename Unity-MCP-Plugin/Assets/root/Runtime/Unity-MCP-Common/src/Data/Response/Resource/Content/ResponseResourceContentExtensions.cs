@@ -7,10 +7,11 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+#nullable enable
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.ReflectorNet.Model
+namespace com.IvanMurzak.Unity.MCP.Common.Model
 {
     public static class ResponseResourceContentExtensions
     {

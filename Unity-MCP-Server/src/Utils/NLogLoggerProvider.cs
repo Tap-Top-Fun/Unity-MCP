@@ -21,6 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public void Dispose()
         {
+            NLog.LogManager.Shutdown();
         }
     }
 }

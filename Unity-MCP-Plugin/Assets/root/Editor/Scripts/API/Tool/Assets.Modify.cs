@@ -11,9 +11,9 @@
 using System.ComponentModel;
 using System.Text;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 

@@ -8,19 +8,20 @@
 └──────────────────────────────────────────────────────────────────┘
 */
 using System.Collections;
-using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using System.Text.Json;
 using System.Linq;
 using System.Collections.Generic;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.Unity.MCP.Common;
 using UnityEditor;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -131,7 +132,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
     void ValidateResult(IResponseData<ResponseCallTool> result)
     {
       Assert.IsNotNull(result);
-      Assert.IsFalse(result.IsError, "Modification failed");
+      Assert.IsFalse(result.Status == ResponseStatus.Error, "Modification failed");
       Assert.IsTrue(result.Message.Contains("[Success]"), "Result should contain success message.");
       Assert.IsFalse(result.Message.Contains("[Error]"), "Result should not contain error message.");
     }

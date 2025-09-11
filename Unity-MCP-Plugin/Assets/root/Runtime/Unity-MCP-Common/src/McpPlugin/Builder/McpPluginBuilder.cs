@@ -7,13 +7,12 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Model;
-using Microsoft.AspNetCore.SignalR.Client;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -42,16 +41,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _logger = loggerProvider?.CreateLogger(nameof(McpPluginBuilder));
             _services = services ?? new ServiceCollection();
 
-            _services.AddTransient<IConnectionManager, ConnectionManager>();
+            _services.AddSingleton<IConnectionManager, ConnectionManager>();
             _services.AddSingleton<IMcpPlugin, McpPlugin>();
             _services.AddSingleton<IHubEndpointConnectionBuilder, HubEndpointConnectionBuilder>();
-
-            // The Func for backward compatibility
-            _services.AddSingleton<Func<string, Task<HubConnection>>>(provider =>
-            {
-                var factory = provider.GetRequiredService<IHubEndpointConnectionBuilder>();
-                return factory.CreateConnectionAsync;
-            });
         }
 
         public IMcpPluginBuilder WithTool(string name, Type classType, MethodInfo method)

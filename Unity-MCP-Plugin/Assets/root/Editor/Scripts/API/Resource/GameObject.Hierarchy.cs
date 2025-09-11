@@ -9,7 +9,7 @@
 */
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor.SceneManagement;
 using UnityEngine;
