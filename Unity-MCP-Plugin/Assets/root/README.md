@@ -121,7 +121,7 @@ openupm add com.ivanmurzak.unity.mcp
 ### Automatic configuration
 
 - Open Unity project
-- Go 👉 `Window/AI Connector (Unity-MCP)`
+- Open `Window/AI Connector (Unity-MCP)`
 - Click `Configure` at your MCP client
 
 ![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/ai-connector-window.gif)
@@ -135,7 +135,7 @@ If Automatic configuration doesn't work for you for any reason.
 Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on your own.
 
 <details>
-  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (Windows)</summary>
+  <summary>Add Unity-MCP to <code>Claude Code</code> (Windows)</summary>
 
   Replace `unityProjectPath` with your real project path
 
@@ -146,7 +146,7 @@ Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on
 </details>
 
 <details>
-  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (MacOS Apple-Silicon)</summary>
+  <summary>Add Unity-MCP to <code>Claude Code</code> (MacOS Apple-Silicon)</summary>
 
   Replace `unityProjectPath` with your real project path
 
@@ -157,7 +157,7 @@ Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on
 </details>
 
 <details>
-  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (MacOS Apple-Intel)</summary>
+  <summary>Add Unity-MCP to <code>Claude Code</code> (MacOS Apple-Intel)</summary>
 
   Replace `unityProjectPath` with your real project path
 
@@ -168,7 +168,7 @@ Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on
 </details>
 
 <details>
-  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (Linux x64)</summary>
+  <summary>Add Unity-MCP to <code>Claude Code</code> (Linux x64)</summary>
 
   Replace `unityProjectPath` with your real project path
 
@@ -179,7 +179,7 @@ Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on
 </details>
 
 <details>
-  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (Linux arm64)</summary>
+  <summary>Add Unity-MCP to <code>Claude Code</code> (Linux arm64)</summary>
 
   Replace `unityProjectPath` with your real project path
 
