@@ -40,8 +40,9 @@ AI helper which does wide range of tasks in Unity Editor and even in a running g
 
 ## Features for a human
 
-- ✅ Few clicks installation
 - ✅ Chat with AI like with a human
+- ✅ Local and Remote usage supported
+- ✅ `STDIO` and `HTTP` protocols supported
 - ✅ Wide range of default [AI tools](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/ai-tools.md)
 - ✅ Use `Description` attribute in C# code to provide detailed information for `class`, `field`, `property` or `method`.
 - ✅ Customizable reflection convertors, inspired by `System.Text.Json` convertors
@@ -80,31 +81,30 @@ AI helper which does wide range of tasks in Unity Editor and even in a running g
 > - ✅ `C:/MyProjects/Project`
 > - ❌ `C:/My Projects/Project`
 
-### Install MCP client
+### Install `MCP Client`
 
-Choose MCP client you prefer, don't need to install all of them. This is will be your main chat window to talk with LLM.
+Choose `MCP Client` you prefer, don't need to install all of them. This is will be your main chat window to talk with LLM.
 
+- [Claude Code](https://github.com/anthropics/claude-code)
+- [Claude Desktop](https://claude.ai/download)
 - [GitHub Copilot in VS Code](https://code.visualstudio.com/docs/copilot/overview)
 - [Cursor](https://www.cursor.com/)
-- [Claude Desktop](https://claude.ai/download)
-- [Claude Code](https://github.com/anthropics/claude-code)
 - [Windsurf](https://windsurf.com)
 - Any other supported
 
 > MCP protocol is quite universal, that is why you may any MCP client you prefer, it will work as smooth as anyone else. The only important thing, that the MCP client has to support dynamic tool update.
 
-# 👉 Installation
+# Installation
 
-## Option 1: Install `.unitypackage` installer
+## Step 1: Install `Unity Plugin`
 
--  **[⬇️ Download the Installer ⬇️](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.16.2/AI-Game-Dev-Installer.unitypackage)**
-- **📂 Open the installer into Unity project 📂**
+- **[⬇️ Download Installer](https://github.com/IvanMurzak/Unity-MCP/releases/download/0.16.2/AI-Game-Dev-Installer.unitypackage)**
+- **📂 Import installer into Unity project**
   > - You may use double click on the file - Unity will open it
   > - OR: You may open Unity Editor first, then click on `Assets/Import Package/Custom Package`, then choose the file
 
-## Option 2: Using OpenUPM
-
-> This option is recommended for people well familiar with command line and probably with the NPM package managers.
+<details>
+  <summary><b>Alternative: Install <code>Unity Plugin</code> via OpenUPM</b></summary>
 
 - [Install OpenUPM-CLI](https://github.com/openupm/openupm-cli#installation)
 - Open command line in Unity project folder
@@ -114,21 +114,89 @@ Choose MCP client you prefer, don't need to install all of them. This is will be
 openupm add com.ivanmurzak.unity.mcp
 ```
 
-# 👉 Configure MCP client
+</details>
 
-## 🟢 Step 1 Open `AI Connector` window
+## Step 2: Configure `MCP Client`
 
-Open Unity project, go 👉 `Window/AI Connector (Unity-MCP)`.
+### Automatic configuration
+
+- Open Unity project,
+- Go 👉 `Window/AI Connector (Unity-MCP)`.
+
+- Click `Configure` at your MCP client
 
 ![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/ai-connector-window.gif)
 
-## 🟢 Step 2: Click `Configure` at your MCP client
+> If MCP client is not in the list, use the raw JSON below in the window, to inject it into your MCP client. Read instructions for your MCP client how to do that.
 
-  > If MCP client is not in the list, use the raw JSON below in the window, to inject it into your MCP client. Read instructions for your MCP client how to do that.
+### Manual configuration
 
-# 👉 Talk to LLM
+If Automatic configuration doesn't work for you for any reason.
 
-> Make sure `Agent` mode is turned on in MCP client
+Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on your own.
+
+<details>
+  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (Windows)</summary>
+
+  Replace `unityProjectPath` with your real project path
+
+  ```bash
+  claude mcp add Unity-MCP "<unityProjectPath>/Library/mcp-server/win-x64/unity-mcp-server.exe" client-transport=stdio
+  ```
+
+</details>
+
+<details>
+  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (MacOS Apple-Silicon)</summary>
+
+  Replace `unityProjectPath` with your real project path
+
+  ```bash
+  claude mcp add Unity-MCP "<unityProjectPath>/Library/mcp-server/osx-arm64/unity-mcp-server" client-transport=stdio
+  ```
+
+</details>
+
+<details>
+  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (MacOS Apple-Intel)</summary>
+
+  Replace `unityProjectPath` with your real project path
+
+  ```bash
+  claude mcp add Unity-MCP "<unityProjectPath>/Library/mcp-server/osx-x64/unity-mcp-server" client-transport=stdio
+  ```
+
+</details>
+
+<details>
+  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (Linux x64)</summary>
+
+  Replace `unityProjectPath` with your real project path
+
+  ```bash
+  claude mcp add Unity-MCP "<unityProjectPath>/Library/mcp-server/linux-x64/unity-mcp-server" client-transport=stdio
+  ```
+
+</details>
+
+<details>
+  <summary><b>Add Unity-MCP to <code>Claude Code</code></b> (Linux arm64)</summary>
+
+  Replace `unityProjectPath` with your real project path
+
+  ```bash
+  claude mcp add Unity-MCP "<unityProjectPath>/Library/mcp-server/linux-arm64/unity-mcp-server" client-transport=stdio
+  ```
+
+</details>
+
+---
+
+# Use AI
+
+Talk with AI (LLM) in your `MCP Client`. Ask it to do anything you want. As better you describe your task / idea - as better it will do the job.
+
+Some `MCP Clients` allow to chose different LLM models. Take an eye on it, some model may work much better.
 
   ```text
   Explain my scene hierarchy
@@ -141,6 +209,8 @@ Open Unity project, go 👉 `Window/AI Connector (Unity-MCP)`.
   ```text
   Create metallic golden material and attach it to a sphere gameObject
   ```
+
+> Make sure `Agent` mode is turned on in MCP client
 
 ---
 
