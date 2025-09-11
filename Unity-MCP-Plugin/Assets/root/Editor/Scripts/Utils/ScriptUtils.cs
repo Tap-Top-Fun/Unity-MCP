@@ -36,21 +36,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             // Process any pending notifications after domain reload (successful compilation)
             ScheduleProcessPendingNotifications();
 
-            // Also listen for compilation events to handle both success and failure cases
-            CompilationPipeline.compilationFinished += OnCompilationFinished;
+            // Also listen for compilation event to handle both success and failure cases
             CompilationPipeline.assemblyCompilationFinished += OnAssemblyCompilationFinished;
         }
 
-        private static void OnCompilationFinished(object obj)
-        {
-            // This will be called even when compilation fails
-            // Schedule processing to ensure it runs after Unity has processed the compilation results
-            ScheduleProcessPendingNotifications();
-        }
         private static void OnAssemblyCompilationFinished(string assemblyPath, CompilerMessage[] messages)
         {
             lock (_compilationMessagesLock)
             {
+                _lastCompilationMessages.Clear();
                 _lastCompilationMessages.AddRange(messages);
             }
         }

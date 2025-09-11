@@ -11,6 +11,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -57,7 +58,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             int startIndex = lineFrom - 1;
             int endIndex = lineTo; // lineTo is inclusive in 1-based, so this works for slice
 
-            return string.Join("\n", lines[startIndex..endIndex]);
+            return string.Join("\n", lines.Skip(startIndex).Take(endIndex - startIndex));
         }
     }
 }
