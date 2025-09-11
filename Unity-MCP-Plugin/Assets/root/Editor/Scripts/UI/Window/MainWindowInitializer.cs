@@ -28,6 +28,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         static void PerformInitialization()
         {
+            EditorApplication.update -= PerformInitialization;
+
             if (isInitialized.Value)
                 return;
 
