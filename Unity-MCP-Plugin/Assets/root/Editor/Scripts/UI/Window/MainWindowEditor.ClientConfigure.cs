@@ -270,15 +270,29 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 }
 
                 // Parse the injected config as JsonObject
-                var injectObj = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs);
+                var pathSegments = Consts.MCP.Server.BodyPathSegments(bodyPath);
+                var injectTarget = rootObj;
+
+                foreach (var segment in pathSegments)
+                {
+                    var tempTarget = injectTarget[segment]?.AsObject();
+                    if (tempTarget == null)
+                    {
+                        break;
+                    }
+                    injectTarget = tempTarget;
+                }
+
+                // Get mcpServers from both
+                var mcpServers = rootObj[bodyPath]?.AsObject();
+
+                var injectObj = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, pathSegments.Last(), McpPluginUnity.TimeoutMs);
                 if (injectObj == null)
                     throw new Exception("Injected config is not a valid JSON object.");
 
-                // Get mcpServers from both
-                var mcpServers = rootObj[bodyName]?.AsObject();
-                var injectMcpServers = injectObj[bodyName]?.AsObject();
+                var injectMcpServers = injectObj[pathSegments.Last()]?.AsObject();
                 if (injectMcpServers == null)
-                    throw new Exception($"Missing '{bodyName}' object in config.");
+                    throw new Exception($"Missing '{pathSegments.Last()}' object in config.");
 
                 if (mcpServers == null)
                 {
