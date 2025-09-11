@@ -67,7 +67,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 await Task.Yield();
 
                 // Schedule notification to be sent after compilation completes (survives domain reload)
-                ScriptUtils.SchedulePostCompilationNotification(requestId, filePath, $"[Success] {scriptWord} at: {filePath}");
+                ScriptUtils.SchedulePostCompilationNotification(requestId, filePath, $"{scriptWord}");
 
                 AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             });
