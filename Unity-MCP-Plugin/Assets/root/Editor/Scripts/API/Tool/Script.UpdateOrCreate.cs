@@ -58,7 +58,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             File.WriteAllText(filePath, content);
 
-
             var scriptWord = exists
                 ? "Script updated"
                 : "Script created";
