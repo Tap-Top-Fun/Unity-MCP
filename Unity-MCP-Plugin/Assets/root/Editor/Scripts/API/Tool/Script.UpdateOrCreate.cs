@@ -17,7 +17,7 @@ using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
-    public partial class Tool_Script
+    public static partial class Tool_Script
     {
         [McpPluginTool
         (
@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Create or Update Script"
         )]
         [Description("Creates or updates a script file with the provided content. Does AssetDatabase.Refresh() at the end.")]
-        public string UpdateOrCreate
+        public static string UpdateOrCreate
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
             string filePath,

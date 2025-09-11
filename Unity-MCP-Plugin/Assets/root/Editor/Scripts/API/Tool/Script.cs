@@ -7,16 +7,18 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
+using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
     [McpPluginToolType]
-    public partial class Tool_Script
+    [InitializeOnLoad]
+    public static partial class Tool_Script
     {
         static IEnumerable<Type> AllComponentTypes => AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(assembly => assembly.GetTypes())

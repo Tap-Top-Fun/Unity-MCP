@@ -7,23 +7,21 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.Unity.MCP.Common.Model;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
-    public partial class Tool_Script
+    public static partial class Tool_Script
     {
         [McpPluginTool
         (
@@ -31,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Execute C# code immediately"
         )]
         [Description("Compiles and executes C# code dynamically using Roslyn. The provided code must define a class with a static method to execute.")]
-        public string Execute
+        public static string Execute
         (
             [Description(@"C# code that compiles and executes immediately. It won't be stored as a script in the project. It is temporary one shot C# code execution using Roslyn.
 IMPORTANT: The code must define a class (e.g., 'public class Script') with a static method (e.g., 'public static object Main()').
@@ -69,7 +67,7 @@ Do NOT use top-level statements or code outside a class. Top-level statements ar
                 return $"[Success] {result}";
             });
         }
-        static bool ExecuteCSharpCode(string className, string methodName, string code, SerializedMemberList? parameters, out object? returnValue, out string error)
+        static bool ExecuteCSharpCode(string className, string methodName, string code, SerializedMemberList? parameters, out object? returnValue, out string? error)
         {
             if (string.IsNullOrEmpty(className))
             {

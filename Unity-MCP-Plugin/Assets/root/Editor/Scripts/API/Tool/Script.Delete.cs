@@ -7,16 +7,17 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System.ComponentModel;
 using System.IO;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
-    public partial class Tool_Script
+    public static partial class Tool_Script
     {
         [McpPluginTool
         (
@@ -24,30 +25,41 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Delete Script content"
         )]
         [Description("Delete the script file. Does AssetDatabase.Refresh() at the end.")]
-        public string Delete
+        public static ResponseCallTool Delete
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
-            string filePath
+            string filePath,
+            [RequestID]
+            string? requestId = null
         )
         {
+            if (requestId == null || string.IsNullOrWhiteSpace(requestId))
+                return ResponseCallTool.Error("Original request with valid RequestID must be provided.");
+
             if (string.IsNullOrEmpty(filePath))
-                return Error.ScriptPathIsEmpty();
+                return ResponseCallTool.Error(Error.ScriptPathIsEmpty()).SetRequestID(requestId);
 
             if (!filePath.EndsWith(".cs"))
-                return Error.FilePathMustEndsWithCs();
+                return ResponseCallTool.Error(Error.FilePathMustEndsWithCs()).SetRequestID(requestId);
 
             if (File.Exists(filePath) == false)
-                return Error.ScriptFileNotFound(filePath);
+                return ResponseCallTool.Error(Error.ScriptFileNotFound(filePath)).SetRequestID(requestId);
 
             File.Delete(filePath);
             if (File.Exists(filePath + ".meta"))
                 File.Delete(filePath + ".meta");
 
-            return MainThread.Instance.Run(() =>
+            MainThread.Instance.RunAsync(() =>
             {
                 AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-                return $"[Success] Script deleted: {filePath}";
+
+                var message = $"[Success] Script deleted: {filePath}";
+                var response = ResponseCallTool.Success(message).SetRequestID(requestId);
+
+                _ = McpPluginUnity.NotifyToolRequestCompleted(response);
             });
+
+            return ResponseCallTool.Processing("Script deleted. Refreshing AssetDatabase...").SetRequestID(requestId);
         }
     }
 }

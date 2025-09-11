@@ -7,14 +7,14 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System.ComponentModel;
 using System.IO;
 using com.IvanMurzak.Unity.MCP.Common;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
-    public partial class Tool_Script
+    public static partial class Tool_Script
     {
         [McpPluginTool
         (
@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Read Script content"
         )]
         [Description("Reads the content of a script file and returns it as a string.")]
-        public string Read
+        public static string Read
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
             string filePath
