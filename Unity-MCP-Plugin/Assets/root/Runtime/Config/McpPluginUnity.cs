@@ -25,6 +25,7 @@ namespace com.IvanMurzak.Unity.MCP
         Data data = new Data();
         static event Action<Data>? onChanged;
 
+        static volatile object instanceMutex = new();
         static McpPluginUnity instance = null!;
         static McpPluginUnity Instance
         {
@@ -37,17 +38,20 @@ namespace com.IvanMurzak.Unity.MCP
 
         public static void Init()
         {
-            if (instance == null)
+            lock (instanceMutex)
             {
-                instance = GetOrCreateInstance(out var wasCreated);
                 if (instance == null)
                 {
-                    Debug.LogWarning("[McpPluginUnity] ConnectionConfig instance is null");
-                    return;
-                }
-                else if (wasCreated)
-                {
-                    Save();
+                    instance = GetOrCreateInstance(out var wasCreated);
+                    if (instance == null)
+                    {
+                        Debug.LogWarning("[McpPluginUnity] ConnectionConfig instance is null");
+                        return;
+                    }
+                    else if (wasCreated)
+                    {
+                        Save();
+                    }
                 }
             }
         }

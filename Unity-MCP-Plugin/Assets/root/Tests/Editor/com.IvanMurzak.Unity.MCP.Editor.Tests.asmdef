@@ -7,9 +7,7 @@
         "com.IvanMurzak.Unity.MCP.Runtime",
         "com.IvanMurzak.Unity.MCP.TestFiles",
         "com.IvanMurzak.Unity.MCP.Editor",
-        "com.IvanMurzak.Unity.MCP.Common",
-        "Extensions.Unity.PlayerPrefsEx",
-        "Extensions.Unity.PlayerPrefsEx.Tests.Editor"
+        "com.IvanMurzak.Unity.MCP.Common"
     ],
     "includePlatforms": [
         "Editor"
@@ -21,9 +19,9 @@
         "nunit.framework.dll",
         "System.Text.Json.dll",
         "Microsoft.Extensions.Logging.Abstractions.dll",
-        "ReflectorNet.dll",
         "Microsoft.AspNetCore.SignalR.Client.dll",
         "Microsoft.AspNetCore.SignalR.Client.Core.dll",
+        "ReflectorNet.dll",
         "R3.dll"
     ],
     "autoReferenced": false,

@@ -22,18 +22,18 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP
 {
-    using LogLevelMicrosoft = Microsoft.Extensions.Logging.LogLevel;
-    using LogLevel = Utils.LogLevel;
     using Consts = Common.Consts;
+    using LogLevel = Utils.LogLevel;
+    using LogLevelMicrosoft = Microsoft.Extensions.Logging.LogLevel;
 
     public partial class McpPluginUnity
     {
-        static volatile object mutex = new();
+        static volatile object buildAndStartMutex = new();
         static volatile bool isInitializationStarted = false;
 
         public static async void BuildAndStart(bool openConnection = true)
         {
-            lock (mutex)
+            lock (buildAndStartMutex)
             {
                 if (isInitializationStarted)
                     return;
@@ -50,7 +50,7 @@ namespace com.IvanMurzak.Unity.MCP
             }
             finally
             {
-                lock (mutex)
+                lock (buildAndStartMutex)
                 {
                     isInitializationStarted = false;
                 }

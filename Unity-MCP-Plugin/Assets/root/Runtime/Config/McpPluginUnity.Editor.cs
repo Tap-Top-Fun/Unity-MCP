@@ -24,8 +24,8 @@ namespace com.IvanMurzak.Unity.MCP
         public static void InvalidateAssetFile() => UnityEditor.AssetDatabase.ImportAsset(AssetsFilePath, UnityEditor.ImportAssetOptions.ForceUpdate);
 #endif
 
-        public static McpPluginUnity GetOrCreateInstance() => GetOrCreateInstance(out _);
-        public static McpPluginUnity GetOrCreateInstance(out bool wasCreated)
+        static McpPluginUnity GetOrCreateInstance() => GetOrCreateInstance(out _);
+        static McpPluginUnity GetOrCreateInstance(out bool wasCreated)
         {
             wasCreated = false;
             try
