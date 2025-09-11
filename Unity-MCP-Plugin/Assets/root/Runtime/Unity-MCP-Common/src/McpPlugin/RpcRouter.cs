@@ -142,7 +142,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             var request = new VersionHandshakeRequest
             {
-                RequestID = System.Guid.NewGuid().ToString(),
+                RequestID = Guid.NewGuid().ToString(),
                 ApiVersion = Consts.ApiVersion.Current,
                 PluginVersion = GetPluginVersion()
             };
