@@ -8,13 +8,14 @@
                     <ui:VisualElement name="divider" class="Divider" />
                     <ui:EnumField label="Log Level" name="dropdownLogLevel" type="com.IvanMurzak.Unity.MCP.Utils.LogLevel, com.IvanMurzak.Unity.MCP.Runtime" value="Warning" class="ContentItem" style="align-self: flex-start;" />
                     <ui:IntegerField label="Timeout (ms)" name="inputTimeoutMs" value="10000" class="ContentItem" style="align-self: flex-start;" />
+                    <ui:TextField picking-mode="Ignore" label="Version" value="0.0.0" readonly="true" name="currentVersion" focusable="false" class="ContentItem" style="align-self: flex-start;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="imgLogoPivot" class="AnimatedSelectable" style="flex-grow: 0; height: 90px; width: 90px; right: 0; margin-left: 15px; flex-shrink: 0; margin-right: -8px; margin-top: 10px; flex-direction: row;">
                     <ui:VisualElement name="imgLogo" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: url(&quot;project://database/Assets/root/Editor/Gizmos/logo_512.png?fileID=2800000&amp;guid=bbb0f64bd8f15164781e01168cd6fa4f&amp;type=3#logo_512&quot;); -unity-background-scale-mode: stretch-to-fill; align-self: stretch;" />
                 </ui:VisualElement>
             </ui:Box>
             <ui:Label text="Connect to MCP server" class="Header" />
-            <ui:TextField picking-mode="Ignore" label="Server URL" value="http://localhost:8080" name="InputServerURL" class="ContentItem" />
+            <ui:TextField picking-mode="Ignore" label="Server URL" value="http://localhost:8080" name="InputServerURL" tooltip="Connection URL to an MCP server. Default value: http://localhost:8080" class="ContentItem" />
             <ui:Foldout text="Information" value="false">
                 <ui:Label text="Usually the server is hosted locally at:&#10;http://localhost:8080&#10;&#10;But feel free to connect to remote MCP server if needed. The connection under the hood is established using SignalR and supports wide range of features." class="section-desc" />
             </ui:Foldout>
@@ -26,8 +27,16 @@
             <ui:VisualElement name="divider" class="Divider" style="flex-grow: 1;" />
             <ui:Label text="Configure MCP Client" class="Header" />
             <ui:Label text="At least one client should be configured.&#10;Some clients need restart after configuration." class="section-desc" />
+            <ui:VisualElement name="ConfigureClient-Claude" class="Frame-Group" style="flex-grow: 1;">
+                <ui:Label text="Claude (Desktop &amp; Code)" class="section-title" />
+                <ui:VisualElement class="row">
+                    <ui:VisualElement name="configureStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />
+                    <ui:Label text="Not configured" name="configureStatusText" style="flex-grow: 1;" />
+                    <ui:Button name="btnConfigure" text="Configure" class="Button-Primary" />
+                </ui:VisualElement>
+            </ui:VisualElement>
             <ui:VisualElement name="ConfigureClient-VS-Code" class="Frame-Group" style="flex-grow: 1;">
-                <ui:Label text="VS Code" class="section-title" />
+                <ui:Label text="VS Code (Copilot)" class="section-title" />
                 <ui:VisualElement class="row">
                     <ui:VisualElement name="configureStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />
                     <ui:Label text="Not configured" name="configureStatusText" style="flex-grow: 1;" />
@@ -36,14 +45,6 @@
             </ui:VisualElement>
             <ui:VisualElement name="ConfigureClient-Cursor" class="Frame-Group" style="flex-grow: 1;">
                 <ui:Label text="Cursor" class="section-title" />
-                <ui:VisualElement class="row">
-                    <ui:VisualElement name="configureStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />
-                    <ui:Label text="Not configured" name="configureStatusText" style="flex-grow: 1;" />
-                    <ui:Button name="btnConfigure" text="Configure" class="Button-Primary" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="ConfigureClient-Claude" class="Frame-Group" style="flex-grow: 1;">
-                <ui:Label text="Claude Desktop" class="section-title" />
                 <ui:VisualElement class="row">
                     <ui:VisualElement name="configureStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />
                     <ui:Label text="Not configured" name="configureStatusText" style="flex-grow: 1;" />
