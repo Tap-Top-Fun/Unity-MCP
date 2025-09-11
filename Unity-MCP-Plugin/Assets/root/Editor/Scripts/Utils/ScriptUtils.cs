@@ -23,6 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
     public static partial class ScriptUtils
     {
         private const string PendingNotificationKeysKey = "MCP_PendingNotificationKeys";
+        private const string NotificationDataSeparator = "|";
 
         private static bool _processPendingScheduled = false;
 
@@ -93,7 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
         public static void SchedulePostCompilationNotification(string requestId, string filePath, string operationType)
         {
             var notificationKey = $"MCP_PendingNotification_{requestId}";
-            var notificationData = $"{requestId}|{filePath}|{operationType}";
+            var notificationData = $"{requestId}{NotificationDataSeparator}{filePath}{NotificationDataSeparator}{operationType}";
 
             // Store the notification data
             SessionState.SetString(notificationKey, notificationData);
@@ -136,7 +137,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                     continue;
                 }
 
-                var parts = notificationData.Split('|');
+                var parts = notificationData.Split(NotificationDataSeparator[0]);
                 if (parts.Length != 3)
                 {
                     processedKeys.Add(key);

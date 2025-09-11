@@ -31,8 +31,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             public static string ScriptPathIsEmpty()
                 => "[Error] Script path is empty. Please provide a valid path. Sample: \"Assets/Scripts/MyScript.cs\".";
 
-            public static string ScriptFileNotFound(string filePath)
-                => $"[Error] File not found: {filePath}. Please check the path and try again.";
+            public static string ScriptFileNotFound(params string[] files)
+                => $"[Error] File(s) not found: {string.Join(", ", files.Select(f => $"'{f}'"))}. Please check the path(s) and try again.";
 
             public static string FilePathMustEndsWithCs()
                 => "[Error] File path must end with \".cs\". Please provide a valid C# file path.";

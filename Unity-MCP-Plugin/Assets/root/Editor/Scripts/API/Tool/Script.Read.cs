@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+
 #nullable enable
 using System.ComponentModel;
 using System.IO;
@@ -25,7 +26,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         public static string Read
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
-            string filePath
+            string filePath,
+            [Description("The line number to start reading from (1-based).")]
+            int lineFrom = 1,
+            [Description("The line number to stop reading at (1-based, -1 for all lines).")]
+            int lineTo = -1
         )
         {
             if (string.IsNullOrEmpty(filePath))
@@ -37,8 +42,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (File.Exists(filePath) == false)
                 return Error.ScriptFileNotFound(filePath);
 
-            var csharpCode = File.ReadAllText(filePath);
-            return csharpCode;
+            var lines = File.ReadAllLines(filePath);
+
+            if (lineFrom < 1 || lineFrom > lines.Length)
+                lineFrom = 1;
+            if (lineTo < 1 || lineTo > lines.Length)
+                lineTo = lines.Length;
+            if (lineFrom > lineTo)
+                lineFrom = lineTo;
+
+            return string.Join("\n", lines[lineFrom..lineTo]);
         }
     }
 }

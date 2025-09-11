@@ -7,11 +7,14 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+
 #nullable enable
 using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Editor.Utils;
 using UnityEditor;
 
@@ -25,34 +28,52 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Create or Update Script"
         )]
         [Description("Creates or updates a script file with the provided content. Does AssetDatabase.Refresh() at the end.")]
-        public static string UpdateOrCreate
+        public static ResponseCallTool UpdateOrCreate
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
             string filePath,
             [Description("C# code - content of the file.")]
-            string content
+            string content,
+            [RequestID]
+            string? requestId = null
         )
         {
+            if (requestId == null || string.IsNullOrWhiteSpace(requestId))
+                return ResponseCallTool.Error("[Error] Original request with valid RequestID must be provided.");
+
             if (string.IsNullOrEmpty(filePath))
-                return Error.ScriptPathIsEmpty();
+                return ResponseCallTool.Error(Error.ScriptPathIsEmpty()).SetRequestID(requestId);
 
             if (!filePath.EndsWith(".cs"))
-                return Error.FilePathMustEndsWithCs();
+                return ResponseCallTool.Error(Error.FilePathMustEndsWithCs()).SetRequestID(requestId);
 
             if (!ScriptUtils.IsValidCSharpSyntax(content, out var errors))
-                return $"[Error] Invalid C# syntax:\n{string.Join("\n", errors)}";
+                return ResponseCallTool.Error($"[Error] Invalid C# syntax:\n{string.Join("\n", errors)}").SetRequestID(requestId);
 
             var dirPath = Path.GetDirectoryName(filePath)!;
             if (Directory.Exists(dirPath) == false)
                 Directory.CreateDirectory(dirPath);
 
+            var exists = File.Exists(filePath);
+
             File.WriteAllText(filePath, content);
 
-            return MainThread.Instance.Run(() =>
+
+            var scriptWord = exists
+                ? "Script updated"
+                : "Script created";
+
+            MainThread.Instance.RunAsync(async () =>
             {
+                await Task.Yield();
+
+                // Schedule notification to be sent after compilation completes (survives domain reload)
+                ScriptUtils.SchedulePostCompilationNotification(requestId, filePath, $"[Success] {scriptWord} at: {filePath}");
+
                 AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-                return $"[Success] Script created or updated at: {filePath}";
             });
+
+            return ResponseCallTool.Processing($"{scriptWord}. Refreshing AssetDatabase and waiting for compilation to complete...").SetRequestID(requestId);
         }
     }
 }
