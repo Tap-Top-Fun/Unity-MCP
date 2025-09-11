@@ -7,14 +7,16 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+#nullable enable
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
-    public partial class Tool_Script
+    public static partial class Tool_Script
     {
         [McpPluginTool
         (
@@ -22,10 +24,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Read Script content"
         )]
         [Description("Reads the content of a script file and returns it as a string.")]
-        public string Read
+        public static string Read
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
-            string filePath
+            string filePath,
+            [Description("The line number to start reading from (1-based).")]
+            int lineFrom = 1,
+            [Description("The line number to stop reading at (1-based, -1 for all lines).")]
+            int lineTo = -1
         )
         {
             if (string.IsNullOrEmpty(filePath))
@@ -37,8 +43,21 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (File.Exists(filePath) == false)
                 return Error.ScriptFileNotFound(filePath);
 
-            var csharpCode = File.ReadAllText(filePath);
-            return csharpCode;
+            var lines = File.ReadAllLines(filePath);
+
+            if (lineFrom < 1 || lineFrom > lines.Length)
+                lineFrom = 1;
+            if (lineTo == -1 || lineTo > lines.Length)
+                lineTo = lines.Length;
+            if (lineTo < 1)
+                lineTo = lines.Length;
+            if (lineFrom > lineTo)
+                lineFrom = lineTo;
+
+            int startIndex = lineFrom - 1; // Convert from 1-based to 0-based indexing
+            int count = lineTo - lineFrom + 1; // Inclusive range: count of lines to take
+
+            return string.Join("\n", lines.Skip(startIndex).Take(count));
         }
     }
 }

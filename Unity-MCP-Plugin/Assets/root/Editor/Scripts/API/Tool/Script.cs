@@ -7,16 +7,18 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
+using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
     [McpPluginToolType]
-    public partial class Tool_Script
+    [InitializeOnLoad]
+    public static partial class Tool_Script
     {
         static IEnumerable<Type> AllComponentTypes => AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
@@ -29,8 +31,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             public static string ScriptPathIsEmpty()
                 => "[Error] Script path is empty. Please provide a valid path. Sample: \"Assets/Scripts/MyScript.cs\".";
 
-            public static string ScriptFileNotFound(string filePath)
-                => $"[Error] File not found: {filePath}. Please check the path and try again.";
+            public static string ScriptFileNotFound(params string[] files)
+                => $"[Error] File(s) not found: {string.Join(", ", files.Select(f => $"'{f}'"))}. Please check the path(s) and try again.";
 
             public static string FilePathMustEndsWithCs()
                 => "[Error] File path must end with \".cs\". Please provide a valid C# file path.";

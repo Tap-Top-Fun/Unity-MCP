@@ -234,10 +234,22 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             return output.ToString();
         }
 
-        public static int CountTests(ITestAdaptor test) => test.HasChildren
-            ? test.Children.Sum(CountTests)
-            : test.IsSuite
-                ? 0
-                : 1;
+        public static int CountTests(ITestAdaptor test)
+        {
+            try
+            {
+                if (test == null)
+                    return 0;
+
+                if (test.HasChildren && test.Children != null)
+                    return test.Children.Sum(CountTests);
+
+                return test.IsSuite ? 0 : 1;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
     }
 }
