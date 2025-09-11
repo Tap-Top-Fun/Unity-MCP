@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
     public static partial class ScriptUtils
     {
         private const string PendingNotificationKeysKey = "MCP_PendingNotificationKeys";
-        private const char NotificationDataSeparator = '|';
+        private const string NotificationDataSeparator = "<MCP_SEP>";
 
         private static bool _processPendingScheduled = false;
 
