@@ -47,6 +47,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                 _lastCompilationMessages.Clear();
                 _lastCompilationMessages.AddRange(messages);
             }
+            ScheduleProcessPendingNotifications();
         }
 
         private static void ScheduleProcessPendingNotifications()
