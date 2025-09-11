@@ -40,6 +40,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 public const string OnDomainReloadStarted = "OnDomainReloadStarted";
                 public const string OnDomainReloadCompleted = "OnDomainReloadCompleted";
                 public const string OnToolRequestCompleted = "OnToolRequestCompleted";
+                public const string OnVersionHandshake = "OnVersionHandshake";
             }
         }
     }

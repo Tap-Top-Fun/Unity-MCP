@@ -11,6 +11,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.Unity.MCP.Common.Model;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -41,13 +42,22 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _rpcRouter = rpcRouter;
             _rpcRouter?.ConnectionState
                 .Where(state => state == HubConnectionState.Connected)
-                .Subscribe(state =>
+                .Subscribe(async state =>
                 {
                     _logger.LogDebug("{0}.{1}, connection state: {2}",
                         nameof(McpPlugin),
                         nameof(IRpcRouter.NotifyAboutUpdatedTools),
                         state);
-                    _rpcRouter.NotifyAboutUpdatedTools(_disposables.ToCancellationToken());
+
+                    // Perform version handshake first
+                    var handshakeResponse = await _rpcRouter.PerformVersionHandshake(_disposables.ToCancellationToken());
+                    if (handshakeResponse != null && !handshakeResponse.Compatible)
+                    {
+                        LogVersionMismatchError(handshakeResponse);
+                        // Still proceed with tool notification for now, but user will see the error
+                    }
+
+                    await _rpcRouter.NotifyAboutUpdatedTools(_disposables.ToCancellationToken());
                 }).AddTo(_disposables);
 
             if (HasInstance)
@@ -70,6 +80,14 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public Task Disconnect(CancellationToken cancellationToken = default)
             => _rpcRouter?.Disconnect(cancellationToken) ?? Task.FromResult(false);
+
+        private void LogVersionMismatchError(VersionHandshakeResponse handshakeResponse)
+        {
+            var errorMessage = $"[Unity-MCP] API VERSION MISMATCH: {handshakeResponse.Message}";
+            
+            // Log using ILogger which will be connected to Unity's logging system from the outside
+            _logger.LogError(errorMessage);
+        }
 
         public void Dispose()
         {
