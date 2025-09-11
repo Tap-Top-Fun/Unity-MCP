@@ -49,7 +49,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
                         nameof(IRpcRouter.NotifyAboutUpdatedTools),
                         state);
 
-
                     var cancellationToken = _disposables.ToCancellationToken();
                     if (cancellationToken.IsCancellationRequested)
                         return;
