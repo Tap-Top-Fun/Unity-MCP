@@ -35,30 +35,44 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     public const string ClientTransportMethod = "UNITY_MCP_CLIENT_TRANSPORT";
                 }
 
+                public const string DefaultBodyPath = "mcpServers";
+                public const string DefaultServerName = "Unity-MCP";
+                public const string BodyPathDelimiter = "<///>";
+
+                public static string[] BodyPathSegments(string bodyPath)
+                {
+                    return bodyPath.Split(BodyPathDelimiter);
+                }
+
                 public static JsonNode Config(
                     string executablePath,
-                    string serverName = "Unity-MCP",
-                    string bodyName = "mcpServers",
+                    string serverName = DefaultServerName,
+                    string bodyPath = DefaultBodyPath,
                     int port = Hub.DefaultPort,
                     int timeoutMs = Hub.DefaultTimeoutMs)
                 {
-                    return new JsonObject
+                    var root = new JsonObject();
+                    foreach (var segment in BodyPathSegments(bodyPath))
                     {
-                        [bodyName] = new JsonObject
+                        var child = new JsonObject();
+                        root[segment] = child;
+                        root = child;
+                    }
+                    root[bodyPath] = new JsonObject
+                    {
+                        [serverName] = new JsonObject
                         {
-                            [serverName] = new JsonObject
+                            ["type"] = "stdio",
+                            ["command"] = executablePath,
+                            ["args"] = new JsonArray
                             {
-                                ["type"] = "stdio",
-                                ["command"] = executablePath,
-                                ["args"] = new JsonArray
-                                {
-                                    $"{Args.Port}={port}",
-                                    $"{Args.PluginTimeout}={timeoutMs}",
-                                    $"{Args.ClientTransportMethod}={TransportMethod.stdio}"
-                                }
+                                $"{Args.Port}={port}",
+                                $"{Args.PluginTimeout}={timeoutMs}",
+                                $"{Args.ClientTransportMethod}={TransportMethod.stdio}"
                             }
                         }
                     };
+                    return root;
                 }
 
                 public enum TransportMethod

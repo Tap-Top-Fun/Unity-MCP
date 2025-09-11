@@ -25,22 +25,35 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
     public partial class MainWindowEditor : EditorWindow
     {
+        string ProjectRootPath => Application.dataPath.EndsWith("/Assets")
+            ? Application.dataPath.Substring(0, Application.dataPath.Length - "/Assets".Length)
+            : Application.dataPath;
+
         void ConfigureClientsWindows(VisualElement root)
         {
-            ConfigureClient(root.Query<VisualElement>("ConfigureClient-Claude").First(),
+            ConfigureClient(root.Query<VisualElement>("ConfigureClient-Claude-Desktop").First(),
                 configPath: Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "Claude",
                     "claude_desktop_config.json"
                 ),
-                bodyName: "mcpServers");
+                bodyPath: Consts.MCP.Server.DefaultBodyPath);
+
+            ConfigureClient(root.Query<VisualElement>("ConfigureClient-Claude-Code").First(),
+                configPath: Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    ".claude.json"
+                ),
+                bodyPath: $"projects{Consts.MCP.Server.BodyPathDelimiter}"
+                    + $"{ProjectRootPath}{Consts.MCP.Server.BodyPathDelimiter}"
+                    + Consts.MCP.Server.DefaultBodyPath);
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-VS-Code").First(),
                 configPath: Path.Combine(
                     ".vscode",
                     "mcp.json"
                 ),
-                bodyName: "servers");
+                bodyPath: "servers");
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-Cursor").First(),
                 configPath: Path.Combine(
@@ -48,12 +61,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     ".cursor",
                     "mcp.json"
                 ),
-                bodyName: "mcpServers");
+                bodyPath: Consts.MCP.Server.DefaultBodyPath);
         }
 
         void ConfigureClientsMacAndLinux(VisualElement root)
         {
-            ConfigureClient(root.Query<VisualElement>("ConfigureClient-Claude").First(),
+            ConfigureClient(root.Query<VisualElement>("ConfigureClient-Claude-Desktop").First(),
                 configPath: Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                     "Library",
@@ -61,14 +74,23 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     "Claude",
                     "claude_desktop_config.json"
                 ),
-                bodyName: "mcpServers");
+                bodyPath: Consts.MCP.Server.DefaultBodyPath);
+
+            ConfigureClient(root.Query<VisualElement>("ConfigureClient-Claude-Code").First(),
+                configPath: Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    ".claude.json"
+                ),
+                bodyPath: $"projects{Consts.MCP.Server.BodyPathDelimiter}"
+                    + $"{ProjectRootPath}{Consts.MCP.Server.BodyPathDelimiter}"
+                    + Consts.MCP.Server.DefaultBodyPath);
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-VS-Code").First(),
                 configPath: Path.Combine(
                     ".vscode",
                     "mcp.json"
                 ),
-                bodyName: "servers");
+                bodyPath: "servers");
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-Cursor").First(),
                 configPath: Path.Combine(
@@ -76,16 +98,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     ".cursor",
                     "mcp.json"
                 ),
-                bodyName: "mcpServers");
+                bodyPath: Consts.MCP.Server.DefaultBodyPath);
         }
 
-        void ConfigureClient(VisualElement root, string configPath, string bodyName = "mcpServers")
+        void ConfigureClient(VisualElement root, string configPath, string bodyPath = Consts.MCP.Server.DefaultBodyPath)
         {
             var statusCircle = root.Query<VisualElement>("configureStatusCircle").First();
             var statusText = root.Query<Label>("configureStatusText").First();
             var btnConfigure = root.Query<Button>("btnConfigure").First();
 
-            var isConfiguredResult = IsMcpClientConfigured(configPath, bodyName);
+            var isConfiguredResult = IsMcpClientConfigured(configPath, bodyPath);
 
             statusCircle.RemoveFromClassList(USS_IndicatorClass_Connected);
             statusCircle.RemoveFromClassList(USS_IndicatorClass_Connecting);
@@ -100,7 +122,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             btnConfigure.RegisterCallback<ClickEvent>(evt =>
             {
-                var configureResult = ConfigureMcpClient(configPath, bodyName);
+                var configureResult = ConfigureMcpClient(configPath, bodyPath);
 
                 statusText.text = configureResult ? "Configured" : "Not Configured";
 
@@ -116,7 +138,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             });
         }
 
-        bool IsMcpClientConfigured(string configPath, string bodyPath = "mcpServers")
+        bool IsMcpClientConfigured(string configPath, string bodyPath = Consts.MCP.Server.DefaultBodyPath)
         {
             if (string.IsNullOrEmpty(configPath) || !File.Exists(configPath))
                 return false;
@@ -208,10 +230,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             return foundPort && foundTimeout;
         }
 
-        bool ConfigureMcpClient(string configPath, string bodyName = "mcpServers")
+        bool ConfigureMcpClient(string configPath, string bodyPath = Consts.MCP.Server.DefaultBodyPath)
         {
             if (string.IsNullOrEmpty(configPath))
                 return false;
+
+            Debug.Log($"{Consts.Log.Tag} Configuring MCP client with path: {configPath} and bodyPath: {bodyPath}");
 
             try
             {
@@ -223,7 +247,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     // Create the file if it doesn't exist
                     File.WriteAllText(
                         path: configPath,
-                        contents: Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs).ToString());
+                        contents: Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyPath, McpPluginUnity.TimeoutMs).ToString());
                     return true;
                 }
 
@@ -241,7 +265,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 {
                     File.WriteAllText(
                         path: configPath,
-                        contents: Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyName, McpPluginUnity.TimeoutMs).ToString());
+                        contents: Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, bodyPath, McpPluginUnity.TimeoutMs).ToString());
                     return true;
                 }
 
@@ -259,9 +283,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 if (mcpServers == null)
                 {
                     // If mcpServers is null, create it
-                    rootObj[bodyName] = JsonNode.Parse(injectMcpServers.ToJsonString())?.AsObject();
+                    rootObj[bodyPath] = JsonNode.Parse(injectMcpServers.ToJsonString())?.AsObject();
                     File.WriteAllText(configPath, rootObj.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
-                    return IsMcpClientConfigured(configPath, bodyName);
+                    return IsMcpClientConfigured(configPath, bodyPath);
                 }
 
                 // Find all command values in injectMcpServers
@@ -291,7 +315,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 // Write back to file
                 File.WriteAllText(configPath, rootObj.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-                return IsMcpClientConfigured(configPath, bodyName);
+                return IsMcpClientConfigured(configPath, bodyPath);
             }
             catch (Exception ex)
             {
