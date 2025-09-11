@@ -23,12 +23,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
     public static partial class ScriptUtils
     {
         private const string PendingNotificationKeysKey = "MCP_PendingNotificationKeys";
-        private const string NotificationDataSeparator = "|";
+        private const char NotificationDataSeparator = '|';
 
         private static bool _processPendingScheduled = false;
 
-        // Store compilation messages
-        private static List<CompilerMessage> _lastCompilationMessages = new List<CompilerMessage>();
+        // Store compilation messages (thread-safe with lock)
+        private static readonly List<CompilerMessage> _lastCompilationMessages = new List<CompilerMessage>();
+        private static readonly object _compilationMessagesLock = new object();
 
         static ScriptUtils()
         {
@@ -48,8 +49,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
         }
         private static void OnAssemblyCompilationFinished(string assemblyPath, CompilerMessage[] messages)
         {
-            // Store messages for later retrieval
-            _lastCompilationMessages.AddRange(messages);
+            lock (_compilationMessagesLock)
+            {
+                _lastCompilationMessages.AddRange(messages);
+            }
         }
 
         private static void ScheduleProcessPendingNotifications()
@@ -64,6 +67,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
         private static void ProcessPendingNotificationsOnce()
         {
             EditorApplication.update -= ProcessPendingNotificationsOnce;
+
+            if (!_processPendingScheduled)
+                return;
+
             _processPendingScheduled = false;
             ProcessPendingNotifications();
         }
@@ -137,7 +144,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                     continue;
                 }
 
-                var parts = notificationData.Split(NotificationDataSeparator[0]);
+                var parts = notificationData.Split(NotificationDataSeparator);
                 if (parts.Length != 3)
                 {
                     processedKeys.Add(key);
@@ -200,11 +207,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
         {
             var errors = new List<string>();
 
-            // Use stored compilation messages
-            foreach (var message in _lastCompilationMessages)
+            lock (_compilationMessagesLock)
             {
-                if (message.type == CompilerMessageType.Error)
-                    errors.Add($"[{message.file}] {message.message} (Line: {message.line})");
+                foreach (var message in _lastCompilationMessages)
+                {
+                    if (message.type == CompilerMessageType.Error)
+                        errors.Add($"[{message.file}] {message.message} (Line: {message.line})");
+                }
             }
 
             if (errors.Count == 0)
