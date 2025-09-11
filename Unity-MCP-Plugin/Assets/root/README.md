@@ -120,9 +120,8 @@ openupm add com.ivanmurzak.unity.mcp
 
 ### Automatic configuration
 
-- Open Unity project,
-- Go 👉 `Window/AI Connector (Unity-MCP)`.
-
+- Open Unity project
+- Go 👉 `Window/AI Connector (Unity-MCP)`
 - Click `Configure` at your MCP client
 
 ![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/ai-connector-window.gif)
