@@ -9,11 +9,11 @@
 */
 using System.Collections;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEditor.PackageManager;
-using System.Linq;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -87,11 +87,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 "Version not found in package.json");
 
             // Compare versions
-            var startupVersion = Startup.Version;
-            Assert.AreEqual(packageJson.version, startupVersion,
-                $"Version mismatch: package.json has '{packageJson.version}' but Startup.Version is '{startupVersion}'. Package.json path: {packageJsonPath}");
+            var pluginVersion = McpPluginUnity.Version;
+            Assert.AreEqual(packageJson.version, pluginVersion,
+                $"Version mismatch: package.json has '{packageJson.version}' but Startup.Version is '{pluginVersion}'. Package.json path: {packageJsonPath}");
 
-            Debug.Log($"Version validation passed: {startupVersion} (from {packageJsonPath})");
+            Debug.Log($"Version validation passed: {pluginVersion} (from {packageJsonPath})");
             yield return null;
         }
 

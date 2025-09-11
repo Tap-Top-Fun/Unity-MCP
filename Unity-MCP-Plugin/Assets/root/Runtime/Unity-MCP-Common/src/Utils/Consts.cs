@@ -11,6 +11,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class Consts
     {
+        public const string ApiVersion = "1.0.0";
+
         public static class Guid
         {
             public const string Zero = "00000000-0000-0000-0000-000000000000";

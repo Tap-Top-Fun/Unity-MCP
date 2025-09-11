@@ -35,12 +35,13 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public IServiceCollection Services => _services;
         public ServiceProvider? ServiceProvider { get; private set; }
 
-        public McpPluginBuilder(ILoggerProvider? loggerProvider = null, IServiceCollection? services = null)
+        public McpPluginBuilder(Version version, ILoggerProvider? loggerProvider = null, IServiceCollection? services = null)
         {
             _loggerProvider = loggerProvider;
             _logger = loggerProvider?.CreateLogger(nameof(McpPluginBuilder));
             _services = services ?? new ServiceCollection();
 
+            _services.AddSingleton(version);
             _services.AddSingleton<IConnectionManager, ConnectionManager>();
             _services.AddSingleton<IMcpPlugin, McpPlugin>();
             _services.AddSingleton<IHubEndpointConnectionBuilder, HubEndpointConnectionBuilder>();

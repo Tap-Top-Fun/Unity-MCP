@@ -115,7 +115,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             }
 
             public static string ExecutableZipUrl
-                => $"https://github.com/IvanMurzak/Unity-MCP/releases/download/{Version}/{ExecutableName.ToLowerInvariant()}-{PlatformName}.zip";
+                => $"https://github.com/IvanMurzak/Unity-MCP/releases/download/{McpPluginUnity.Version}/{ExecutableName.ToLowerInvariant()}-{PlatformName}.zip";
 
             // ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     return false;
 
                 var existingVersion = File.ReadAllText(VersionFullPath);
-                return existingVersion == Version;
+                return existingVersion == McpPluginUnity.Version;
             }
 
             public static Task<bool> DownloadServerBinaryIfNeeded()
@@ -165,7 +165,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     if (!Directory.Exists(ExecutableFolderPath))
                         Directory.CreateDirectory(ExecutableFolderPath);
 
-                    var archiveFilePath = Path.GetFullPath($"{Application.temporaryCachePath}/{ExecutableName.ToLowerInvariant()}-{PlatformName}-{Version}.zip");
+                    var archiveFilePath = Path.GetFullPath($"{Application.temporaryCachePath}/{ExecutableName.ToLowerInvariant()}-{PlatformName}-{McpPluginUnity.Version}.zip");
                     Debug.Log($"Temporary archive file path: <color=yellow>{archiveFilePath}</color>");
 
                     // Download the zip file from the GitHub release notes
@@ -185,7 +185,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                         return false;
                     }
 
-                    File.WriteAllText(VersionFullPath, Version);
+                    File.WriteAllText(VersionFullPath, McpPluginUnity.Version);
 
                     return IsBinaryExists() && IsVersionMatches();
                 }

@@ -26,16 +26,18 @@ namespace com.IvanMurzak.Unity.MCP.Common
         readonly IConnectionManager _connectionManager;
         readonly CompositeDisposable _serverEventsDisposables = new();
         readonly IDisposable _hubConnectionDisposable;
+        readonly Version _apiVersion;
 
         public ReadOnlyReactiveProperty<HubConnectionState> ConnectionState => _connectionManager.ConnectionState;
         public ReadOnlyReactiveProperty<bool> KeepConnected => _connectionManager.KeepConnected;
 
-        public RpcRouter(ILogger<RpcRouter> logger, IConnectionManager connectionManager, IMcpRunner mcpRunner)
+        public RpcRouter(ILogger<RpcRouter> logger, Version apiVersion, IConnectionManager connectionManager, IMcpRunner mcpRunner)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("{class} Ctor.", nameof(RpcRouter));
             _mcpRunner = mcpRunner ?? throw new ArgumentNullException(nameof(mcpRunner));
             _connectionManager = connectionManager ?? throw new ArgumentNullException(nameof(connectionManager));
+            _apiVersion = apiVersion ?? throw new ArgumentNullException(nameof(apiVersion));
 
             _connectionManager.Endpoint = Consts.Hub.RemoteApp;
 
@@ -143,8 +145,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
             var request = new VersionHandshakeRequest
             {
                 RequestID = Guid.NewGuid().ToString(),
-                ApiVersion = Consts.ApiVersion.Current,
-                PluginVersion = GetPluginVersion()
+                ApiVersion = _apiVersion.Api,
+                PluginVersion = _apiVersion.Plugin
             };
 
             try
@@ -162,13 +164,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 _logger.LogError(ex, "{class} Version handshake failed: {Error}", nameof(RpcRouter), ex.Message);
                 return null;
             }
-        }
-
-        private static string GetPluginVersion()
-        {
-            // Get the version from assembly
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            return assembly.GetName().Version?.ToString() ?? "Unknown";
         }
 
         public void Dispose()
