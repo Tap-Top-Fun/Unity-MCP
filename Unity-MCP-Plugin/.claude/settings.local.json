@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "mcp__Unity-MCP__Scene_GetHierarchy",
+      "mcp__Unity-MCP__GameObject_Duplicate",
+      "mcp__Unity-MCP__GameObject_Modify"
     ],
     "deny": [],
     "ask": []
