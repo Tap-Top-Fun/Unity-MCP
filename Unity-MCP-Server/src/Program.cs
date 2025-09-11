@@ -72,7 +72,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 .AddJsonProtocol(options => RpcJsonConfiguration.ConfigureJsonSerializer(reflector, options));
 
                 // Setup MCP Plugin ---------------------------------------------------------------
-                builder.Services.WithAppFeatures(loggerProvider: new NLogLoggerProvider(), configure =>
+                var version = new Common.Version
+                {
+                    Api = Consts.ApiVersion,
+                    Plugin = Consts.ApiVersion
+                };
+                builder.Services.WithAppFeatures(version, new NLogLoggerProvider(), configure =>
                 {
                     configure.WithServerFeatures(dataArguments);
                 }).Build(reflector);

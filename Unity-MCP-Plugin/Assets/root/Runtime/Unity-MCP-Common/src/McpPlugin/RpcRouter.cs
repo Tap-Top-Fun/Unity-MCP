@@ -146,7 +146,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
             {
                 RequestID = Guid.NewGuid().ToString(),
                 ApiVersion = _apiVersion.Api,
-                PluginVersion = _apiVersion.Plugin
+                PluginVersion = _apiVersion.Plugin,
+                UnityVersion = _apiVersion.UnityVersion
             };
 
             try
