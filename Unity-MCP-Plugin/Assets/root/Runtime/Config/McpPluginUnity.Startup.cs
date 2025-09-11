@@ -28,6 +28,8 @@ namespace com.IvanMurzak.Unity.MCP
 
     public partial class McpPluginUnity
     {
+        public const string Version = "0.16.2";
+
         static volatile object buildAndStartMutex = new();
         static volatile bool isInitializationStarted = false;
 
@@ -62,8 +64,14 @@ namespace com.IvanMurzak.Unity.MCP
             MainThreadInstaller.Init();
             await McpPlugin.StaticDisposeAsync();
 
+            var version = new Common.Version
+            {
+                Api = Consts.ApiVersion,
+                Plugin = McpPluginUnity.Version,
+                UnityVersion = Application.unityVersion
+            };
             var loggerProvider = new UnityLoggerProvider();
-            var mcpPlugin = new McpPluginBuilder(loggerProvider)
+            var mcpPlugin = new McpPluginBuilder(version, loggerProvider)
                 .AddMcpPlugin()
                 .WithConfig(config =>
                 {

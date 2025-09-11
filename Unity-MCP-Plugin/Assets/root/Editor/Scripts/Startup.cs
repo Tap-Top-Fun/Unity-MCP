@@ -20,8 +20,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor
     [InitializeOnLoad]
     public static partial class Startup
     {
-        public const string Version = "0.16.2";
-
         static Startup()
         {
             McpPluginUnity.BuildAndStart(openConnection: !IsCi());

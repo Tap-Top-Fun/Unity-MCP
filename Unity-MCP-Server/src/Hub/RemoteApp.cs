@@ -19,12 +19,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public class RemoteApp : BaseHub<RemoteApp>, IRemoteApp
     {
+        readonly Common.Version _version;
         readonly EventAppToolsChange _eventAppToolsChange;
         readonly IRequestTrackingService _requestTrackingService;
 
-        public RemoteApp(ILogger<RemoteApp> logger, IHubContext<RemoteApp> hubContext, EventAppToolsChange eventAppToolsChange, IRequestTrackingService requestTrackingService)
+        public RemoteApp(ILogger<RemoteApp> logger, Common.Version version, IHubContext<RemoteApp> hubContext, EventAppToolsChange eventAppToolsChange, IRequestTrackingService requestTrackingService)
             : base(logger, hubContext)
         {
+            _version = version ?? throw new ArgumentNullException(nameof(version));
             _eventAppToolsChange = eventAppToolsChange ?? throw new ArgumentNullException(nameof(eventAppToolsChange));
             _requestTrackingService = requestTrackingService ?? throw new ArgumentNullException(nameof(requestTrackingService));
         }
@@ -66,7 +68,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             _logger.LogTrace("RemoteApp OnVersionHandshake. {0}. PluginVersion: {1}, ApiVersion: {2}", _guid, request.PluginVersion, request.ApiVersion);
 
-            var serverApiVersion = Consts.ApiVersion.Current;
+            var serverApiVersion = _version.Api;
             var compatible = IsApiVersionCompatible(request.ApiVersion, serverApiVersion);
 
             var response = new VersionHandshakeResponse

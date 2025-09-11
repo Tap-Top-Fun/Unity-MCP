@@ -18,10 +18,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class McpPluginBuilderExtensions
     {
-        public static IMcpPluginBuilder WithAppFeatures(this IServiceCollection services, ILoggerProvider? loggerProvider = null, Action<IMcpPluginBuilder>? configure = null)
+        public static IMcpPluginBuilder WithAppFeatures(this IServiceCollection services, Version version, ILoggerProvider? loggerProvider = null, Action<IMcpPluginBuilder>? configure = null)
         {
             // Create an instance of McpAppBuilder
-            var mcpPluginBuilder = new McpPluginBuilder(loggerProvider, services);
+            var mcpPluginBuilder = new McpPluginBuilder(version, loggerProvider, services);
 
             // Allow additional configuration of McpAppBuilder
             configure?.Invoke(mcpPluginBuilder);

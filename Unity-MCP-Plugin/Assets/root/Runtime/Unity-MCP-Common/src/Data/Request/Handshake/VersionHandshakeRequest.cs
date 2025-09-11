@@ -21,5 +21,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Model
 
         [JsonPropertyName("pluginVersion")]
         public string PluginVersion { get; set; } = string.Empty;
+
+        [JsonPropertyName("unityVersion")]
+        public string UnityVersion { get; set; } = string.Empty;
     }
 }
