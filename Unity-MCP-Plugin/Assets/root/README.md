@@ -130,9 +130,7 @@ openupm add com.ivanmurzak.unity.mcp
 
 ### Manual configuration
 
-If Automatic configuration doesn't work for you for any reason.
-
-Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on your own.
+If Automatic configuration doesn't work for you for any reason. Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on your own.
 
 <details>
   <summary>Add Unity-MCP to <code>Claude Code</code> (Windows)</summary>
