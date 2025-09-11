@@ -156,7 +156,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                 ResponseCallTool response;
                 if (hasErrors)
                 {
-                    // get compilation error details
                     var errorDetails = GetCompilationErrorDetails();
                     var message = $"[Warning] {operationType} completed: {filePath}, but compilation errors occurred. Details:\n{errorDetails}";
                     response = ResponseCallTool.Success(message).SetRequestID(requestId);

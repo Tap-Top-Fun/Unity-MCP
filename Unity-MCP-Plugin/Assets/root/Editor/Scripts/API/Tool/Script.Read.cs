@@ -54,11 +54,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (lineFrom > lineTo)
                 lineFrom = lineTo;
 
-            // Convert from 1-based to 0-based indexing
-            int startIndex = lineFrom - 1;
-            int endIndex = lineTo; // lineTo is inclusive in 1-based, so this works for slice
+            int startIndex = lineFrom - 1; // Convert from 1-based to 0-based indexing
+            int count = lineTo - lineFrom + 1; // Inclusive range: count of lines to take
 
-            return string.Join("\n", lines.Skip(startIndex).Take(endIndex - startIndex));
+            return string.Join("\n", lines.Skip(startIndex).Take(count));
         }
     }
 }
