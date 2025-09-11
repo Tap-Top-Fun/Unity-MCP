@@ -19,6 +19,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         Task<IResponseData> OnListToolsUpdated(string data);
         Task<IResponseData> OnListResourcesUpdated(string data);
         Task<IResponseData> OnToolRequestCompleted(ToolRequestCompletedData data);
+        Task<VersionHandshakeResponse> OnVersionHandshake(VersionHandshakeRequest request);
     }
 
     public interface IToolResponseReceiver

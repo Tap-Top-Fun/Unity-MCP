@@ -18,35 +18,65 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             var providedArguments = new Dictionary<string, string>();
 
-            // Extract flags with optional values
-            for (int current = 0, next = 1; current < args.Length; current++, next++)
+            for (int i = 0; i < args.Length; i++)
             {
-                // Parse flag
-                var isFlag = args[current].StartsWith("-");
-                if (!isFlag)
-                    continue;
+                var currentArg = args[i];
 
-                if (args[current].Contains("="))
+                // Handle arguments with '=' syntax (--key=value, -key=value, key=value)
+                if (currentArg.Contains('='))
                 {
-                    // Handle flags with '=' syntax
-                    var parts = args[current].Split('=');
+                    var parts = currentArg.Split('=', 2);
                     if (parts.Length == 2)
                     {
-                        providedArguments[parts[0].TrimStart('-')] = parts[1];
+                        var key = ExtractArgumentName(parts[0]);
+                        providedArguments[key] = parts[1];
                         continue;
                     }
                 }
 
-                var flag = args[current].TrimStart('-');
+                // Extract argument name (supports --, -, or no prefix)
+                var argumentName = ExtractArgumentName(currentArg);
 
-                // Parse optional value
-                var flagHasValue = next < args.Length && !args[next].StartsWith("-");
-                var value = flagHasValue ? args[next].TrimStart('-') : string.Empty;
+                // Check if next argument is a value (not starting with - unless it's a negative number)
+                var value = string.Empty;
+                if (i + 1 < args.Length)
+                {
+                    var nextArg = args[i + 1];
+                    var isNextArgument = IsArgumentName(nextArg);
 
-                providedArguments[flag] = value;
+                    if (!isNextArgument)
+                    {
+                        value = nextArg;
+                        i++; // Skip the next argument as it's the value
+                    }
+                }
+
+                providedArguments[argumentName] = value;
             }
 
             return providedArguments;
+        }
+
+        private static string ExtractArgumentName(string arg)
+        {
+            if (arg.StartsWith("--"))
+                return arg.Substring(2);
+            if (arg.StartsWith("-"))
+                return arg.Substring(1);
+            return arg;
+        }
+
+        private static bool IsArgumentName(string arg)
+        {
+            // Check if it's an argument name (starts with - but not a negative number)
+            if (!arg.StartsWith("-"))
+                return false;
+
+            // If it starts with - but is followed by a digit, it's likely a negative number
+            if (arg.Length > 1 && char.IsDigit(arg[1]))
+                return false;
+
+            return true;
         }
 
         public static Dictionary<string, string> ParseCommandLineArguments()

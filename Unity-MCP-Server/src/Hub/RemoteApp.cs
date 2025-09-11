@@ -61,5 +61,46 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             return ResponseData.Success(string.Empty, string.Empty).TaskFromResult<IResponseData>();
         }
+
+        public Task<VersionHandshakeResponse> OnVersionHandshake(VersionHandshakeRequest request)
+        {
+            _logger.LogTrace("RemoteApp OnVersionHandshake. {0}. PluginVersion: {1}, ApiVersion: {2}", _guid, request.PluginVersion, request.ApiVersion);
+
+            var serverApiVersion = Consts.ApiVersion.Current;
+            var compatible = IsApiVersionCompatible(request.ApiVersion, serverApiVersion);
+
+            var response = new VersionHandshakeResponse
+            {
+                ApiVersion = serverApiVersion,
+                ServerVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown",
+                Compatible = compatible,
+                Message = compatible
+                    ? "API version is compatible."
+                    : $"API version mismatch. Plugin: {request.ApiVersion}, Server: {serverApiVersion}. Please update to compatible versions."
+            };
+
+            if (!compatible)
+            {
+                _logger.LogError("API version mismatch detected. Plugin: {PluginApiVersion}, Server: {ServerApiVersion}",
+                    request.ApiVersion, serverApiVersion);
+            }
+            else
+            {
+                _logger.LogInformation("Version handshake successful. Plugin: {PluginVersion}, API: {ApiVersion}",
+                    request.PluginVersion, request.ApiVersion);
+            }
+
+            return Task.FromResult(response);
+        }
+
+        private static bool IsApiVersionCompatible(string pluginApiVersion, string serverApiVersion)
+        {
+            if (string.IsNullOrEmpty(pluginApiVersion) || string.IsNullOrEmpty(serverApiVersion))
+                return false;
+
+            // For now, require exact version match. In the future, this could be enhanced
+            // to support semantic versioning compatibility rules
+            return pluginApiVersion.Equals(serverApiVersion, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

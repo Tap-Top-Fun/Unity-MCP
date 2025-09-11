@@ -25,5 +25,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
         Task<ResponseData> NotifyAboutUpdatedTools(CancellationToken cancellationToken = default);
         Task<ResponseData> NotifyAboutUpdatedResources(CancellationToken cancellationToken = default);
         Task<ResponseData> NotifyToolRequestCompleted(ResponseCallTool response, CancellationToken cancellationToken = default);
+        Task<VersionHandshakeResponse?> PerformVersionHandshake(CancellationToken cancellationToken = default);
     }
 }

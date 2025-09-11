@@ -136,6 +136,41 @@ namespace com.IvanMurzak.Unity.MCP.Common
             return _connectionManager.InvokeAsync<ToolRequestCompletedData, ResponseData>(Consts.RPC.Server.OnToolRequestCompleted, data, cancellationToken);
         }
 
+        public async Task<VersionHandshakeResponse?> PerformVersionHandshake(CancellationToken cancellationToken = default)
+        {
+            _logger.LogTrace("{class} Performing version handshake.", nameof(RpcRouter));
+
+            var request = new VersionHandshakeRequest
+            {
+                RequestID = System.Guid.NewGuid().ToString(),
+                ApiVersion = Consts.ApiVersion.Current,
+                PluginVersion = GetPluginVersion()
+            };
+
+            try
+            {
+                var response = await _connectionManager.InvokeAsync<VersionHandshakeRequest, VersionHandshakeResponse>(
+                    Consts.RPC.Server.OnVersionHandshake, request, cancellationToken);
+
+                _logger.LogInformation("{class} Version handshake completed. Compatible: {Compatible}, Message: {Message}",
+                    nameof(RpcRouter), response.Compatible, response.Message);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{class} Version handshake failed: {Error}", nameof(RpcRouter), ex.Message);
+                return null;
+            }
+        }
+
+        private static string GetPluginVersion()
+        {
+            // Get the version from assembly
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            return assembly.GetName().Version?.ToString() ?? "Unknown";
+        }
+
         public void Dispose()
         {
             DisposeAsync().Wait();
