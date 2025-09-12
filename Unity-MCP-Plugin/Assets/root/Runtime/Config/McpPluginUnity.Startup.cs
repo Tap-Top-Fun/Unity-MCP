@@ -123,35 +123,35 @@ namespace com.IvanMurzak.Unity.MCP
             reflector.Convertors.Remove<ArrayReflectionConvertor>();
 
             // Add Unity-specific converters
-            reflector.Convertors.Add(new RS_GenericUnity<object>());
-            reflector.Convertors.Add(new RS_ArrayUnity());
+            reflector.Convertors.Add(new UnityGenericReflectionConvertor<object>());
+            reflector.Convertors.Add(new UnityArrayReflectionConvertor());
 
             // Unity types
-            reflector.Convertors.Add(new RS_UnityEngineColor32());
-            reflector.Convertors.Add(new RS_UnityEngineColor());
-            reflector.Convertors.Add(new RS_UnityEngineMatrix4x4());
-            reflector.Convertors.Add(new RS_UnityEngineQuaternion());
-            reflector.Convertors.Add(new RS_UnityEngineVector2());
-            reflector.Convertors.Add(new RS_UnityEngineVector2Int());
-            reflector.Convertors.Add(new RS_UnityEngineVector3());
-            reflector.Convertors.Add(new RS_UnityEngineVector3Int());
-            reflector.Convertors.Add(new RS_UnityEngineVector4());
-            reflector.Convertors.Add(new RS_UnityEngineBounds());
-            reflector.Convertors.Add(new RS_UnityEngineBoundsInt());
-            reflector.Convertors.Add(new RS_UnityEngineRect());
-            reflector.Convertors.Add(new RS_UnityEngineRectInt());
+            reflector.Convertors.Add(new UnityEngine_Color32_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Color_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Matrix4x4_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Quaternion_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Vector2_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Vector2Int_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Vector3_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Vector3Int_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Vector4_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Bounds_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_BoundsInt_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Rect_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_RectInt_ReflectionConvertor());
 
             // Components
-            reflector.Convertors.Add(new RS_UnityEngineObject());
-            reflector.Convertors.Add(new RS_UnityEngineGameObject());
-            reflector.Convertors.Add(new RS_UnityEngineComponent());
-            reflector.Convertors.Add(new RS_UnityEngineTransform());
-            reflector.Convertors.Add(new RS_UnityEngineRenderer());
-            reflector.Convertors.Add(new RS_UnityEngineMeshFilter());
+            reflector.Convertors.Add(new UnityEngine_Object_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_GameObject_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Component_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Transform_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Renderer_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_MeshFilter_ReflectionConvertor());
 
             // Assets
-            reflector.Convertors.Add(new RS_UnityEngineMaterial());
-            reflector.Convertors.Add(new RS_UnityEngineSprite());
+            reflector.Convertors.Add(new UnityEngine_Material_ReflectionConvertor());
+            reflector.Convertors.Add(new UnityEngine_Sprite_ReflectionConvertor());
 
             // Json Converters
             // ---------------------------------------------------------

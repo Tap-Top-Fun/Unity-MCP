@@ -103,12 +103,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             public static JsonNode RawJsonConfiguration(
                 int port,
-                string bodyName = "mcpServers",
+                string bodyPath = "mcpServers",
                 int timeoutMs = Consts.Hub.DefaultTimeoutMs)
             {
                 return Consts.MCP.Server.Config(
                     executablePath: ExecutableFullPath.Replace('\\', '/'),
-                    bodyName: bodyName,
+                    bodyPath: bodyPath,
                     port: port,
                     timeoutMs: timeoutMs
                 );

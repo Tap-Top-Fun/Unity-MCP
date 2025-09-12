@@ -19,7 +19,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
     public class CombinedTestResultCollector
     {
         private readonly List<TestResultData> _allResults = new();
-        private readonly List<string> _allLogs = new();
+        private readonly List<TestLogEntry> _allLogs = new();
         private readonly List<TestResultCollector> _collectors = new();
         private TestSummaryData _combinedSummary = new();
         private TestSummaryData _editModeSummary = new();
@@ -29,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
         public TestSummaryData GetSummary() => _combinedSummary;
         public TestSummaryData GetEditModeSummary() => _editModeSummary;
         public TestSummaryData GetPlayModeSummary() => _playModeSummary;
-        public List<string> GetLogs() => _allLogs;
+        public List<TestLogEntry> GetLogs() => _allLogs;
         public List<TestResultCollector> GetAllCollectors() => _collectors;
 
         public void AddResults(TestResultCollector collector)
@@ -147,7 +147,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             {
                 output.AppendLine("=== CONSOLE LOGS ===");
                 foreach (var log in logs)
-                    output.AppendLine(log);
+                    output.AppendLine(log.ToStringFormat(
+                        includeType: true,
+                        includeStacktrace: TestResultCollector.IncludeLogsStacktrace.Value));
             }
 
             return output.ToString();

@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+
 #nullable enable
 using System;
 using System.Collections.Generic;
@@ -15,19 +16,19 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.Extensions.Logging;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public partial class RS_UnityEngineGameObject : RS_GenericUnity<UnityEngine.GameObject>
+    public partial class UnityEngine_GameObject_ReflectionConvertor : UnityGenericReflectionConvertor<UnityEngine.GameObject>
     {
         const string ComponentNamePrefix = "component_";
         static string GetComponentName(int index) => $"{ComponentNamePrefix}{index}";

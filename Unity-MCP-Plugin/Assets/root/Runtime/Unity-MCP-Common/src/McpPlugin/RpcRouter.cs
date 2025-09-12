@@ -155,6 +155,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 var response = await _connectionManager.InvokeAsync<VersionHandshakeRequest, VersionHandshakeResponse>(
                     Consts.RPC.Server.OnVersionHandshake, request, cancellationToken);
 
+                if (response == null)
+                {
+                    _logger.LogError("{class} Version handshake failed: No response from server.", nameof(RpcRouter));
+                    return null;
+                }
+
                 _logger.LogInformation("{class} Version handshake completed. Compatible: {Compatible}, Message: {Message}",
                     nameof(RpcRouter), response.Compatible, response.Message);
 

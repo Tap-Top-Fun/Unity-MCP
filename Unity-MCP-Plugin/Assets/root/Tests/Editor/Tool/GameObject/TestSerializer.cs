@@ -13,6 +13,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Convertor;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
@@ -20,10 +24,6 @@ using com.IvanMurzak.Unity.MCP.Reflection.Convertor;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Convertor;
-using com.IvanMurzak.ReflectorNet.Utils;
-using System.Text;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -41,13 +41,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             TestGetConvertor(typeof(TTarget), typeof(TSerializer));
 
             PrintSerializers<IEnumerable<TTarget>>();
-            TestGetConvertor(typeof(IEnumerable<TTarget>), typeof(RS_ArrayUnity));
+            TestGetConvertor(typeof(IEnumerable<TTarget>), typeof(UnityArrayReflectionConvertor));
 
             PrintSerializers<List<TTarget>>();
-            TestGetConvertor(typeof(List<TTarget>), typeof(RS_ArrayUnity));
+            TestGetConvertor(typeof(List<TTarget>), typeof(UnityArrayReflectionConvertor));
 
             PrintSerializers<TTarget[]>();
-            TestGetConvertor(typeof(TTarget[]), typeof(RS_ArrayUnity));
+            TestGetConvertor(typeof(TTarget[]), typeof(UnityArrayReflectionConvertor));
 
             Debug.Log($"-------------------------------------------");
         }
@@ -67,17 +67,17 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             TestGetConvertor<string, PrimitiveReflectionConvertor>();
             TestGetConvertor<DateTime, PrimitiveReflectionConvertor>();
             TestGetConvertor<CultureTypes, PrimitiveReflectionConvertor>(); // enum
-            TestGetConvertor<object, RS_GenericUnity<object>>();
-            TestGetConvertor<ObjectRef, RS_GenericUnity<object>>();
+            TestGetConvertor<object, UnityGenericReflectionConvertor<object>>();
+            TestGetConvertor<ObjectRef, UnityGenericReflectionConvertor<object>>();
 
-            TestGetConvertor<UnityEngine.Object, RS_UnityEngineObject>();
-            TestGetConvertor<UnityEngine.Vector3, RS_UnityEngineVector3>();
-            TestGetConvertor<UnityEngine.Rigidbody, RS_UnityEngineComponent>();
-            TestGetConvertor<UnityEngine.Animation, RS_UnityEngineComponent>();
-            TestGetConvertor<UnityEngine.Material, RS_UnityEngineMaterial>();
-            TestGetConvertor<UnityEngine.Transform, RS_UnityEngineTransform>();
-            TestGetConvertor<UnityEngine.SpriteRenderer, RS_UnityEngineRenderer>();
-            TestGetConvertor<UnityEngine.MeshRenderer, RS_UnityEngineRenderer>();
+            TestGetConvertor<UnityEngine.Object, UnityEngine_Object_ReflectionConvertor>();
+            TestGetConvertor<UnityEngine.Vector3, UnityEngine_Vector3_ReflectionConvertor>();
+            TestGetConvertor<UnityEngine.Rigidbody, UnityEngine_Component_ReflectionConvertor>();
+            TestGetConvertor<UnityEngine.Animation, UnityEngine_Component_ReflectionConvertor>();
+            TestGetConvertor<UnityEngine.Material, UnityEngine_Material_ReflectionConvertor>();
+            TestGetConvertor<UnityEngine.Transform, UnityEngine_Transform_ReflectionConvertor>();
+            TestGetConvertor<UnityEngine.SpriteRenderer, UnityEngine_Renderer_ReflectionConvertor>();
+            TestGetConvertor<UnityEngine.MeshRenderer, UnityEngine_Renderer_ReflectionConvertor>();
 
             yield return null;
         }

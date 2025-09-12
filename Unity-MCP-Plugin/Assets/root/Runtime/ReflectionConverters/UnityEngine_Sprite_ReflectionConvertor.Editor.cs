@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+
 #nullable enable
 #if UNITY_EDITOR
 using System;
@@ -14,17 +15,17 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
-using UnityEditor;
 using Microsoft.Extensions.Logging;
+using UnityEditor;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
+    public partial class UnityEngine_Sprite_ReflectionConvertor : UnityEngine_Object_ReflectionConvertor<UnityEngine.Sprite>
     {
         public override bool TryPopulate(
             Reflector reflector,
