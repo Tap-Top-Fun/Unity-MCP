@@ -27,7 +27,7 @@
             <ui:VisualElement name="divider" class="Divider" style="flex-grow: 1;" />
             <ui:Label text="Configure MCP Client" class="Header" />
             <ui:Label text="At least one client should be configured.&#10;Some clients need restart after configuration." class="section-desc" />
-            <ui:VisualElement name="ConfigureClient-Claude-Desktop" class="Frame-Group" style="flex-grow: 1;">
+            <ui:VisualElement name="ConfigureClient-Claude-Desktop" class="Frame-Group" style="flex-grow: 1; display: none;">
                 <ui:Label text="Claude Desktop" class="section-title" />
                 <ui:VisualElement class="row">
                     <ui:VisualElement name="configureStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />
