@@ -64,6 +64,19 @@ jobs:
           key: Library-${{ inputs.unityVersion }}-${{ inputs.testMode }}-${{ matrix.os }}
 
       # --------------------------------------------------------------------- #
+      - name: Generate custom image name
+        id: custom_image
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            echo "image=unityci/editor:ubuntu-${{ inputs.unityVersion }}-base-3" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+            echo "image=unityci/editor:windows-${{ inputs.unityVersion }}-base-3" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Unsupported OS: ${{ matrix.os }}"
+            exit 1
+          fi
+        shell: bash
+
       - uses: game-ci/unity-test-runner@v4
         id: tests
         env:
@@ -74,6 +87,7 @@ jobs:
           projectPath:    ${{ inputs.projectPath }}
           unityVersion:   ${{ inputs.unityVersion }}
           testMode:       ${{ inputs.testMode }}
+          customImage:    ${{ steps.custom_image.outputs.image }}
           githubToken:    ${{ secrets.GITHUB_TOKEN }}
           checkName:      ${{ inputs.unityVersion }} ${{ inputs.testMode }} ${{ matrix.os }} Test Results
           artifactsPath:  artifacts-${{ inputs.unityVersion }}-${{ inputs.testMode }}-${{ matrix.os }}
