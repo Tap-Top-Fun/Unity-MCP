@@ -47,6 +47,53 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
+  export-and-publish-unity-installer:
+    runs-on: ubuntu-latest
+    needs: check-version-tag
+    if: needs.check-version-tag.outputs.tag_exists == 'false'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: ./AssetStore-Installer/Library
+          key: Library-2022.3.61f1-installer-ubuntu-latest
+
+      - name: Test Unity Installer (EditMode)
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ./AssetStore-Installer
+          unityVersion: 2022.3.61f1
+          testMode: editmode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Unity Installer EditMode Test Results
+          artifactsPath: artifacts-installer-editmode
+
+      - name: Export Unity Package
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ./AssetStore-Installer
+          unityVersion: 2022.3.61f1
+          buildName: AI-Game-Dev-Installer
+          buildsPath: build
+          buildMethod: PackageExporter.ExportPackage
+
+      - name: Upload Unity Package as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-installer-package
+          path: ./AssetStore-Installer/build/AI-Game-Dev-Installer.unitypackage
+
   build-and-zip-mcp-server:
     runs-on: macos-latest
     needs: check-version-tag
@@ -73,77 +120,95 @@ jobs:
           name: mcp-server-zips
           path: ./Unity-MCP-Server/publish/*.zip
 
-  # --- UNITY TESTS ------
-  # ----------------------
+  # --- UNITY TESTS ---
+  # -------------------
 
   # --- EDIT MODE ---
 
   test-unity-2022-3-61f1-editmode:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2022.3.61f1'
+      testMode: 'editmode'
+    secrets: inherit
 
   test-unity-2023-3-20f1-editmode:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2023.2.20f1'
+      testMode: 'editmode'
+    secrets: inherit
 
   test-unity-6000-2-3f1-editmode:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '6000.2.3f1'
+      testMode: 'editmode'
+    secrets: inherit
 
   # --- PLAY MODE ---
 
   test-unity-2022-3-61f1-playmode:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2022.3.61f1'
+      testMode: 'playmode'
+    secrets: inherit
 
   test-unity-2023-3-20f1-playmode:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2023.2.20f1'
+      testMode: 'playmode'
+    secrets: inherit
 
   test-unity-6000-2-3f1-playmode:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '6000.2.3f1'
+      testMode: 'playmode'
+    secrets: inherit
 
   # --- STANDALONE ---
 
   test-unity-2022-3-61f1-standalone:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2022.3.61f1'
+      testMode: 'standalone'
+    secrets: inherit
 
   test-unity-2023-3-20f1-standalone:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '2023.2.20f1'
+      testMode: 'standalone'
+    secrets: inherit
 
   test-unity-6000-2-3f1-standalone:
-    runs-on: ubuntu-latest
-    needs: build-and-zip-mcp-server
-    steps:
-      - name: Skip test
-        run: echo "Skipping Unity tests - job completes successfully"
+    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: './Unity-MCP-Plugin'
+      unityVersion: '6000.2.3f1'
+      testMode: 'standalone'
+    secrets: inherit
 
   # -------------------
 
@@ -152,6 +217,7 @@ jobs:
     needs: [
       check-version-tag,
       build-and-zip-mcp-server,
+      export-and-publish-unity-installer,
       test-unity-2022-3-61f1-editmode,
       test-unity-2022-3-61f1-playmode,
       test-unity-2022-3-61f1-standalone,
@@ -224,36 +290,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  export-and-publish-unity-package:
+  publish-unity-installer:
     runs-on: ubuntu-latest
     needs: release-unity-plugin
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Cache Unity Library
-        uses: actions/cache@v4
+      - name: Download Unity Package artifact
+        uses: actions/download-artifact@v4
         with:
-          path: ./AssetStore-Installer/Library
-          key: Library-2022.3.61f1-export-ubuntu-latest
-
-      - name: Export Unity Package
-        uses: game-ci/unity-builder@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          projectPath: ./AssetStore-Installer
-          unityVersion: 2022.3.61f1
-          buildName: AI-Game-Dev-Installer
-          buildsPath: build
-          buildMethod: PackageExporter.ExportPackage
+          name: unity-installer-package
+          path: ./
 
       - name: Upload Unity Package to Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./AssetStore-Installer/build/AI-Game-Dev-Installer.unitypackage
+          files: ./AI-Game-Dev-Installer.unitypackage
           tag_name: ${{ needs.release-unity-plugin.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -280,12 +330,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Cleanup job to remove build artifacts after publishing
-  cleanup-mcp-server-artifacts:
+  cleanup-artifacts:
     runs-on: ubuntu-latest
-    needs: publish-mcp-server
+    needs: [publish-mcp-server, publish-unity-installer]
     if: always()
     steps:
-      - name: Delete workflow artifacts
+      - name: Delete MCP Server artifacts
         uses: geekyeggo/delete-artifact@v5
         with:
           name: mcp-server-zips
+
+      - name: Delete Unity Package artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: unity-installer-package
