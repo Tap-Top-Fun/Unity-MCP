@@ -47,7 +47,7 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-  export-and-publish-unity-installer:
+  build-unity-installer:
     runs-on: ubuntu-latest
     needs: check-version-tag
     if: needs.check-version-tag.outputs.tag_exists == 'false'
@@ -127,21 +127,21 @@ jobs:
 
   test-unity-2022-3-61f1-editmode:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
 
   test-unity-2023-3-20f1-editmode:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
 
   test-unity-6000-2-3f1-editmode:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
@@ -150,21 +150,21 @@ jobs:
 
   test-unity-2022-3-61f1-playmode:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
 
   test-unity-2023-3-20f1-playmode:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
 
   test-unity-6000-2-3f1-playmode:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
@@ -173,21 +173,21 @@ jobs:
 
   test-unity-2022-3-61f1-standalone:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
 
   test-unity-2023-3-20f1-standalone:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
 
   test-unity-6000-2-3f1-standalone:
     runs-on: ubuntu-latest
-    needs: [build-and-zip-mcp-server, export-and-publish-unity-installer]
+    needs: [build-and-zip-mcp-server, build-unity-installer]
     steps:
       - name: Skip test
         run: echo "Skipping Unity tests - job completes successfully"
@@ -199,7 +199,7 @@ jobs:
     needs: [
       check-version-tag,
       build-and-zip-mcp-server,
-      export-and-publish-unity-installer,
+      build-unity-installer,
       test-unity-2022-3-61f1-editmode,
       test-unity-2022-3-61f1-playmode,
       test-unity-2022-3-61f1-standalone,
