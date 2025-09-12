@@ -43,6 +43,17 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 logger.LogTrace($"{StringUtils.GetPadding(depth)}PopulateProperty property='{propertyValue.name}' type='{propertyValue.typeName}'. Convertor='{GetType().GetTypeShortName()}'.");
 
             var material = obj as Material;
+            if (material == null)
+            {
+                if (logger?.IsEnabled(LogLevel.Error) == true)
+                    logger.LogError($"{padding}Object is not a Material or is null. Convertor: {GetType().GetTypeShortName()}");
+
+                if (stringBuilder != null)
+                    stringBuilder.AppendLine($"{padding}[Error] Object is not a Material or is null. Convertor: {GetType().GetTypeShortName()}");
+
+                return false;
+            }
+
             var propType = TypeUtils.GetType(propertyValue.typeName);
             if (propType == null)
             {
