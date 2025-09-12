@@ -45,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     ".claude.json"
                 ),
                 bodyPath: $"projects{Consts.MCP.Server.BodyPathDelimiter}"
-                    + $"{ProjectRootPath}{Consts.MCP.Server.BodyPathDelimiter}"
+                    + $"{ProjectRootPath.Replace("/", "\\")}{Consts.MCP.Server.BodyPathDelimiter}"
                     + Consts.MCP.Server.DefaultBodyPath);
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-VS-Code").First(),
@@ -82,7 +82,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     ".claude.json"
                 ),
                 bodyPath: $"projects{Consts.MCP.Server.BodyPathDelimiter}"
-                    + $"{ProjectRootPath}{Consts.MCP.Server.BodyPathDelimiter}"
+                    + $"{ProjectRootPath.Replace("/", "\\")}{Consts.MCP.Server.BodyPathDelimiter}"
                     + Consts.MCP.Server.DefaultBodyPath);
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-VS-Code").First(),
@@ -138,7 +138,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             });
         }
 
-        bool IsMcpClientConfigured(string configPath, string bodyPath = Consts.MCP.Server.DefaultBodyPath)
+        public bool IsMcpClientConfigured(string configPath, string bodyPath = Consts.MCP.Server.DefaultBodyPath)
         {
             if (string.IsNullOrEmpty(configPath) || !File.Exists(configPath))
                 return false;
@@ -154,13 +154,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 if (rootObj == null)
                     return false;
 
-                var pathSegments = bodyPath.Split(new[] { '.', '/' }, StringSplitOptions.RemoveEmptyEntries);
+                var pathSegments = Consts.MCP.Server.BodyPathSegments(bodyPath);
 
-                var mcpServers = rootObj[bodyPath]?.AsObject();
-                if (mcpServers == null)
+                // Navigate to the target location using bodyPath segments
+                var targetObj = NavigateToJsonPath(rootObj, pathSegments);
+                if (targetObj == null)
                     return false;
 
-                foreach (var kv in mcpServers)
+                foreach (var kv in targetObj)
                 {
                     var command = kv.Value?["command"]?.GetValue<string>();
                     if (string.IsNullOrEmpty(command) || !IsCommandMatch(command!))
@@ -230,7 +231,43 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             return foundPort && foundTimeout;
         }
 
-        bool ConfigureMcpClient(string configPath, string bodyPath = Consts.MCP.Server.DefaultBodyPath)
+        JsonObject? NavigateToJsonPath(JsonObject rootObj, string[] pathSegments)
+        {
+            JsonObject? current = rootObj;
+
+            foreach (var segment in pathSegments)
+            {
+                if (current == null)
+                    return null;
+
+                current = current[segment]?.AsObject();
+            }
+
+            return current;
+        }
+
+        JsonObject EnsureJsonPathExists(JsonObject rootObj, string[] pathSegments)
+        {
+            JsonObject current = rootObj;
+
+            foreach (var segment in pathSegments)
+            {
+                if (current[segment]?.AsObject() is JsonObject existingObj)
+                {
+                    current = existingObj;
+                }
+                else
+                {
+                    var newObj = new JsonObject();
+                    current[segment] = newObj;
+                    current = newObj;
+                }
+            }
+
+            return current;
+        }
+
+        public bool ConfigureMcpClient(string configPath, string bodyPath = Consts.MCP.Server.DefaultBodyPath)
         {
             if (string.IsNullOrEmpty(configPath))
                 return false;
@@ -269,59 +306,41 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     return true;
                 }
 
-                // Parse the injected config as JsonObject
+                // Get path segments and navigate to the injection target
                 var pathSegments = Consts.MCP.Server.BodyPathSegments(bodyPath);
-                var injectTarget = rootObj;
 
-                foreach (var segment in pathSegments)
-                {
-                    var tempTarget = injectTarget[segment]?.AsObject();
-                    if (tempTarget == null)
-                    {
-                        break;
-                    }
-                    injectTarget = tempTarget;
-                }
-
-                // Get mcpServers from both
-                var mcpServers = rootObj[bodyPath]?.AsObject();
-
+                // Generate the configuration to inject
                 var injectObj = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, pathSegments.Last(), McpPluginUnity.TimeoutMs);
                 if (injectObj == null)
                     throw new Exception("Injected config is not a valid JSON object.");
 
                 var injectMcpServers = injectObj[pathSegments.Last()]?.AsObject();
                 if (injectMcpServers == null)
-                    throw new Exception($"Missing '{pathSegments.Last()}' object in config.");
+                    throw new Exception($"Missing '{pathSegments.Last()}' object in inject config.");
 
-                if (mcpServers == null)
-                {
-                    // If mcpServers is null, create it
-                    rootObj[bodyPath] = JsonNode.Parse(injectMcpServers.ToJsonString())?.AsObject();
-                    File.WriteAllText(configPath, rootObj.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
-                    return IsMcpClientConfigured(configPath, bodyPath);
-                }
+                // Navigate to or create the target location in the existing JSON
+                var targetObj = EnsureJsonPathExists(rootObj, pathSegments);
 
-                // Find all command values in injectMcpServers
+                // Find all command values in injectMcpServers for duplicate removal
                 var injectCommands = injectMcpServers
                     .Select(kv => kv.Value?["command"]?.GetValue<string>())
                     .Where(cmd => !string.IsNullOrEmpty(cmd))
                     .ToHashSet();
 
-                // Remove any entry in mcpServers with a matching command
-                var keysToRemove = mcpServers
+                // Remove any entry in targetObj with a matching command
+                var keysToRemove = targetObj
                     .Where(kv => injectCommands.Contains(kv.Value?["command"]?.GetValue<string>()))
                     .Select(kv => kv.Key)
                     .ToList();
 
                 foreach (var key in keysToRemove)
-                    mcpServers.Remove(key);
+                    targetObj.Remove(key);
 
                 // Merge/overwrite entries from injectMcpServers
                 foreach (var kv in injectMcpServers)
                 {
                     // Clone the value to avoid parent conflict
-                    mcpServers[kv.Key] = kv.Value?.ToJsonString() is string jsonStr
+                    targetObj[kv.Key] = kv.Value?.ToJsonString() is string jsonStr
                         ? JsonNode.Parse(jsonStr)
                         : null;
                 }

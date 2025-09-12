@@ -15,6 +15,7 @@ using System.Text;
 using com.IvanMurzak.Unity.MCP.Common.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Extensions.Unity.PlayerPrefsEx;
+using NUnit.Framework.Internal;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 
@@ -26,14 +27,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
         readonly List<TestResultData> _results = new();
         readonly TestSummaryData _summary = new();
-        readonly List<string> _logs = new();
+        readonly List<TestLogEntry> _logs = new();
         readonly TestMode _testMode;
 
         DateTime startTime;
 
         public List<TestResultData> GetResults() => _results;
         public TestSummaryData GetSummary() => _summary;
-        public List<string> GetLogs() => _logs;
+        public List<TestLogEntry> GetLogs() => _logs;
         public TestMode GetTestMode() => _testMode;
 
         public string TestModeAsString => _testMode switch
@@ -44,6 +45,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
         };
 
         public static PlayerPrefsString TestCallRequestID = new PlayerPrefsString("Unity_MCP_TestRunner_TestCallRequestID");
+
+        public static PlayerPrefsBool IncludeMessage = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludeMessage", true);
+        public static PlayerPrefsBool IncludeMessageStacktrace = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludeStacktrace");
+
+        public static PlayerPrefsBool IncludeLogs = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludeLogs");
+        public static PlayerPrefsInt IncludeLogsMinLevel = new PlayerPrefsInt("Unity_MCP_TestRunner_IncludeLogsMinLevel", (int)LogType.Warning);
+        public static PlayerPrefsBool IncludeLogsStacktrace = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludeLogsStacktrace");
 
         public TestResultCollector()
         {
@@ -64,11 +72,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
 
+            _logs.Clear();
             _results.Clear();
             _summary.Clear();
             _summary.TotalTests = testCount;
 
             // Subscribe on log messages
+            Application.logMessageReceived -= OnLogMessageReceived;
             Application.logMessageReceived += OnLogMessageReceived;
 
             if (McpPluginUnity.IsLogActive(LogLevel.Info))
@@ -112,7 +122,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             TestCallRequestID.Value = string.Empty;
             if (string.IsNullOrEmpty(requestId) == false)
             {
-                var response = ResponseCallTool.Success(FormatTestResults()).SetRequestID(requestId);
+                var response = ResponseCallTool
+                    .Success(FormatTestResults(
+                        includeMessage: IncludeMessage.Value,
+                        includeLogs: IncludeLogs.Value,
+                        includeMessageStacktrace: IncludeMessageStacktrace.Value,
+                        includeLogsStacktrace: IncludeLogsStacktrace.Value))
+                    .SetRequestID(requestId);
+
                 _ = McpPluginUnity.NotifyToolRequestCompleted(response);
             }
         }
@@ -177,14 +194,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
 
         void OnLogMessageReceived(string condition, string stackTrace, LogType type)
         {
-            var logEntry = $"[{DateTime.Now:HH:mm:ss:fff}] [{type}] {condition}";
-            if (!string.IsNullOrEmpty(stackTrace))
-                logEntry += $"\n{stackTrace}";
-
-            _logs.Add(logEntry);
+            _logs.Add(new TestLogEntry(type, condition, stackTrace));
         }
 
-        string FormatTestResults()
+        string FormatTestResults(bool includeMessage, bool includeMessageStacktrace, bool includeLogs, bool includeLogsStacktrace)
         {
             var results = GetResults();
             var summary = GetSummary();
@@ -213,22 +226,35 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     output.AppendLine($"[{result.Status}] {result.Name}");
                     output.AppendLine($"  Duration: {result.Duration:ss\\.fff}s");
 
-                    if (!string.IsNullOrEmpty(result.Message))
-                        output.AppendLine($"  Message: {result.Message}");
+                    if (includeMessage)
+                    {
+                        if (!string.IsNullOrEmpty(result.Message))
+                            output.AppendLine($"  Message: {result.Message}");
+                    }
 
-                    if (!string.IsNullOrEmpty(result.StackTrace))
-                        output.AppendLine($"  Stack Trace: {result.StackTrace}");
+                    if (includeMessageStacktrace)
+                    {
+                        if (!string.IsNullOrEmpty(result.StackTrace))
+                            output.AppendLine($"  Stack Trace: {result.StackTrace}");
+                    }
 
                     output.AppendLine();
                 }
             }
 
             // Console logs
-            if (logs.Any())
+            if (includeLogs && logs.Any())
             {
+                var minLogLevel = TestLogEntry.ToLogLevel((LogType)IncludeLogsMinLevel.Value);
                 output.AppendLine("=== CONSOLE LOGS ===");
                 foreach (var log in logs)
-                    output.AppendLine(log);
+                {
+                    if (log.LogLevel < minLogLevel)
+                        continue;
+                    output.AppendLine(log.ToStringFormat(
+                        includeType: true,
+                        includeStacktrace: includeLogsStacktrace));
+                }
             }
 
             return output.ToString();

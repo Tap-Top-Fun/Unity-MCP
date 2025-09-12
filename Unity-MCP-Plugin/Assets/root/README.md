@@ -121,7 +121,7 @@ openupm add com.ivanmurzak.unity.mcp
 ### Automatic configuration
 
 - Open Unity project
-- Open `Window/AI Connector (Unity-MCP)`
+- Open `Window/AI Game Developer`
 - Click `Configure` at your MCP client
 
 ![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/ai-connector-window.gif)
@@ -130,7 +130,7 @@ openupm add com.ivanmurzak.unity.mcp
 
 ### Manual configuration
 
-If Automatic configuration doesn't work for you for any reason. Use JSON from `AI Connector (Unity-MCP)` window to configure any `MCP Client` on your own.
+If Automatic configuration doesn't work for you for any reason. Use JSON from `AI Game Developer` window to configure any `MCP Client` on your own.
 
 <details>
   <summary>Add Unity-MCP to <code>Claude Code</code> (Windows)</summary>
@@ -215,7 +215,7 @@ Some `MCP Clients` allow to chose different LLM models. Take an eye on it, some 
 
 **[Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)** is a bridge between LLM and Unity. It exposes and explains to LLM Unity's tools. LLM understands the interface and utilizes the tools in the way a user asks.
 
-Connect **[Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)** to LLM client such as [Claude](https://claude.ai/download) or [Cursor](https://www.cursor.com/) using integrated `AI Connector` window. Custom clients are supported as well.
+Connect **[Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)** to LLM client such as [Claude](https://claude.ai/download) or [Cursor](https://www.cursor.com/) using integrated `AI Game Developer` window. Custom clients are supported as well.
 
 The project is designed to let developers to add custom tools soon. After that the next goal is to enable the same features in player's build. For not it works only in Unity Editor.
 

@@ -53,7 +53,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             dropdownLogLevel.RegisterValueChangedCallback(evt =>
             {
                 McpPluginUnity.LogLevel = evt.newValue as LogLevel? ?? LogLevel.Warning;
-                SaveChanges($"[AI Connector] LogLevel Changed: {evt.newValue}");
+                SaveChanges($"[AI Game Developer] LogLevel Changed: {evt.newValue}");
                 McpPluginUnity.BuildAndStart();
             });
 
@@ -75,7 +75,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 var rawJsonField = root.Query<TextField>("rawJsonConfiguration").First();
                 rawJsonField.value = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutMs).ToString();
 
-                SaveChanges($"[AI Connector] Timeout Changed: {newValue} ms");
+                SaveChanges($"[AI Game Developer] Timeout Changed: {newValue} ms");
                 McpPluginUnity.BuildAndStart();
             });
 

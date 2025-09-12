@@ -37,7 +37,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
                 public const string DefaultBodyPath = "mcpServers";
                 public const string DefaultServerName = "Unity-MCP";
-                public const string BodyPathDelimiter = "<///>";
+                public const string BodyPathDelimiter = "->";
 
                 public static string[] BodyPathSegments(string bodyPath)
                 {
@@ -51,27 +51,31 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     int port = Hub.DefaultPort,
                     int timeoutMs = Hub.DefaultTimeoutMs)
                 {
+                    var pathSegments = BodyPathSegments(bodyPath);
                     var root = new JsonObject();
-                    foreach (var segment in BodyPathSegments(bodyPath))
+                    var current = root;
+
+                    // Create nested structure following the path segments
+                    foreach (var segment in pathSegments)
                     {
                         var child = new JsonObject();
-                        root[segment] = child;
-                        root = child;
+                        current[segment] = child;
+                        current = child;
                     }
-                    root[bodyPath] = new JsonObject
+
+                    // Place the server configuration at the final location
+                    current[serverName] = new JsonObject
                     {
-                        [serverName] = new JsonObject
+                        ["type"] = "stdio",
+                        ["command"] = executablePath,
+                        ["args"] = new JsonArray
                         {
-                            ["type"] = "stdio",
-                            ["command"] = executablePath,
-                            ["args"] = new JsonArray
-                            {
-                                $"{Args.Port}={port}",
-                                $"{Args.PluginTimeout}={timeoutMs}",
-                                $"{Args.ClientTransportMethod}={TransportMethod.stdio}"
-                            }
+                            $"{Args.Port}={port}",
+                            $"{Args.PluginTimeout}={timeoutMs}",
+                            $"{Args.ClientTransportMethod}={TransportMethod.stdio}"
                         }
                     };
+
                     return root;
                 }
 
