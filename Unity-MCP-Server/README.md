@@ -5,6 +5,8 @@
 
 Model Context Protocol implementation for Unity Editor and for games made with Unity.
 
+Required to install [Unity MCP Plugin](https://github.com/IvanMurzak/Unity-MCP) into Unity Engine to connect it with MCP Server.
+
 ## Topology
 
 - **Client** is the MCP client, such as VS Code, Cursor, Claude Desktop, Claude Code etc.

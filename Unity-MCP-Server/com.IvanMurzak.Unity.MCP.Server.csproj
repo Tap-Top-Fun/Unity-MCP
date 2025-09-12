@@ -16,6 +16,7 @@
     <Version>1.0.1</Version>
     <Authors>Ivan Murzak</Authors>
     <Company>Ivan Murzak</Company>
+    <Copyright>Copyright © 2025 Ivan Murzak</Copyright>
     <Description>Unity MCP Server - A Model Context Protocol server that enables AI assistants to interact with Unity Editor and games through the Unity-MCP Plugin</Description>
     <PackageTags>unity;mcp;model-context-protocol;ai;assistant;signalr;dotnet-tool</PackageTags>
     <RepositoryUrl>https://github.com/IvanMurzak/Unity-MCP</RepositoryUrl>
