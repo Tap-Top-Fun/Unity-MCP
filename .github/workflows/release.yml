@@ -24,14 +24,9 @@ jobs:
         with:
           path: Unity-MCP-Plugin/Assets/root
 
-      - name: Fetch all history and tags
-        run: git fetch --unshallow --tags || git fetch --all --tags
-
       - name: Find previous version tag
         id: prev_tag
         uses: WyriHaximus/github-action-get-previous-tag@v1
-        with:
-          fallback: '0.0.0'
 
       - name: Check if tag exists
         id: tag_exists
@@ -74,7 +69,10 @@ jobs:
           sudo rm -rf ./AssetStore-Installer/Logs/ || true
           sudo rm -rf ./AssetStore-Installer/Temp/ || true
           sudo rm -rf ./artifacts-installer-editmode/ || true
-          echo "Cleaned Unity artifacts and working directory"
+
+          # Reset only tracked files to their committed state
+          git reset --hard HEAD
+          echo "Cleaned Unity artifacts and reset tracked files"
 
       - name: Export Unity Package
         uses: game-ci/unity-builder@v4
