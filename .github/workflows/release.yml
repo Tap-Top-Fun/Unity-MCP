@@ -73,7 +73,7 @@ jobs:
           name: mcp-server-zips
           path: ./Unity-MCP-Server/publish/*.zip
 
-  # --- UNITY TESTS ---
+  # --- UNITY TESTS ------
   # ----------------------
 
   # --- EDIT MODE ---
