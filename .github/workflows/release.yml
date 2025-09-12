@@ -9,7 +9,7 @@ jobs:
   check-version-tag:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get_version.outputs.version }}
+      version: ${{ steps.get_version.outputs.current-version }}
       prev_tag: ${{ steps.prev_tag.outputs.tag }}
       tag_exists: ${{ steps.tag_exists.outputs.exists }}
     steps:
@@ -20,10 +20,9 @@ jobs:
 
       - name: Get version from package.json
         id: get_version
-        run: |
-          version=$(grep '"version"' Unity-MCP-Plugin/Assets/root/package.json | head -1 | sed -E 's/.*"([0-9.]+)".*/\1/')
-          echo "version: $version"
-          echo "version=$version" >> $GITHUB_OUTPUT
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        with:
+          path: Unity-MCP-Plugin/Assets/root
 
       - name: Fetch all history and tags
         run: git fetch --unshallow --tags || git fetch --all --tags
@@ -37,7 +36,7 @@ jobs:
       - name: Check if tag exists
         id: tag_exists
         run: |
-          version=${{ steps.get_version.outputs.version }}
+          version=${{ steps.get_version.outputs.current-version }}
           tag_name="$version"
           if git ls-remote --tags origin | grep -q "refs/tags/$tag_name"; then
             echo "exists=true" >> $GITHUB_OUTPUT
