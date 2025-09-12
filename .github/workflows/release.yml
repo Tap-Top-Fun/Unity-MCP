@@ -74,12 +74,7 @@ jobs:
           sudo rm -rf ./AssetStore-Installer/Logs/ || true
           sudo rm -rf ./AssetStore-Installer/Temp/ || true
           sudo rm -rf ./artifacts-installer-editmode/ || true
-
-          # Reset git working directory
-          git reset --hard HEAD
-          git clean -fd
-
-          echo "Cleaned Unity artifacts and git working directory"
+          echo "Cleaned Unity artifacts and working directory"
 
       - name: Export Unity Package
         uses: game-ci/unity-builder@v4
