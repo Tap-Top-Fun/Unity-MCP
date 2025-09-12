@@ -82,7 +82,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     ".claude.json"
                 ),
                 bodyPath: $"projects{Consts.MCP.Server.BodyPathDelimiter}"
-                    + $"{ProjectRootPath.Replace("/", "\\")}{Consts.MCP.Server.BodyPathDelimiter}"
+                    + $"{ProjectRootPath}{Consts.MCP.Server.BodyPathDelimiter}"
                     + Consts.MCP.Server.DefaultBodyPath);
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-VS-Code").First(),
