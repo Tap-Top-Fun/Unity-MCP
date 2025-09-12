@@ -7,45 +7,45 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+
 #nullable enable
-#if !UNITY_EDITOR
 using System;
-using System.Reflection;
+using System.Collections.Generic;
 using System.Text;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
-using com.IvanMurzak.ReflectorNet.Utils;
-using Microsoft.Extensions.Logging;
+using com.IvanMurzak.Unity.MCP.Utils;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
+    public partial class UnityEngine_Component_ReflectionConvertor : UnityEngine_Object_ReflectionConvertor<UnityEngine.Component>
     {
-        public override bool TryPopulate(
+        public override bool AllowSetValue => false;
+
+        protected override IEnumerable<string> GetIgnoredProperties()
+        {
+            foreach (var property in base.GetIgnoredProperties())
+                yield return property;
+
+            yield return nameof(UnityEngine.Component.gameObject);
+            yield return nameof(UnityEngine.Component.transform);
+        }
+        protected override object? DeserializeValueAsJsonElement(
             Reflector reflector,
-            ref object? obj,
             SerializedMember data,
-            Type? dataType = null,
+            Type type,
             int depth = 0,
             StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
-            var padding = StringUtils.GetPadding(depth);
-
-            if (logger?.IsEnabled(LogLevel.Trace) == true)
-                logger.LogTrace($"{StringUtils.GetPadding(depth)}Populate sprite from data. Convertor='{GetType().GetTypeShortName()}'.");
-
-            if (logger?.IsEnabled(LogLevel.Error) == true)
-                logger.LogError($"{padding}Operation is not supported in runtime. Convertor: {GetType().GetTypeShortName()}");
-
-            if (stringBuilder != null)
-                stringBuilder.AppendLine($"{padding}[Error] Operation is not supported in runtime. Convertor: {GetType().GetTypeShortName()}");
-
-            return false;
+            return data.valueJsonElement
+                .ToObjectRef(
+                    reflector: reflector,
+                    depth: depth,
+                    stringBuilder: stringBuilder,
+                    logger: logger)
+                .FindObject() as UnityEngine.Component;
         }
     }
 }
-#endif
