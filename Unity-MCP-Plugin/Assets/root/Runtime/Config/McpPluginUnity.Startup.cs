@@ -28,7 +28,7 @@ namespace com.IvanMurzak.Unity.MCP
 
     public partial class McpPluginUnity
     {
-        public const string Version = "0.16.2";
+        public const string Version = "0.17.0";
 
         static volatile object buildAndStartMutex = new();
         static volatile bool isInitializationStarted = false;
