@@ -10,20 +10,16 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using com.IvanMurzak.ReflectorNet;
-using com.IvanMurzak.ReflectorNet.Convertor;
-using UnityEngine;
+using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
+namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public partial class RS_GenericUnity<T> : GenericReflectionConvertor<T>
+    public partial class UnityGenericNoPropertiesReflectionConvertor<T> : UnityGenericReflectionConvertor<T>
     {
-        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
-            => objType.GetFields(flags)
-                .Where(field => field.GetCustomAttribute<ObsoleteAttribute>() == null)
-                .Where(field => field.IsPublic || field.IsPrivate && field.GetCustomAttribute<SerializeField>() != null);
+        public override IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
+            => null;
     }
 }

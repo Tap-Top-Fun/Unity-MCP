@@ -7,12 +7,14 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+#nullable enable
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
-    public partial class RS_GenericUnityStruct<T> : RS_GenericUnityNoProperties<T>
+    public partial class UnityEngine_Transform_ReflectionConvertor : UnityEngine_Object_ReflectionConvertor<UnityEngine.Transform>
     {
-        public override bool AllowCascadeSerialization => false;
+        // public override bool AllowCascadeSerialize => false;
+        // public override bool AllowCascadePopulate => false;
     }
 }
