@@ -47,3 +47,7 @@ nupkg/
 
 # Claude Code settings
 .claude/
+
+# MCP Publisher
+.mcpregistry_github_token
+.mcpregistry_registry_token

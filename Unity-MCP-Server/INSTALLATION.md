@@ -4,7 +4,7 @@
 
 1. Install the Unity MCP Server globally using dotnet:
 ```bash
-dotnet tool install -g Unity.MCP.Server
+dotnet tool install -g com.IvanMurzak.Unity.MCP.Server
 ```
 
 2. Verify the installation:
