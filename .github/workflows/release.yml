@@ -224,7 +224,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
   export-and-publish-unity-package:
     runs-on: ubuntu-latest
     needs: release-unity-plugin
