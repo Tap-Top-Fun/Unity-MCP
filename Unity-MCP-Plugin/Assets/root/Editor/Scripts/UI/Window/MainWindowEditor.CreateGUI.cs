@@ -49,16 +49,17 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             var dropdownLogLevel = root.Query<EnumField>("dropdownLogLevel").First();
             dropdownLogLevel.value = McpPluginUnity.LogLevel;
+            dropdownLogLevel.tooltip = "The minimum level of messages to log. Debug includes all messages, while Critical includes only the most severe.";
             dropdownLogLevel.RegisterValueChangedCallback(evt =>
             {
                 McpPluginUnity.LogLevel = evt.newValue as LogLevel? ?? LogLevel.Warning;
-                SaveChanges($"[AI Connector] LogLevel Changed: {evt.newValue}");
+                SaveChanges($"[AI Game Developer] LogLevel Changed: {evt.newValue}");
                 McpPluginUnity.BuildAndStart();
             });
 
             var inputTimeoutMs = root.Query<IntegerField>("inputTimeoutMs").First();
             inputTimeoutMs.value = McpPluginUnity.TimeoutMs;
-            inputTimeoutMs.tooltip = $"Timeout for MCP tool execution in milliseconds.\n\nMost tools only need a few seconds, but running test suites can take much longer.\n\nSet this higher than your longest test execution time.\n\nImportant: Also update the '{Consts.MCP.Server.Args.PluginTimeout}' argument in your MCP client configuration to match this value so your MCP client doesn't timeout before the tool completes.";
+            inputTimeoutMs.tooltip = $"Timeout for MCP tool execution in milliseconds.\n\nMost tools only need a few seconds.\n\nSet this higher than your longest test execution time.\n\nImportant: Also update the '{Consts.MCP.Server.Args.PluginTimeout}' argument in your MCP client configuration to match this value so your MCP client doesn't timeout before the tool completes.";
             inputTimeoutMs.RegisterCallback<FocusOutEvent>(evt =>
             {
                 var newValue = Mathf.Max(1000, inputTimeoutMs.value);
@@ -74,9 +75,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 var rawJsonField = root.Query<TextField>("rawJsonConfiguration").First();
                 rawJsonField.value = Startup.Server.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutMs).ToString();
 
-                SaveChanges($"[AI Connector] Timeout Changed: {newValue} ms");
+                SaveChanges($"[AI Game Developer] Timeout Changed: {newValue} ms");
                 McpPluginUnity.BuildAndStart();
             });
+
+            var currentVersion = root.Query<TextField>("currentVersion").First();
+            currentVersion.value = McpPluginUnity.Version;
 
             // Connection status
             // -----------------------------------------------------------------

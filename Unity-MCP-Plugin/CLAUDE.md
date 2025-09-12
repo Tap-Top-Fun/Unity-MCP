@@ -17,7 +17,7 @@ Unity-MCP is a bridge between Large Language Models (LLMs) and Unity Editor that
 ### Unity Operations
 - **Open Unity Project**: Open the `Unity-MCP-Plugin` folder in Unity Editor
 - **Run Tests**: Use Unity Test Runner window (`Window > General > Test Runner`)
-  - EditMode tests: `Assets/root/Tests/Editor`  
+  - EditMode tests: `Assets/root/Tests/Editor`
   - PlayMode tests: `Assets/root/Tests/Runtime`
 - **Build Plugin**: Unity handles compilation automatically when scripts change
 
@@ -96,12 +96,12 @@ Tools are implemented using attributes:
 - **MCP Client** - Requires compatible MCP client (Claude Desktop, Cursor, VS Code Copilot, etc.)
 
 ### Configuration
-- Main configuration through `Window/AI Connector (Unity-MCP)` 
+- Main configuration through `Window/AI Game Developer`
 - Connection settings stored in `McpPluginUnity.Data`
 - Runtime configuration via `Assets/Resources/Unity-MCP-ConnectionConfig.json`
 
 ### Dependencies
 - **SignalR Client**: Real-time communication
-- **Roslyn**: C# code compilation and execution  
+- **Roslyn**: C# code compilation and execution
 - **R3 Reactive Extensions**: Reactive programming patterns
 - **ReflectorNet**: Advanced reflection system for Unity objects

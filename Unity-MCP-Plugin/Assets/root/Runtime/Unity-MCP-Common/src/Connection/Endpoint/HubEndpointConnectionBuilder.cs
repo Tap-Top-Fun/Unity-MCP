@@ -45,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 {
                     logging.ClearProviders();
                     logging.AddProvider(new ForwardLoggerProvider(_logger,
-                        additionalErrorMessage: "To stop seeing the error, please <b>Stop</b> the connection to MCP server in <b>AI Connector</b> window."));
+                        additionalErrorMessage: "To stop seeing the error, please <b>Stop</b> the connection to MCP server in <b>AI Game Developer</b> window."));
                     logging.SetMinimumLevel(LogLevel.Trace);
                 })
                 .Build();

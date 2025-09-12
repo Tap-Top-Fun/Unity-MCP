@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public Task<IResponseData> OnListToolsUpdated(string data)
         {
-            _logger.LogTrace("RemoteApp OnListToolsUpdated. {0}. Data: {1}", _guid, data);
+            _logger.LogTrace("OnListToolsUpdated. {0}. Data: {1}", _guid, data);
             _eventAppToolsChange.OnNext(new EventAppToolsChange.EventData
             {
                 ConnectionId = Context.ConnectionId,
@@ -44,13 +44,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public Task<IResponseData> OnListResourcesUpdated(string data)
         {
-            _logger.LogTrace("RemoteApp OnListResourcesUpdated. {0}. Data: {1}", _guid, data);
+            _logger.LogTrace("OnListResourcesUpdated. {0}. Data: {1}", _guid, data);
             return ResponseData.Success(data, string.Empty).TaskFromResult<IResponseData>();
         }
 
         public Task<IResponseData> OnToolRequestCompleted(ToolRequestCompletedData data)
         {
-            _logger.LogTrace("RemoteApp OnToolRequestCompleted. {0}. RequestId: {1}", _guid, data.RequestId);
+            _logger.LogTrace("OnToolRequestCompleted. {0}. RequestId: {1}", _guid, data.RequestId);
 
             try
             {
@@ -66,7 +66,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public Task<VersionHandshakeResponse> OnVersionHandshake(VersionHandshakeRequest request)
         {
-            _logger.LogTrace("RemoteApp OnVersionHandshake. {0}. PluginVersion: {1}, ApiVersion: {2}", _guid, request.PluginVersion, request.ApiVersion);
+            _logger.LogTrace("OnVersionHandshake. {0}. PluginVersion: {1}, ApiVersion: {2}, UnityVersion: {3}", _guid, request.PluginVersion, request.ApiVersion, request.UnityVersion);
 
             var serverApiVersion = _version.Api;
             var compatible = IsApiVersionCompatible(request.ApiVersion, serverApiVersion);
@@ -88,8 +88,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
             }
             else
             {
-                _logger.LogInformation("Version handshake successful. Plugin: {PluginVersion}, API: {ApiVersion}",
-                    request.PluginVersion, request.ApiVersion);
+                _logger.LogInformation("Version handshake successful. Plugin: {PluginVersion}, API: {ApiVersion}, Unity Version: {UnityVersion}",
+                    request.PluginVersion, request.ApiVersion, request.UnityVersion);
             }
 
             return Task.FromResult(response);

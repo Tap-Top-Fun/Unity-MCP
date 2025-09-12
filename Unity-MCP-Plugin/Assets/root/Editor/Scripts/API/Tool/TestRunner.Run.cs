@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.  │
 └──────────────────────────────────────────────────────────────────┘
 */
+
 #nullable enable
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,19 @@ Be default recommended to use 'EditMode' for faster iteration during development
             string? testClass = null,
             [Description("Specific fully qualified test method to run (optional). Example: 'MyTestNamespace.FixtureName.TestName'")]
             string? testMethod = null,
+
+            [Description("Include test result messages in the test results (default: true). If just need pass/fail status, set to false.")]
+            bool includeMessages = true,
+            [Description("Include stack traces in the test results (default: false).")]
+            bool includeStacktrace = false,
+
+            [Description("Include console logs in the test results (default: false).")]
+            bool includeLogs = false,
+            [Description("Log type filter for console logs. Options: '" + nameof(LogType.Log) + "', '" + nameof(LogType.Warning) + "', '" + nameof(LogType.Assert) + "', '" + nameof(LogType.Error) + "', '" + nameof(LogType.Exception) + "'. (default: Warning)")]
+            LogType logType = LogType.Warning,
+            [Description("Include stack traces for console logs in the test results (default: false). This is huge amount of data, use only if really needed.")]
+            bool includeLogsStacktrace = false,
+
             [RequestID]
             string? requestId = null
         )
@@ -59,6 +73,12 @@ Be default recommended to use 'EditMode' for faster iteration during development
                 try
                 {
                     TestResultCollector.TestCallRequestID.Value = requestId;
+                    TestResultCollector.IncludeMessage.Value = includeMessages;
+                    TestResultCollector.IncludeMessageStacktrace.Value = includeStacktrace;
+
+                    TestResultCollector.IncludeLogs.Value = includeLogs;
+                    TestResultCollector.IncludeLogsMinLevel.Value = (int)logType;
+                    TestResultCollector.IncludeLogsStacktrace.Value = includeLogsStacktrace;
 
                     // Create filter parameters
                     var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
@@ -85,7 +105,7 @@ Be default recommended to use 'EditMode' for faster iteration during development
                         Debug.LogException(ex);
                         Debug.LogError($"[TestRunner] ------------------------------------- Exception {testMode} tests.");
                     }
-                    return ResponseCallTool.Error(Error.TestExecutionFailed(ex.Message));
+                    return ResponseCallTool.Error(Error.TestExecutionFailed(ex.Message)).SetRequestID(requestId);
                 }
             }).Unwrap();
         }
