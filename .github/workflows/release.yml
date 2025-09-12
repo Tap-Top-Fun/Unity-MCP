@@ -74,7 +74,7 @@ jobs:
           path: ./Unity-MCP-Server/publish/*.zip
 
   # --- UNITY TESTS ---
-  # -------------------
+  # ----------------------
 
   # --- EDIT MODE ---
 
