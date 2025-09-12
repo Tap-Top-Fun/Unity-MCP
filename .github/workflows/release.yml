@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get_version.outputs.version }}
-      prev_tag: ${{ steps.prev_tag.outputs.prev_tag }}
+      prev_tag: ${{ steps.prev_tag.outputs.tag }}
       tag_exists: ${{ steps.tag_exists.outputs.exists }}
     steps:
       - name: Checkout repository
@@ -30,11 +30,9 @@ jobs:
 
       - name: Find previous version tag
         id: prev_tag
-        run: |
-          version=${{ steps.get_version.outputs.version }}
-          prev_tag=$(git tag --list '[0-9]*.[0-9]*.[0-9]*' | grep -v "^$version$" | sort -V | tail -n 1)
-          echo "Previous version: $prev_tag"
-          echo "prev_tag=$prev_tag" >> $GITHUB_OUTPUT
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        with:
+          fallback: '0.0.0'
 
       - name: Check if tag exists
         id: tag_exists
