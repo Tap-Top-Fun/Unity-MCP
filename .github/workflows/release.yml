@@ -9,8 +9,8 @@ jobs:
   check-version-tag:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get_version.outputs.version }}
-      prev_tag: ${{ steps.prev_tag.outputs.prev_tag }}
+      version: ${{ steps.get_version.outputs.current-version }}
+      prev_tag: ${{ steps.prev_tag.outputs.tag }}
       tag_exists: ${{ steps.tag_exists.outputs.exists }}
     steps:
       - name: Checkout repository
@@ -20,32 +20,24 @@ jobs:
 
       - name: Get version from package.json
         id: get_version
-        run: |
-          version=$(grep '"version"' Unity-MCP-Plugin/Assets/root/package.json | head -1 | sed -E 's/.*"([0-9.]+)".*/\1/')
-          echo "version: $version"
-          echo "version=$version" >> $GITHUB_OUTPUT
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        with:
+          path: Unity-MCP-Plugin/Assets/root
 
       - name: Fetch all history and tags
         run: git fetch --unshallow --tags || git fetch --all --tags
 
       - name: Find previous version tag
         id: prev_tag
-        run: |
-          version=${{ steps.get_version.outputs.version }}
-          prev_tag=$(git tag --list '[0-9]*.[0-9]*.[0-9]*' | grep -v "^$version$" | sort -V | tail -n 1)
-          echo "Previous version: $prev_tag"
-          echo "prev_tag=$prev_tag" >> $GITHUB_OUTPUT
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        with:
+          fallback: '0.0.0'
 
       - name: Check if tag exists
         id: tag_exists
-        run: |
-          version=${{ steps.get_version.outputs.version }}
-          tag_name="$version"
-          if git ls-remote --tags origin | grep -q "refs/tags/$tag_name"; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
+        uses: mukunku/tag-exists-action@v1.6.0
+        with:
+          tag: ${{ steps.get_version.outputs.current-version }}
 
   build-unity-installer:
     runs-on: ubuntu-latest
@@ -59,7 +51,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./AssetStore-Installer/Library
-          key: Library-2022.3.61f1-installer-ubuntu-latest
+          key: Library-Unity-Installer
 
       - name: Test Unity Installer (EditMode)
         uses: game-ci/unity-test-runner@v4
@@ -70,10 +62,19 @@ jobs:
         with:
           projectPath: ./AssetStore-Installer
           unityVersion: 2022.3.61f1
+          customImage: 'unityci/editor:ubuntu-2022.3.61f1-base-3'
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Unity Installer EditMode Test Results
           artifactsPath: artifacts-installer-editmode
+
+      - name: Clean Unity artifacts and reset git state
+        run: |
+          # Force remove Unity generated files with restricted permissions
+          sudo rm -rf ./AssetStore-Installer/Logs/ || true
+          sudo rm -rf ./AssetStore-Installer/Temp/ || true
+          sudo rm -rf ./artifacts-installer-editmode/ || true
+          echo "Cleaned Unity artifacts and working directory"
 
       - name: Export Unity Package
         uses: game-ci/unity-builder@v4
@@ -84,6 +85,7 @@ jobs:
         with:
           projectPath: ./AssetStore-Installer
           unityVersion: 2022.3.61f1
+          customImage: 'unityci/editor:ubuntu-2022.3.61f1-base-3'
           buildName: AI-Game-Dev-Installer
           buildsPath: build
           buildMethod: PackageExporter.ExportPackage
@@ -339,8 +341,12 @@ jobs:
         uses: geekyeggo/delete-artifact@v5
         with:
           name: mcp-server-zips
+          failOnError: false
+        continue-on-error: true
 
       - name: Delete Unity Package artifacts
         uses: geekyeggo/delete-artifact@v5
         with:
           name: unity-installer-package
+          failOnError: false
+        continue-on-error: true
