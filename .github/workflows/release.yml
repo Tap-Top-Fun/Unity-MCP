@@ -67,6 +67,7 @@ jobs:
         with:
           projectPath: ./AssetStore-Installer
           unityVersion: 2022.3.61f1
+          customImage: 'unityci/editor:ubuntu-2022.3.61f1-linux-il2cpp-3'
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Unity Installer EditMode Test Results
@@ -94,6 +95,7 @@ jobs:
         with:
           projectPath: ./AssetStore-Installer
           unityVersion: 2022.3.61f1
+          customImage: 'unityci/editor:ubuntu-2022.3.61f1-linux-il2cpp-3'
           buildName: AI-Game-Dev-Installer
           buildsPath: build
           buildMethod: PackageExporter.ExportPackage
