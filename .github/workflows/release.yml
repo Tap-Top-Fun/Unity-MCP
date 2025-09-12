@@ -75,6 +75,12 @@ jobs:
           checkName: Unity Installer EditMode Test Results
           artifactsPath: artifacts-installer-editmode
 
+      - name: Restore clean git state
+        uses: actions/checkout@v4
+        with:
+          clean: true
+          fetch-depth: 1
+
       - name: Export Unity Package
         uses: game-ci/unity-builder@v4
         env:
