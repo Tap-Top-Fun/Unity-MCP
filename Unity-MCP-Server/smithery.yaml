@@ -18,33 +18,20 @@ startCommand:
         type: integer
         description: "The timeout for the Unity plugin"
         default: 30000
-  commandFunction:
-    |-
-    (config) => {
-      const { execSync } = require('child_process');
-      const imageName = 'ivanmurzakdev/unity-mcp-server';
-
-      // Check if Docker image exists, pull if not
-      try {
-        execSync(`docker image inspect ${imageName}`, { stdio: 'ignore' });
-      } catch (error) {
-        console.log(`Docker image ${imageName} not found locally, pulling...`);
-        execSync(`docker pull ${imageName}`, { stdio: 'inherit' });
-      }
-
-      return {
-        command: 'docker',
-        args: [
-          'run',
-          '-t',
-          '-e', `UNITY_MCP_PORT=${config.UNITY_MCP_PORT}`,
-          '-e', `UNITY_MCP_CLIENT_TRANSPORT=${config.UNITY_MCP_CLIENT_TRANSPORT}`,
-          '-e', `UNITY_MCP_PLUGIN_TIMEOUT=${config.UNITY_MCP_PLUGIN_TIMEOUT}`,
-          '-p', `8080:8080`,
-          imageName
-        ]
-      };
-    }
+  commandFunction: |-
+    (config) => ({
+      command: 'docker',
+      args: [
+        'run',
+        '-t',
+        '--pull', 'always',
+        '-e', `UNITY_MCP_CLIENT_TRANSPORT=${config.UNITY_MCP_CLIENT_TRANSPORT}`,
+        '-e', `UNITY_MCP_PORT=${config.UNITY_MCP_PORT}`,
+        '-e', `UNITY_MCP_PLUGIN_TIMEOUT=${config.UNITY_MCP_PLUGIN_TIMEOUT}`,
+        '-p', '8080:8080',
+        'ivanmurzakdev/unity-mcp-server'
+      ]
+    })
   exampleConfig:
     UNITY_MCP_CLIENT_TRANSPORT: "stdio"
     UNITY_MCP_PORT: 8080
