@@ -7,21 +7,21 @@ build:
 ports:
   - 8080:8080                        # Forward Unity plugin port
 env:
-  UNITY_MCP_CLIENT_TRANSPORT: http
+  UNITY_MCP_CLIENT_TRANSPORT: stdio
   UNITY_MCP_PORT: 8080               # Unity plugin port
-  UNITY_MCP_PLUGIN_TIMEOUT: 15000    # Unity plugin timeout
+  UNITY_MCP_PLUGIN_TIMEOUT: 30000    # Unity plugin timeout
 startCommand:
-  type: http
+  type: stdio
   configSchema:
     type: object
     required:
-    #  - UNITY_MCP_PORT
+      - UNITY_MCP_CLIENT_TRANSPORT
       - UNITY_MCP_PLUGIN_TIMEOUT
     properties:
       UNITY_MCP_CLIENT_TRANSPORT:
         type: string
         description: "http or stdio transport options"
-        default: "http"
+        default: "stdio"
       # UNITY_MCP_PORT:
       #   type: integer
       #   description: "The port for the Unity plugin"
@@ -29,7 +29,7 @@ startCommand:
       UNITY_MCP_PLUGIN_TIMEOUT:
         type: integer
         description: "The timeout for the Unity plugin"
-        default: 15000
+        default: 30000
   commandFunction:
     |-
     (config) => ({
@@ -42,6 +42,6 @@ startCommand:
       }
     })
   exampleConfig:
-    UNITY_MCP_CLIENT_TRANSPORT: "http"
+    UNITY_MCP_CLIENT_TRANSPORT: "stdio"
     # UNITY_MCP_PORT: 8080
-    UNITY_MCP_PLUGIN_TIMEOUT: 15000
+    UNITY_MCP_PLUGIN_TIMEOUT: 30000
